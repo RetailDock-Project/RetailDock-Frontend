@@ -6,10 +6,9 @@ import Cashier from "../../components/sidebar/Cashier";
 const currentUser = {
   name: "Sabith",
   roles: ["superadmin", "inventory"],
-  permissions: ["view_superadmin", "view_inventory"],
+  permissions: ["view_superadmin", "view_inventory", "view_cashier"],
 };
 
-const hasRole = (role: string) => currentUser.roles.includes(role);
 const hasPermission = (permission: string) =>
   currentUser.permissions.includes(permission);
 
@@ -25,13 +24,9 @@ const SideBar: React.FC = () => {
           </p>
         </div>
         {/* Conditionally render role-based sections */}
-        {hasRole("superadmin") && hasPermission("view_superadmin") && (
-          <SuperAdmin />
-        )}
-        {hasRole("inventory") && hasPermission("view_inventory") && (
-          <Inventory />
-        )}
-        {hasRole("cashier") && hasPermission("view_cashier") && <Cashier />}
+        {hasPermission("view_superadmin") && <SuperAdmin />}
+        {hasPermission("view_inventory") && <Inventory />}
+        {hasPermission("view_cashier") && <Cashier />}
       </SidebarContent>
     </Sidebar>
   );
