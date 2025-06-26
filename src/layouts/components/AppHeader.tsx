@@ -1,10 +1,32 @@
 import React from "react";
-import { Bell } from "lucide-react";
+import { Bell, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
-const AppHeader: React.FC = () => {
+interface AppHeaderProps {
+  sidebarOpen: boolean;
+  toggleSidebar: () => void;
+}
+
+const AppHeader: React.FC<AppHeaderProps> = ({
+  sidebarOpen,
+  toggleSidebar,
+}) => {
   return (
-    <header className="flex justify-end px-6 py-4 bg-white shadow-sm border-b">
-      <div className="flex items-center gap-4">
+    <header className="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b">
+      {/* Sidebar Toggle - Visible only on mobile */}
+      <div className="md:hidden">
+        <button
+          onClick={toggleSidebar}
+          className="text-gray-600 hover:text-gray-800 transition"
+        >
+          {sidebarOpen ? (
+            <PanelLeftClose size={24} />
+          ) : (
+            <PanelLeftOpen size={24} />
+          )}
+        </button>
+      </div>
+
+      <div className="flex items-center gap-4 ml-auto">
         <button className="relative text-gray-600 hover:text-gray-800">
           <Bell size={20} />
           <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
