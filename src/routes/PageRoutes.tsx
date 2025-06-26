@@ -8,6 +8,9 @@ import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
 import EmailVerificationStatus from "../features/auth/components/EmailVerificationStatus";
 import MainLayout from "../layouts/MainLayout";
 
+import Customers from "../features/superadmin/components/Customers";
+import Dashboard from "../features/superadmin/components/Dashboard";
+
 const PageRoutes: React.FC = () => {
   return (
     <Routes>
@@ -23,7 +26,14 @@ const PageRoutes: React.FC = () => {
             element={<EmailVerificationStatus />}
           />
         </Route>
-        <Route path="home" element={<MainLayout />}></Route>
+        <Route path="home" element={<MainLayout />}>
+                <Route path="super-admin" >
+                     <Route path="customers" element={<Customers />}></Route>
+                     <Route path="dashboard" element={<Dashboard />}></Route>
+                </Route>
+
+        </Route>
+        
       </Route>
     </Routes>
   );
