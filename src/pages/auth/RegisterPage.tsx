@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/api/authApi";
 import toast from "react-hot-toast";
 
@@ -45,6 +45,8 @@ const RegisterPage: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -60,8 +62,10 @@ const RegisterPage: React.FC = () => {
       console.log("Registered:", response);
       toast.success(response?.message);
       // Optionally navigate or show toast
+      navigate("/auth/login");
     } catch (error: any) {
       console.error("Registration failed:", error.response?.data?.message);
+      toast.error(error?.response?.data?.message);
     }
   };
 

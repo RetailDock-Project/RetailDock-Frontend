@@ -7,6 +7,9 @@ import VerifyOtpPage from "../pages/auth/VerifyOtpPage";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
 import EmailVerificationStatus from "../features/auth/components/EmailVerificationStatus";
 import MainLayout from "../layouts/MainLayout";
+import PurchaseOrder from "../features/inventory/purchaseorder/PurchaseOrder";
+import NewPurchaseOrder from "../features/inventory/purchaseorder/NewPurchaseOrder";
+import PurchaseOrderDetail from "../features/inventory/purchaseorder/PurchaseOrderDetail";
 
 const PageRoutes: React.FC = () => {
   return (
@@ -23,7 +26,15 @@ const PageRoutes: React.FC = () => {
             element={<EmailVerificationStatus />}
           />
         </Route>
-        <Route path="home" element={<MainLayout />}></Route>
+        <Route path="home" element={<MainLayout />}>
+          <Route path="inventory">
+            <Route path="purchase-orders" element={<PurchaseOrder />}></Route>
+            <Route path="purchase-order">
+              <Route path="new" element={<NewPurchaseOrder />}></Route>
+              <Route path="invoicenumber" element={<PurchaseOrderDetail />} />
+            </Route>
+          </Route>
+        </Route>
       </Route>
     </Routes>
   );
