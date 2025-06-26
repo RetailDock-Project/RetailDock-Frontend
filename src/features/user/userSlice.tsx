@@ -4,9 +4,10 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface User {
   id: string;
+  organizationId: string;
   name: string;
   email: string;
-  roles: string;
+  role: string;
   permissions: string[];
 }
 

@@ -1,5 +1,8 @@
 import React from "react";
 import { Bell, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
+import { FaUserCircle } from "react-icons/fa";
 
 interface AppHeaderProps {
   sidebarOpen: boolean;
@@ -10,6 +13,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   sidebarOpen,
   toggleSidebar,
 }) => {
+  const user = useSelector((state: RootState) => state.user.user);
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b">
       {/* Sidebar Toggle - Visible only on mobile */}
@@ -31,13 +35,18 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           <Bell size={20} />
           <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
         </button>
-        <div className="flex items-center gap-2">
-          <img
-            src="https://i.pravatar.cc/40?img=5"
-            alt="User"
-            className="w-8 h-8 rounded-full"
-          />
-          <span className="text-sm font-medium text-gray-700">Sabith</span>
+        <div className="flex items-center  gap-2">
+          <div className="">
+            <FaUserCircle className="text-2xl text-gray-500" />
+          </div>
+          <div className="d-flex flex-col">
+            <strong className="text-sm block font-medium text-gray-700">
+              {"Rahbar"}
+            </strong>
+            <small className="text-xs block font-medium text-gray-500">
+              {"Inventory Manager"}
+            </small>
+          </div>
         </div>
       </div>
     </header>

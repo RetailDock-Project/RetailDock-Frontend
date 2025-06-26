@@ -1,27 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ResetPassword } from "../../services/api/authApi";
+import toast from "react-hot-toast";
 
 const ResetPasswordPage: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleResetPassword = (e: React.FormEvent) => {
-    e.preventDefault();
+  const email = location.state?.email ?? null;
+  const otp = location.state?.otp ?? null;
+  console.log(email, otp);
+  useEffect(() => {
+    if (!email || !otp) {
+      navigate("/auth/forgot-password");
+    }
+  }, [email, navigate]);
 
+  const handleResetPassword = async () => {
     if (!newPassword || !confirmPassword) {
-      alert("Please fill in both fields.");
+      toast.error("Please fill in both fields.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
-
-    // Call your backend API here to reset password
-    console.log("Resetting password to:", newPassword);
+    try {
+      console.log("Resetting password to:", newPassword);
+      const response = await ResetPassword({
+        email: email,
+        otp: otp,
+        newPassword: newPassword,
+      });
+      toast.success(response?.message);
+      navigate("/auth/login");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.response?.data?.message);
+    }
   };
 
   return (
@@ -87,6 +109,7 @@ const ResetPasswordPage: React.FC = () => {
           {/* Reset Button */}
           <button
             type="submit"
+            onClick={handleResetPassword}
             className="w-full bg-blue-900 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center text-white"
           >
             Reset Password

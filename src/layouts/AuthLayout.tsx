@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 const AuthLayout: React.FC = () => {
   return (
     <section className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form className="w-[95%] w-sm-[50%]">
+      <div className="w-[95%] w-sm-[50%]">
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
           <div className="w-full bg-white rounded-lg shadow border sm:max-w-md xl:p-0">
             {/* Brand Title and Description */}
@@ -17,7 +17,7 @@ const AuthLayout: React.FC = () => {
             <Outlet />
           </div>
         </div>
-      </form>
+      </div>
     </section>
   );
 };
