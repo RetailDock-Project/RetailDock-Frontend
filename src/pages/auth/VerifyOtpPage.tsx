@@ -1,9 +1,20 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { VerifyOtp } from "../../services/api/authApi";
+import toast from "react-hot-toast";
 
 const VerifyOtpPage: React.FC = () => {
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [otpValues, setOtpValues] = useState<string[]>(new Array(6).fill(""));
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  const email = location.state?.email ?? null;
+  useEffect(() => {
+    if (!email) {
+      navigate("/auth/forgot-password");
+    }
+  }, [email, navigate]);
   const focusInput = (index: number) => {
     inputRefs.current[index]?.focus();
   };
@@ -29,15 +40,24 @@ const VerifyOtpPage: React.FC = () => {
     }
   };
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyOtp = async () => {
     const otp = otpValues.join("");
     if (otp.length !== 6) {
       alert("OTP must be 6 digits.");
       return;
     }
     console.log("Verifying OTP:", otp);
-    // Call your backend API here
+    try {
+      const response = await VerifyOtp({
+        email: email,
+        otp: otp,
+      });
+      toast.success(response?.message);
+      navigate("/auth/reset-password", { state: { email, otp } });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.response?.data?.message);
+    }
   };
 
   const handleResendOtp = () => {
@@ -80,6 +100,7 @@ const VerifyOtpPage: React.FC = () => {
           <button
             type="submit"
             className="w-full bg-blue-900 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            onClick={handleVerifyOtp}
           >
             Verify OTP
           </button>

@@ -5,9 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { loginUser } from "../../services/api/authApi";
+import { loginUser, UserInfo } from "../../services/api/authApi";
 import { useDispatch } from "react-redux";
 import { login } from "../../features/auth/authSice";
+import { setUser } from "../../features/user/userSlice";
 
 // Zod schema for validation
 const loginSchema = z.object({
@@ -32,6 +33,8 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
@@ -45,12 +48,18 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      const response = await loginUser(data); // call your API
+      setLoading(true);
+      const response = await loginUser(data);
       toast.success(response?.message);
+      const userData = await UserInfo();
+      console.log(userData);
       dispatch(login());
+      dispatch(setUser(userData));
       navigate("/home");
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,7 +127,9 @@ const LoginPage: React.FC = () => {
       {/* Submit */}
       <button
         type="submit"
-        className="w-full bg-blue-900 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center text-white"
+        className={`w-full bg-blue-900 ${
+          isLoading ? "bg-blue-300" : "bg-blue-900"
+        } hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center text-white`}
         onClick={handleSubmit(onSubmit)}
       >
         Login
