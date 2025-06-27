@@ -5,20 +5,22 @@ type DropdownProps = {
   options: string[];
   onSelect: (value: string) => void;
   label?: string;
-  defaultValue?: string; // 👈 new prop
+  defaultValue?: string;
+  className?: string; // ✅ New className prop
 };
 
 export const DropdownList: React.FC<DropdownProps> = ({
   options,
   onSelect,
   label,
-  defaultValue, // 👈 fallback to "All" if not provided
+  defaultValue = "All",
+  className = "", // ✅ Default to empty
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<string>("null"); // 👈 use defaultValue as initial
+  const [selected, setSelected] = useState<string>(defaultValue);
 
   useEffect(() => {
-    onSelect(defaultValue); // 👈 notify parent initially
+    onSelect(defaultValue);
   }, [defaultValue]);
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
@@ -30,7 +32,7 @@ export const DropdownList: React.FC<DropdownProps> = ({
   };
 
   return (
-    <div className="relative inline-block w-64">
+    <div className={`relative w-full inline-block ${className}`}>
       <button
         onClick={toggleDropdown}
         className="w-full px-4 py-2 border text-sm rounded-xl flex justify-between items-center bg-white shadow hover:shadow-md transition"

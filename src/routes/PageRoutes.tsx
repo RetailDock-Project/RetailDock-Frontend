@@ -10,6 +10,12 @@ import MainLayout from "../layouts/MainLayout";
 import PurchaseOrder from "../features/inventory/purchaseorder/PurchaseOrder";
 import NewPurchaseOrder from "../features/inventory/purchaseorder/NewPurchaseOrder";
 import PurchaseOrderDetail from "../features/inventory/purchaseorder/PurchaseOrderDetail";
+import PurchaseReturn from "../features/inventory/purchasereturn/PurchaseReturn";
+import NewPurchaseReturn from "../features/inventory/purchasereturn/NewPurchaseReturn";
+import Products from "../features/inventory/product/Products";
+import NewProduct from "../features/inventory/product/NewProduct";
+import ProductDetail from "../features/inventory/product/ProductDetail";
+import InventoryDashboard from "../features/inventory/dashboard/InventoryDashboard";
 
 import Customers from "../features/superadmin/components/Customers";
 import Dashboard from "../features/superadmin/components/Dashboard";
@@ -44,21 +50,37 @@ const PageRoutes: React.FC = () => {
 
           </Route>
           <Route path="inventory">
+            <Route path="dashboard" element={<InventoryDashboard />}></Route>
+
             <Route path="purchase-orders" element={<PurchaseOrder />}></Route>
             <Route path="purchase-order">
               <Route path="new" element={<NewPurchaseOrder />}></Route>
               <Route path="invoicenumber" element={<PurchaseOrderDetail />} />
+              <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
+              <Route path="purchase-return">
+                <Route path="new" element={<NewPurchaseReturn />}></Route>
+              </Route>
+              <Route path="products" element={<Products />} />
+              <Route path="product">
+                <Route path="new" element={<NewProduct />}></Route>
+                <Route path="productid" element={<ProductDetail />} />
+              </Route>
+
+
+            </Route>
+           
+
             </Route>
 
           </Route>
-          <Route path="accountant">
-            <Route path="accountant-dashboard" element={<AccountantDashboard />}></Route>
-            <Route path="accountant-transaction" element={<Transaction />}></Route>
-            <Route path="accountant-invoices" element={<Invoices />}></Route>
-            <Route path="accountant-ledgerdetails" element={<LedgerDetails />}></Route>
-             <Route path="accountant-ledgertransactionhistory" element={<LedgerTransactionHistory />}></Route>
-             <Route path="accountant-financialstatements" element={<FinancialStatements />}></Route>
-          </Route>
+           <Route path="accountant">
+              <Route path="accountant-dashboard" element={<AccountantDashboard />}></Route>
+              <Route path="accountant-transaction" element={<Transaction />}></Route>
+              <Route path="accountant-invoices" element={<Invoices />}></Route>
+              <Route path="accountant-ledgerdetails" element={<LedgerDetails />}></Route>
+              <Route path="accountant-ledgertransactionhistory" element={<LedgerTransactionHistory />}></Route>
+              <Route path="accountant-financialstatements" element={<FinancialStatements />}></Route>
+
         </Route>
 
 
