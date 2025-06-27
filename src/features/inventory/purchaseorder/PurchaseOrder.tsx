@@ -10,6 +10,7 @@ import { DropdownList } from "../../../components/ui/reusable/DropdownList";
 import { PurchaseOrderList, type PurchaseOrder } from "./PurchaseOrderList";
 import { PurchaseOrderOverview } from "./PurchaseOrderOverview";
 import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../../../components/ui/reusable/PageHeader";
 const sampleOrders: PurchaseOrder[] = [
   {
     poNumber: "PO-2025-0001",
@@ -47,33 +48,38 @@ const PurchaseOrder: React.FC = () => {
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       {" "}
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold">Purchase Orders</h1>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="primary"
-            className="flex items-center gap-2"
-            onClick={() => navigate("/home/inventory/purchase-order/new")}
-          >
-            <FilePlus size={16} /> New Purchase
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="flex items-center gap-2"
-          >
-            <RotateCcw size={16} /> Purchase Return
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="flex items-center gap-2"
-          >
-            <FileDown size={16} /> Export
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Purchase Orders"
+        actions={
+          <>
+            <Button
+              size="sm"
+              variant="primary"
+              className="flex items-center gap-2"
+              onClick={() => navigate("/home/inventory/purchase-order/new")}
+            >
+              <FilePlus size={16} />
+              New Purchase
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="flex items-center gap-2"
+            >
+              <RotateCcw size={16} />
+              Purchase Return
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="flex items-center gap-2"
+            >
+              <FileDown size={16} />
+              Export
+            </Button>
+          </>
+        }
+      />
       {/* Filters */}
       <div className=" rounded-xl shadow border bg-white p-3">
         <h3 className="block text-lg">Filters</h3>

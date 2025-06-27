@@ -6,7 +6,7 @@ const PurchaseOrderInformation: React.FC = () => {
   //   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   return (
-    <div className="p-6 rounded-xl shadow border bg-white  ml-4 space-y-6">
+    <div className="p-6 rounded-xl shadow border bg-white  space-y-6">
       <h2 className="text-xl font-semibold text-gray-700">
         Purchase Information
       </h2>
