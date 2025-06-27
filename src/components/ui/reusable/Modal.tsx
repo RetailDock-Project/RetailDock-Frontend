@@ -1,0 +1,46 @@
+import React from "react";
+
+export interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  head: string;
+  subHead?: string;
+  badge?: string;
+  children:React. ReactNode;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, subHead,children, head ,badge}) => {
+  if (!isOpen) return null;
+
+  return (
+     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="bg-white w-full max-w-4xl rounded-xl shadow-xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-start justify-between p-6 border-b bg-white">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">{head}</h2>
+            {subHead && <p className="text-sm text-gray-500">{subHead}</p>}
+          </div>
+          <div className="flex items-center gap-2">
+            {badge && (
+              <span className="text-sm bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full capitalize">
+                {badge}
+              </span>
+            )}
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-black text-sm font-medium"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+
+        {/* Modal Content from Parent */}
+        <div className="p-6">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+export default Modal;
