@@ -17,6 +17,9 @@ import NewProduct from "../features/inventory/product/NewProduct";
 import ProductDetail from "../features/inventory/product/ProductDetail";
 import InventoryDashboard from "../features/inventory/dashboard/InventoryDashboard";
 
+import Customers from "../features/superadmin/components/Customers";
+import Dashboard from "../features/superadmin/components/Dashboard";
+
 const PageRoutes: React.FC = () => {
   return (
     <Routes>
@@ -33,6 +36,12 @@ const PageRoutes: React.FC = () => {
           />
         </Route>
         <Route path="home" element={<MainLayout />}>
+
+          <Route path="super-admin" >
+            <Route path="customers" element={<Customers />}></Route>
+            <Route path="dashboard" element={<Dashboard />}></Route>
+
+          </Route>
           <Route path="inventory">
             <Route path="dashboard" element={<InventoryDashboard />}></Route>
 
@@ -52,7 +61,11 @@ const PageRoutes: React.FC = () => {
             </Route>
           </Route>
         </Route>
+
+
       </Route>
+
+
     </Routes>
   );
 };
