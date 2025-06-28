@@ -1,49 +1,48 @@
 import React from 'react'
-interface TrialBalanceRow {
-  account: string;
-  debit?: number;
-  credit?: number;
-}
-const trialBalanceData: TrialBalanceRow[] = [
-  { account: "Cash and Cash Equivalents", debit: 50000 },
-  { account: "Inventory", debit: 30000 },
-  { account: "Accounts Payable", credit: 20000 },
-  { account: "Revenue", credit: 60000 },
-];
+
 
 const TrialBalance:React.FC  = () => {
- const totalDebit = trialBalanceData.reduce((sum, row) => sum + (row.debit || 0), 0);
-  const totalCredit = trialBalanceData.reduce((sum, row) => sum + (row.credit || 0), 0);
+  const data = [
+    { account: "Cash and Cash Equivalents", debit: 87350.25, credit: 0 },
+    { account: "Accounts Payable", debit: 0, credit: 37840.25 },
+    { account: "Fixed Assets", debit: 285430.5, credit: 0 },
+    { account: "Owner’s Capital", debit: 0, credit: 207936.7 },
+    { account: "Revenue", debit: 0, credit: 258750.5 },
+    { account: "Operating Expenses", debit: 68790.25, credit: 0 },
+  ];
 
+   const totalDebit = data.reduce((sum, item) => sum + item.debit, 0);
+  const totalCredit = data.reduce((sum, item) => sum + item.credit, 0);
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Trial Balance</h1>
+     <div className="bg-white p-6 rounded-lg border shadow-sm">
+      <h2 className="text-xl font-semibold text-gray-800 mb-1">Trial Balance</h2>
       <p className="text-sm text-gray-500 mb-4">Current Financial Year</p>
+
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="text-left py-2 px-4 border-b">Account</th>
-              <th className="text-right py-2 px-4 border-b">Debit</th>
-              <th className="text-right py-2 px-4 border-b">Credit</th>
+        <table className="min-w-full text-sm text-left border-t border-gray-200">
+          <thead className="bg-gray-50 text-gray-700">
+            <tr>
+              <th className="px-4 py-2">Account</th>
+              <th className="px-4 py-2 text-right">Debit</th>
+              <th className="px-4 py-2 text-right">Credit</th>
             </tr>
           </thead>
-          <tbody>
-            {trialBalanceData.map((row, idx) => (
-              <tr key={idx}>
-                <td className="py-2 px-4 border-b">{row.account}</td>
-                <td className="py-2 px-4 border-b text-right">
-                  {row.debit ? `$${row.debit.toFixed(2)}` : ""}
+          <tbody className="divide-y">
+            {data.map((item, index) => (
+              <tr key={index}>
+                <td className="px-4 py-2 text-gray-700">{item.account}</td>
+                <td className="px-4 py-2 text-right text-gray-800">
+                  {item.debit > 0 ? `$${item.debit.toLocaleString()}` : ""}
                 </td>
-                <td className="py-2 px-4 border-b text-right">
-                  {row.credit ? `$${row.credit.toFixed(2)}` : ""}
+                <td className="px-4 py-2 text-right text-gray-800">
+                  {item.credit > 0 ? `$${item.credit.toLocaleString()}` : ""}
                 </td>
               </tr>
             ))}
-            <tr className="font-bold bg-gray-100">
-              <td className="py-2 px-4 border-t">TOTAL</td>
-              <td className="py-2 px-4 border-t text-right">${totalDebit.toFixed(2)}</td>
-              <td className="py-2 px-4 border-t text-right">${totalCredit.toFixed(2)}</td>
+            <tr className="font-semibold text-gray-900 bg-gray-50">
+              <td className="px-4 py-2">Total</td>
+              <td className="px-4 py-2 text-right">${totalDebit.toLocaleString()}</td>
+              <td className="px-4 py-2 text-right">${totalCredit.toLocaleString()}</td>
             </tr>
           </tbody>
         </table>

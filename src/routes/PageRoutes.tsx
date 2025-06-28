@@ -26,6 +26,7 @@ import LedgerDetails from "../features/accountant/components/LedgerDetails";
 import LedgerTransactionHistory from "../features/accountant/components/LedgerTransactionHistory";
 import Statements from "../features/accountant/components/FinancialStatements";
 import FinancialStatements from "../features/accountant/components/FinancialStatements";
+import VoucherReport from "../features/accountant/components/VoucherReport";
 
 const PageRoutes: React.FC = () => {
   return (
@@ -68,20 +69,22 @@ const PageRoutes: React.FC = () => {
 
 
             </Route>
-           
 
-            </Route>
 
           </Route>
            <Route path="accountant">
-              <Route path="accountant-dashboard" element={<AccountantDashboard />}></Route>
-              <Route path="accountant-transaction" element={<Transaction />}></Route>
-              <Route path="accountant-invoices" element={<Invoices />}></Route>
-              <Route path="accountant-ledgerdetails" element={<LedgerDetails />}></Route>
-              <Route path="accountant-ledgertransactionhistory" element={<LedgerTransactionHistory />}></Route>
-              <Route path="accountant-financialstatements" element={<FinancialStatements />}></Route>
+          <Route path="accountant-dashboard" element={<AccountantDashboard />}></Route>
+          <Route path="accountant-transaction" element={<Transaction />}></Route>
+          <Route path="accountant-invoices" element={<Invoices />}></Route>
+          <Route path="accountant-ledgerdetails" element={<LedgerDetails />}></Route>
+          <Route path="accountant-ledgertransactionhistory" element={<LedgerTransactionHistory />}></Route>
+          <Route path="accountant-financialstatements" element={<FinancialStatements />}></Route>
+           <Route path="accountant-voucherreport" element={<VoucherReport />}></Route>
 
         </Route>
+
+        </Route>
+       
 
 
       </Route>
