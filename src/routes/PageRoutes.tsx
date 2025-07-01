@@ -44,11 +44,9 @@ const PageRoutes: React.FC = () => {
           />
         </Route>
         <Route path="home" element={<MainLayout />}>
-
-          <Route path="super-admin" >
+          <Route path="super-admin">
             <Route path="customers" element={<Customers />}></Route>
             <Route path="dashboard" element={<Dashboard />}></Route>
-
           </Route>
           <Route path="inventory">
             <Route path="dashboard" element={<InventoryDashboard />}></Route>
@@ -57,7 +55,10 @@ const PageRoutes: React.FC = () => {
             <Route path="purchase-order">
               <Route path="new" element={<NewPurchaseOrder />}></Route>
               <Route path="invoicenumber" element={<PurchaseOrderDetail />} />
-              <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
+              <Route
+                path="purchase-returns"
+                element={<PurchaseReturn />}
+              ></Route>
               <Route path="purchase-return">
                 <Route path="new" element={<NewPurchaseReturn />}></Route>
               </Route>
@@ -66,30 +67,37 @@ const PageRoutes: React.FC = () => {
                 <Route path="new" element={<NewProduct />}></Route>
                 <Route path="productid" element={<ProductDetail />} />
               </Route>
-
-
             </Route>
-
-
           </Route>
-           <Route path="accountant">
-          <Route path="accountant-dashboard" element={<AccountantDashboard />}></Route>
-          <Route path="accountant-transaction" element={<Transaction />}></Route>
-          <Route path="accountant-invoices" element={<Invoices />}></Route>
-          <Route path="accountant-ledgerdetails" element={<LedgerDetails />}></Route>
-          <Route path="accountant-ledgertransactionhistory" element={<LedgerTransactionHistory />}></Route>
-          <Route path="accountant-financialstatements" element={<FinancialStatements />}></Route>
-           <Route path="accountant-voucherreport" element={<VoucherReport />}></Route>
-
+          <Route path="accountant">
+            <Route
+              path="accountant-dashboard"
+              element={<AccountantDashboard />}
+            ></Route>
+            <Route
+              path="accountant-transaction"
+              element={<Transaction />}
+            ></Route>
+            <Route path="accountant-invoices" element={<Invoices />}></Route>
+            <Route
+              path="accountant-ledgerdetails"
+              element={<LedgerDetails />}
+            ></Route>
+            <Route
+              path="accountant-ledgertransactionhistory"
+              element={<LedgerTransactionHistory />}
+            ></Route>
+            <Route
+              path="accountant-financialstatements"
+              element={<FinancialStatements />}
+            ></Route>
+            <Route
+              path="accountant-voucherreport"
+              element={<VoucherReport />}
+            ></Route>
+          </Route>
         </Route>
-
-        </Route>
-       
-
-
       </Route>
-
-
     </Routes>
   );
 };
