@@ -36,11 +36,9 @@ const PageRoutes: React.FC = () => {
           />
         </Route>
         <Route path="home" element={<MainLayout />}>
-
-          <Route path="super-admin" >
+          <Route path="super-admin">
             <Route path="customers" element={<Customers />}></Route>
             <Route path="dashboard" element={<Dashboard />}></Route>
-
           </Route>
           <Route path="inventory">
             <Route path="dashboard" element={<InventoryDashboard />}></Route>
@@ -61,11 +59,7 @@ const PageRoutes: React.FC = () => {
             </Route>
           </Route>
         </Route>
-
-
       </Route>
-
-
     </Routes>
   );
 };
