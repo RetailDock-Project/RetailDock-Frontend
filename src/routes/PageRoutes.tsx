@@ -27,6 +27,8 @@ import LedgerTransactionHistory from "../features/accountant/components/LedgerTr
 import Statements from "../features/accountant/components/FinancialStatements";
 import FinancialStatements from "../features/accountant/components/FinancialStatements";
 import VoucherReport from "../features/accountant/components/VoucherReport";
+import CashierDashboard from "../features/cashier/dashboard/CashierDashboard";
+import PointOfSale from "../features/cashier/pos/PointOfSale";
 
 const PageRoutes: React.FC = () => {
   return (
@@ -50,51 +52,43 @@ const PageRoutes: React.FC = () => {
           </Route>
           <Route path="inventory">
             <Route path="dashboard" element={<InventoryDashboard />}></Route>
+            <Route path="products" element={<Products />} />
 
             <Route path="purchase-orders" element={<PurchaseOrder />}></Route>
             <Route path="purchase-order">
               <Route path="new" element={<NewPurchaseOrder />}></Route>
               <Route path="invoicenumber" element={<PurchaseOrderDetail />} />
-              <Route
-                path="purchase-returns"
-                element={<PurchaseReturn />}
-              ></Route>
-              <Route path="purchase-return">
-                <Route path="new" element={<NewPurchaseReturn />}></Route>
-              </Route>
-              <Route path="products" element={<Products />} />
-              <Route path="product">
-                <Route path="new" element={<NewProduct />}></Route>
-                <Route path="productid" element={<ProductDetail />} />
-              </Route>
+            </Route>
+
+            <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
+            <Route path="purchase-return">
+              <Route path="new" element={<NewPurchaseReturn />}></Route>
+            </Route>
+
+            <Route path="product">
+              <Route path="new" element={<NewProduct />}></Route>
+              <Route path="productid" element={<ProductDetail />} />
             </Route>
           </Route>
+
           <Route path="accountant">
+            <Route path="dashboard" element={<AccountantDashboard />}></Route>
+            <Route path="transaction" element={<Transaction />}></Route>
+            <Route path="invoices" element={<Invoices />}></Route>
+            <Route path="ledger-details" element={<LedgerDetails />}></Route>
             <Route
-              path="accountant-dashboard"
-              element={<AccountantDashboard />}
-            ></Route>
-            <Route
-              path="accountant-transaction"
-              element={<Transaction />}
-            ></Route>
-            <Route path="accountant-invoices" element={<Invoices />}></Route>
-            <Route
-              path="accountant-ledgerdetails"
-              element={<LedgerDetails />}
-            ></Route>
-            <Route
-              path="accountant-ledgertransactionhistory"
+              path="ledgertransactionhistory/id"
               element={<LedgerTransactionHistory />}
             ></Route>
             <Route
-              path="accountant-financialstatements"
+              path="financial-statements"
               element={<FinancialStatements />}
             ></Route>
-            <Route
-              path="accountant-voucherreport"
-              element={<VoucherReport />}
-            ></Route>
+            <Route path="voucher-report" element={<VoucherReport />}></Route>
+          </Route>
+          <Route path="cashier">
+            <Route path="dashboard" element={<CashierDashboard />} />
+            <Route path="pos" element={<PointOfSale />} />
           </Route>
         </Route>
       </Route>

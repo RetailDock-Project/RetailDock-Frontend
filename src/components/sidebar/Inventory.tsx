@@ -18,16 +18,16 @@ const currentUser = {
 };
 
 const inventoryMenuItems = [
-  { title: "Dashboard", url: "/inventory/dashboard", icon: Gauge },
+  { title: "Dashboard", url: "/home/inventory/dashboard", icon: Gauge },
   {
     title: "Purchase Order",
-    url: "/inventory/purchase-orders",
+    url: "/home/inventory/purchase-orders",
     icon: PackagePlus,
   },
-  { title: "Purchase", url: "/inventory/purchases", icon: ShoppingCart },
+  { title: "Purchase", url: "/home/inventory/purchases", icon: ShoppingCart },
   {
     title: "Purchase Return",
-    url: "/inventory/purchase-returns",
+    url: "/home/inventory/purchase-returns",
     icon: RotateCcw,
   },
 ];

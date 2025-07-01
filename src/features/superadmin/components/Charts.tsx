@@ -34,7 +34,9 @@ const DashboardBarChart: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* 📊 Bar Chart Section */}
       <div className="bg-white p-4 rounded-lg shadow-sm">
-        <h2 className="text-lg font-semibold mb-2 text-gray-700">Monthly User Signups</h2>
+        <h2 className="text-lg font-semibold mb-2 text-gray-700">
+          Monthly User Signups
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={userData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -48,7 +50,9 @@ const DashboardBarChart: React.FC = () => {
 
       {/* 📈 Line Chart Section */}
       <div className="bg-white p-4 rounded-lg shadow-sm">
-        <h2 className="text-lg font-semibold mb-2 text-gray-700">Monthly Revenue Trend</h2>
+        <h2 className="text-lg font-semibold mb-2 text-gray-700">
+          Monthly Revenue Trend
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={revenueData}>
             <CartesianGrid strokeDasharray="3 3" />
