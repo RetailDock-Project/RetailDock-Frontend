@@ -16,7 +16,6 @@ const PurchaseReturn: React.FC = () => {
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       {/* Header */}
       <PageHeader
-        backTo="/home/inventory/"
         title="Purchase Return History"
         subtitle="View and manage all purchase returns"
         actions={
@@ -41,7 +40,7 @@ const PurchaseReturn: React.FC = () => {
           </>
         }
       />
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="rounded-xl shadow border bg-white p-4 flex flex-col items-center justify-center">
           <h2 className="text-2xl font-bold">3</h2>
           <span className="text-gray-600">Total Returns</span>
@@ -66,7 +65,7 @@ const PurchaseReturn: React.FC = () => {
           <h2 className="text-2xl font-bold text-green-600">₹90,900</h2>
           <span className="text-gray-600">Total Value</span>
         </div>
-      </div>
+      </div> */}
       <div className=" rounded-xl shadow border bg-white p-3 mt-6">
         <h3 className="block text-lg">Filters</h3>
 

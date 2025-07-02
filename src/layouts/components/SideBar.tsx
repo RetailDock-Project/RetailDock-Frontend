@@ -2,11 +2,17 @@ import { Sidebar, SidebarContent } from "../../components/ui/sidebar";
 import SuperAdmin from "../../components/sidebar/SuperAdmin";
 import Inventory from "../../components/sidebar/Inventory";
 import Cashier from "../../components/sidebar/Cashier";
+import Accountant from "../../components/sidebar/Accountant";
 
 const currentUser = {
   name: "Sabith",
   roles: ["superadmin", "inventory"],
-  permissions: ["view_superadmin", "view_inventory", "view_cashier"],
+  permissions: [
+    "view_superadmin",
+    "view_inventory",
+    "view_cashier",
+    "view_accounts",
+  ],
 };
 
 const hasPermission = (permission: string) =>
@@ -27,6 +33,7 @@ const SideBar: React.FC = () => {
         {hasPermission("view_superadmin") && <SuperAdmin />}
         {hasPermission("view_inventory") && <Inventory />}
         {hasPermission("view_cashier") && <Cashier />}
+        {hasPermission("view_accounts") && <Accountant />}
       </SidebarContent>
     </Sidebar>
   );
