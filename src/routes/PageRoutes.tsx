@@ -27,6 +27,7 @@ import LedgerTransactionHistory from "../features/accountant/components/LedgerTr
 import Statements from "../features/accountant/components/FinancialStatements";
 import FinancialStatements from "../features/accountant/components/FinancialStatements";
 import VoucherReport from "../features/accountant/components/VoucherReport";
+import TaxReports from "../features/accountant/components/TaxReports";
 
 const PageRoutes: React.FC = () => {
   return (
@@ -80,7 +81,7 @@ const PageRoutes: React.FC = () => {
           <Route path="accountant-ledgertransactionhistory" element={<LedgerTransactionHistory />}></Route>
           <Route path="accountant-financialstatements" element={<FinancialStatements />}></Route>
            <Route path="accountant-voucherreport" element={<VoucherReport />}></Route>
-
+           <Route path="accountant-taxreport" element={<TaxReports />}></Route>
         </Route>
 
         </Route>
