@@ -54,7 +54,7 @@ const PurchaseReturnsList: React.FC = () => {
             <th className="p-3 border text-left">Original Purchase</th>
             <th className="p-3 border text-left">Supplier</th>
             <th className="p-3 border text-left">Return Date</th>
-            <th className="p-3 border text-left">Status</th>
+            {/* <th className="p-3 border text-left">Status</th> */}
             <th className="p-3 border text-left">Reason</th>
             <th className="p-3 border text-left">Items</th>
             <th className="p-3 border text-right">Total Value</th>
@@ -83,7 +83,7 @@ const PurchaseReturnsList: React.FC = () => {
                 <p className="text-gray-500 text-xs">GST: {ret.gst}</p>
               </td>
               <td className="p-3 border">{ret.returnDate}</td>
-              <td className="p-3 border">
+              {/* <td className="p-3 border">
                 <span
                   className={`text-xs px-2 py-1 rounded-full font-medium ${
                     statusColorMap[ret.status]
@@ -91,7 +91,7 @@ const PurchaseReturnsList: React.FC = () => {
                 >
                   {ret.status}
                 </span>
-              </td>
+              </td> */}
               <td className="p-3 border text-gray-700">{ret.reason}</td>
               <td className="p-3 border">
                 <p>

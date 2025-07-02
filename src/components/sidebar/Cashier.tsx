@@ -18,11 +18,11 @@ const currentUser = {
 };
 
 const cashierMenuItems = [
-  { title: "Dashboard", url: "/cashier/dashboard", icon: Gauge },
-  { title: "POS", url: "/cashier/pos", icon: ShoppingBag },
-  { title: "Invoices", url: "/cashier/invoices", icon: FileText },
-  { title: "Customers", url: "/cashier/customers", icon: Users },
-  { title: "Sales Return", url: "/cashier/sales-returns", icon: Undo2 },
+  { title: "Dashboard", url: "/home/cashier/dashboard", icon: Gauge },
+  { title: "POS", url: "/home/cashier/pos", icon: ShoppingBag },
+  { title: "Invoices", url: "/home/cashier/invoices", icon: FileText },
+  { title: "Customers", url: "/home/cashier/customers", icon: Users },
+  { title: "Sales Return", url: "/home/cashier/sales-returns", icon: Undo2 },
 ];
 
 const hasCashierAccess = () => {
@@ -50,7 +50,9 @@ const Cashier: React.FC = () => {
                   className="flex items-center gap-2 px-3 py-2 rounded-md bg-green-600 hover:bg-green-500 hover:text-white transition-colors duration-200 text-white"
                 >
                   <item.icon className="w-4 h-4" />
-                  <span className="text-sm">{item.title}</span>
+                  <span className="text-sm hover:text-green-500">
+                    {item.title}
+                  </span>
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
