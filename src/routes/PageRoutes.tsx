@@ -27,8 +27,11 @@ import LedgerTransactionHistory from "../features/accountant/components/LedgerTr
 import Statements from "../features/accountant/components/FinancialStatements";
 import FinancialStatements from "../features/accountant/components/FinancialStatements";
 import VoucherReport from "../features/accountant/components/VoucherReport";
+
+import TaxReports from "../features/accountant/components/TaxReports";
 import CashierDashboard from "../features/cashier/dashboard/CashierDashboard";
 import PointOfSale from "../features/cashier/pos/PointOfSale";
+
 
 const PageRoutes: React.FC = () => {
   return (
@@ -71,6 +74,17 @@ const PageRoutes: React.FC = () => {
             </Route>
           </Route>
 
+          {/* <Route path="accountant">
+            <Route path="accountant-dashboard" element={<AccountantDashboard />}></Route>
+            <Route path="accountant-transaction" element={<Transaction />}></Route>
+            <Route path="accountant-invoices" element={<Invoices />}></Route>
+            <Route path="accountant-ledgerdetails" element={<LedgerDetails />}></Route>
+            <Route path="accountant-ledgertransactionhistory" element={<LedgerTransactionHistory />}></Route>
+            <Route path="accountant-financialstatements" element={<FinancialStatements />}></Route>
+            <Route path="accountant-voucherreport" element={<VoucherReport />}></Route>
+            <Route path="accountant-taxreport" element={<TaxReports />}></Route> */}
+
+
           <Route path="accountant">
             <Route path="dashboard" element={<AccountantDashboard />}></Route>
             <Route path="transaction" element={<Transaction />}></Route>
@@ -85,11 +99,13 @@ const PageRoutes: React.FC = () => {
               element={<FinancialStatements />}
             ></Route>
             <Route path="voucher-report" element={<VoucherReport />}></Route>
+            <Route path="tax-report" element={<TaxReports/>}></Route>
           </Route>
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
             <Route path="pos" element={<PointOfSale />} />
           </Route>
+
         </Route>
       </Route>
     </Routes>
