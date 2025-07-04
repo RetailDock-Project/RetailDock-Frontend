@@ -6,15 +6,31 @@ export interface ModalProps {
   head: string;
   subHead?: string;
   badge?: string;
-  children:React. ReactNode;
+  children: React.ReactNode;
+  width?: string; // 👈 New width prop (Tailwind class)
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, subHead,children, head ,badge}) => {
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  head,
+  subHead,
+  badge,
+  children,
+  width = "max-w-4xl", // 👈 Default width
+}) => {
   if (!isOpen) return null;
 
+  //   max-w-md	~28rem modal
+  // max-w-lg	~32rem modal
+  // max-w-2xl	~42rem modal
+  // max-w-full	Full width on small screens
+
   return (
-     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-4xl rounded-xl shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div
+        className={`bg-white w-full ${width} rounded-xl shadow-xl overflow-hidden`}
+      >
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b bg-white">
           <div>

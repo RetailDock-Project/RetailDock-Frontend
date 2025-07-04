@@ -3,6 +3,7 @@ import SuperAdmin from "../../components/sidebar/SuperAdmin";
 import Inventory from "../../components/sidebar/Inventory";
 import Cashier from "../../components/sidebar/Cashier";
 import Accountant from "../../components/sidebar/Accountant";
+import Admin from "../../components/sidebar/Admin";
 
 const currentUser = {
   name: "Sabith",
@@ -12,6 +13,7 @@ const currentUser = {
     "view_inventory",
     "view_cashier",
     "view_accounts",
+    "view_admin",
   ],
 };
 
@@ -34,6 +36,7 @@ const SideBar: React.FC = () => {
         {hasPermission("view_inventory") && <Inventory />}
         {hasPermission("view_cashier") && <Cashier />}
         {hasPermission("view_accounts") && <Accountant />}
+        {hasPermission("view_admin") && <Admin />}
       </SidebarContent>
     </Sidebar>
   );

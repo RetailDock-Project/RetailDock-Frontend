@@ -1,7 +1,7 @@
 import React from "react";
 import { FaEye, FaEdit, FaFilePdf } from "react-icons/fa";
 
-export type PurchaseOrder = {
+export type PurchaseOrders = {
   poNumber: string;
   orderedDate: string;
   receivedDate?: string;
@@ -14,7 +14,7 @@ export type PurchaseOrder = {
 };
 
 type PurchaseOrderListProps = {
-  data: PurchaseOrder[];
+  data: PurchaseOrders[];
 };
 
 export const PurchaseOrderList: React.FC<PurchaseOrderListProps> = ({

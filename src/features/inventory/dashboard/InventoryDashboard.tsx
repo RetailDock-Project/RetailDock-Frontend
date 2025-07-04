@@ -4,8 +4,10 @@ import { Button } from "../../../components/ui/reusable/Button";
 import InventoryOverviewStats from "./InventoryOverviewStats";
 import RecentInventoryTransactions from "./RecentInventoryTransactions";
 import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker";
+import { useNavigate } from "react-router-dom";
 
 const InventoryDashboard: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="p-6">
       <PageHeader
@@ -15,7 +17,12 @@ const InventoryDashboard: React.FC = () => {
           <>
             <div className="flex gap-2">
               <DateRangePicker onChange={() => {}} />
-              <Button>Add Product</Button>
+              <Button
+                onClick={() => navigate("/home/inventory/product/new")}
+                size="sm"
+              >
+                Add Product
+              </Button>
             </div>
           </>
         }

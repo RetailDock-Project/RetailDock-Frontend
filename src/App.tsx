@@ -1,15 +1,20 @@
 import "./App.css";
 import PageRoutes from "./routes/PageRoutes";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "react-hot-toast";
+
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/react-query-client";
 
 function App() {
   return (
     <>
       <Provider store={store}>
-        <Toaster position="bottom-right" reverseOrder={false} />
-        <PageRoutes />
+        <QueryClientProvider client={queryClient}>
+          <Toaster position="bottom-right" reverseOrder={false} />
+          <PageRoutes />
+        </QueryClientProvider>
       </Provider>
     </>
   );

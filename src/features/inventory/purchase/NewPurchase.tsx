@@ -1,29 +1,30 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "../../../components/ui/reusable/Button";
-import PurchaseOrderInformation from "./PurchaseOrderInformation";
-import OrderSummary from "./OrderSummary";
-import AddItemSection from "./AddItemSection";
+import { useNavigate, useLocation } from "react-router-dom";
 import { MdOutlineSave } from "react-icons/md";
+import { Button } from "../../../components/ui/reusable/Button";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
+import PurchaseInformation from "./PurchaseInformation";
+import PurchaseSummary from "./PurchaseSummary";
+import AddPurchaseItem from "./AddPurchaseItem";
 
-const NewPurchaseOrder: React.FC = () => {
+const NewPurchase: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const purchaseState = location.state || {}; // This contains data sent via navigate(..., { state })
 
   return (
     <div className="p-6">
       <PageHeader
-        backTo="/home/inventory/purchase-orders"
-        title="New Purchase Order"
-        subtitle="Create a new purchase order"
+        backTo="/home/inventory/purchases"
+        title="New Purchase"
+        subtitle="Create a new purchase entry"
         actions={
           <>
             <Button
               size="sm"
               variant="secondary"
               className="flex items-center gap-2 py-2"
-              onClick={() => navigate("/purchase")}
+              onClick={() => navigate("/home/inventory/purchases")}
             >
               Cancel
             </Button>
@@ -40,19 +41,18 @@ const NewPurchaseOrder: React.FC = () => {
         }
       />
 
-      {/* <PurchaseOrderInformation /> */}
-      {/* Layout for Info + Summary */}
-      <div className=" grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Layout for Form + Summary */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
         <div className="lg:col-span-2">
-          <PurchaseOrderInformation />
-          <AddItemSection />
+          <PurchaseInformation prefill={purchaseState} />
+          <AddPurchaseItem prefillItems={purchaseState?.items || []} />
         </div>
         <div className="lg:col-span-1">
-          <OrderSummary />
+          <PurchaseSummary />
         </div>
       </div>
     </div>
   );
 };
 
-export default NewPurchaseOrder;
+export default NewPurchase;

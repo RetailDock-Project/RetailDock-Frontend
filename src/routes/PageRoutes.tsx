@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
 import ForgotPasswordPage from "../pages/auth/ForgotPassword";
@@ -29,8 +29,38 @@ import FinancialStatements from "../features/accountant/components/FinancialStat
 import VoucherReport from "../features/accountant/components/VoucherReport";
 import CashierDashboard from "../features/cashier/dashboard/CashierDashboard";
 import PointOfSale from "../features/cashier/pos/PointOfSale";
+import Purchase from "../features/inventory/purchase/Purchase";
+import NewPurchase from "../features/inventory/purchase/NewPurchase";
+import PurchaseDetail from "../features/inventory/purchase/PurchaseDetail";
+import Users from "../features/admin/Users";
+import RolePermissions from "../features/admin/RolePermissions";
+import OrganizationRegistration from "../features/user/OrganizationRegistration";
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { UserInfo } from "../services/api/authApi";
+import { setUser } from "../features/user/userSlice";
+import { login, logOut } from "../features/auth/authSice";
 
 const PageRoutes: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await UserInfo();
+        dispatch(setUser(res)); // Save user in Redux/Context
+        dispatch(login());
+      } catch (err) {
+        console.error("User not authenticated");
+        dispatch(logOut());
+        navigate("/auth/login");
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <Routes>
       <Route path="/">
@@ -50,6 +80,14 @@ const PageRoutes: React.FC = () => {
             <Route path="customers" element={<Customers />}></Route>
             <Route path="dashboard" element={<Dashboard />}></Route>
           </Route>
+
+          <Route path="user">
+            <Route
+              path="organization-registration"
+              element={<OrganizationRegistration />}
+            ></Route>
+          </Route>
+
           <Route path="inventory">
             <Route path="dashboard" element={<InventoryDashboard />}></Route>
             <Route path="products" element={<Products />} />
@@ -63,6 +101,12 @@ const PageRoutes: React.FC = () => {
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
             <Route path="purchase-return">
               <Route path="new" element={<NewPurchaseReturn />}></Route>
+            </Route>
+
+            <Route path="purchases" element={<Purchase />}></Route>
+            <Route path="purchase">
+              <Route path="new" element={<NewPurchase />}></Route>
+              <Route path="invoicenumber" element={<PurchaseDetail />} />
             </Route>
 
             <Route path="product">
@@ -86,9 +130,15 @@ const PageRoutes: React.FC = () => {
             ></Route>
             <Route path="voucher-report" element={<VoucherReport />}></Route>
           </Route>
+
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
             <Route path="pos" element={<PointOfSale />} />
+          </Route>
+
+          <Route path="admin">
+            <Route path="manage-users" element={<Users />} />
+            <Route path="manage-roles" element={<RolePermissions />} />
           </Route>
         </Route>
       </Route>

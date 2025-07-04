@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { VerifyOtp } from "../../services/api/authApi";
+import { forgotPasswordOtp, VerifyOtp } from "../../services/api/authApi";
 import toast from "react-hot-toast";
 
 const VerifyOtpPage: React.FC = () => {
@@ -60,9 +60,16 @@ const VerifyOtpPage: React.FC = () => {
     }
   };
 
-  const handleResendOtp = () => {
-    console.log("Resending OTP...");
-    // Call your resend API here
+  const handleResendOtp = async () => {
+    try {
+      const response = await forgotPasswordOtp({ email });
+      console.log("OTP sent successfully:", response);
+      toast.success(response?.message);
+      navigate("/auth/verify-otp", { state: { email } });
+    } catch (error: any) {
+      console.error("Failed to send OTP", error);
+      toast.error(error?.response?.data?.message);
+    }
   };
 
   return (
