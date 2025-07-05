@@ -30,6 +30,7 @@ const PurchaseReturn: React.FC = () => {
               Export
             </Button>
             <Button
+              onClick={() => navigate("/home/inventory/purchase-return/new")}
               size="sm"
               variant="primary"
               className="flex items-center gap-2"
@@ -40,32 +41,7 @@ const PurchaseReturn: React.FC = () => {
           </>
         }
       />
-      {/* <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="rounded-xl shadow border bg-white p-4 flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold">3</h2>
-          <span className="text-gray-600">Total Returns</span>
-        </div>
 
-        <div className="rounded-xl shadow border bg-white p-4 flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold">1</h2>
-          <span className="text-gray-600">Processed</span>
-        </div>
-
-        <div className="rounded-xl shadow border bg-white p-4 flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold">1</h2>
-          <span className="text-gray-600">Pending</span>
-        </div>
-
-        <div className="rounded-xl shadow border bg-white p-4 flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold">1</h2>
-          <span className="text-gray-600">Cancelled</span>
-        </div>
-
-        <div className="rounded-xl shadow border bg-white p-4 flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold text-green-600">₹90,900</h2>
-          <span className="text-gray-600">Total Value</span>
-        </div>
-      </div> */}
       <div className=" rounded-xl shadow border bg-white p-3 mt-6">
         <h3 className="block text-lg">Filters</h3>
 

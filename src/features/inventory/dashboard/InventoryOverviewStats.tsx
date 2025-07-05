@@ -15,18 +15,6 @@ const inventoryStats = [
     icon: "💰",
   },
   {
-    label: "Turnover Rate",
-    value: "4.2x",
-    note: "+0.3x from last month",
-    icon: "📈",
-  },
-  {
-    label: "Warehouse Capacity",
-    value: "85%",
-    note: "Near capacity limit",
-    icon: "🏢",
-  },
-  {
     label: "Out of Stock",
     value: "5",
     note: "Items requiring immediate restocking",
@@ -37,13 +25,6 @@ const inventoryStats = [
     value: "23",
     note: "Below minimum threshold",
     icon: "⚠️",
-  },
-  { label: "Expiring Soon", value: "7", note: "Within 30 days", icon: "⏰" },
-  {
-    label: "Optimal Stock",
-    value: "1219",
-    note: "Well-stocked items",
-    icon: "✅",
   },
 ];
 

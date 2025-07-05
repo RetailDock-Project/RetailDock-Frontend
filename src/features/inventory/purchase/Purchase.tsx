@@ -1,62 +1,66 @@
 import React from "react";
-// import { Input } from "@/components/ui/input";
-// import { DatePicker } from "@/components/ui/datepicker"; // Assume you have one
-// import { Select, SelectItem } from "@/components/ui/select";
-import { Search, FilePlus, RotateCcw, FileDown } from "lucide-react";
+import { FilePlus, RotateCcw, FileDown } from "lucide-react";
 import { Button } from "../../../components/ui/reusable/Button";
 import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker";
 import { SearchInput } from "../../../components/ui/reusable/SearchInput";
 import { DropdownList } from "../../../components/ui/reusable/DropdownList";
-import { PurchaseOrderList, type PurchaseOrders } from "./PurchaseOrderList";
-import { PurchaseOrderOverview } from "./PurchaseOrderOverview";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
-const sampleOrders: PurchaseOrders[] = [
+import PurchaseList from "./PurchaseList";
+
+// Dummy data type and list
+type Purchase = {
+  id: string;
+  date: string;
+  supplier: string;
+  items: number;
+  totalAmount: number;
+  status: "Completed" | "Pending" | "Cancelled";
+};
+
+const samplePurchases = [
   {
-    poNumber: "PO-2025-0001",
-    orderedDate: "May 10, 2025",
-    receivedDate: "May 12, 2025",
+    id: "PUR-001",
     supplier: "Samsung Electronics",
-    invoice: "INV-2458",
-    paymentMethod: "Bank Transfer",
+    invoiceNumber: "INV-2458",
+    date: "May 12, 2025",
     items: 12,
-    amount: 124500,
-    orderStatus: "Completed" as const,
+    totalAmount: 124500,
+    status: "Paid",
   },
   {
-    poNumber: "PO-2025-0002",
-    orderedDate: "May 20, 2025",
+    id: "PUR-002",
     supplier: "Sony India",
-    invoice: "INV-3211",
-    paymentMethod: "UPI",
+    invoiceNumber: "INV-3211",
+    date: "May 18, 2025",
     items: 5,
-    amount: 78400,
-    orderStatus: "Pending" as const,
+    totalAmount: 78400,
+    status: "Pending",
   },
 ];
 
-const PurchaseOrder: React.FC = () => {
+const Purchase: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleRangeChange = (range: {
     startDate: Date | null;
     endDate: Date | null;
   }) => {
     console.log("Selected Range:", range);
   };
-  const navigate = useNavigate();
 
   return (
-    <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
-      {" "}
-      {/* Header */}
+    <div className="p-6 overflow-auto scrollbar-hide max-h-screen">
+      {/* Page Header */}
       <PageHeader
-        title="Purchase Orders"
+        title="Purchases"
         actions={
           <>
             <Button
               size="sm"
               variant="primary"
               className="flex items-center gap-2"
-              onClick={() => navigate("/home/inventory/purchase-order/new")}
+              onClick={() => navigate("/home/inventory/purchase/new")}
             >
               <FilePlus size={16} />
               New Purchase
@@ -65,9 +69,10 @@ const PurchaseOrder: React.FC = () => {
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
+              onClick={() => navigate("/home/inventory/purchase-return/new")}
             >
               <RotateCcw size={16} />
-              Purchase Return
+              Return
             </Button>
             <Button
               size="sm"
@@ -81,45 +86,37 @@ const PurchaseOrder: React.FC = () => {
         }
       />
       {/* Filters */}
-      <div className=" rounded-xl shadow border bg-white p-3">
+      <div className="rounded-xl shadow border bg-white p-3 mt-4">
         <h3 className="block text-lg">Filters</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded-lg shadow-sm ">
-          {/* Search */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded-lg shadow-sm">
           <div>
-            <label className="block text-sm font-medium mb-1">Date</label>
-
+            <label className="block text-sm font-medium mb-1">Search</label>
             <SearchInput onSearch={() => {}} />
           </div>
 
-          {/* Date Range */}
           <div>
-            <label className="block text-sm font-medium mb-1">Date</label>
+            <label className="block text-sm font-medium mb-1">Date Range</label>
             <DateRangePicker onChange={handleRangeChange} />
           </div>
 
-          {/* Status Dropdown */}
           <div>
             <label className="block text-sm font-medium mb-1">Status</label>
             <DropdownList
-              options={["Option A", "Option B", "Option C"]}
+              options={["Completed", "Pending", "Cancelled"]}
               onSelect={(val) => console.log("Selected:", val)}
-              label="Choose Option"
+              label="Choose Status"
             />
           </div>
         </div>
       </div>
-      <div className="mt-3">
-        <h2 className="text-lg font-bold mb-4">
-          Purchase Orders ({sampleOrders.length})
-        </h2>
-        <PurchaseOrderList data={sampleOrders} />
-      </div>
+      <PurchaseList purchases={samplePurchases} />
+      {/* Overview section (optional) */}
       <div className="mt-4">
-        <PurchaseOrderOverview />
+        {/* You can add <PurchaseOverview /> component here */}
       </div>
     </div>
   );
 };
 
-export default PurchaseOrder;
+export default Purchase;

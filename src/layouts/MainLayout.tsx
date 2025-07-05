@@ -14,11 +14,11 @@ const MainLayout: React.FC = () => {
         {/* Sidebar */}
         <div
           className={`
-              fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-40
-              transform transition-transform duration-300 ease-in-out
-              ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-              md:translate-x-0 md:static
-            `}
+            fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-40
+            transform transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            md:translate-x-0 md:static
+          `}
         >
           <SideBar />
         </div>
@@ -31,11 +31,14 @@ const MainLayout: React.FC = () => {
           />
         )}
 
-        {/* Main content area */}
-        <div className="flex flex-col flex-1 transition-all">
+        {/* Main Content Area */}
+        <div className="flex flex-col flex-1 h-screen overflow-hidden">
           <AppHeader sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
-          {/* <main className="p-6 flex-1 overflow-y-auto">{children}</main> */}
-          <Outlet />
+
+          {/* Scrollable Outlet */}
+          <main className="flex-1 overflow-y-auto hide-scrollbar">
+            <Outlet />
+          </main>
         </div>
       </div>
     </SidebarProvider>

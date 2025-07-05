@@ -2,10 +2,10 @@ import React from "react";
 
 const PurchaseOrderDetails = () => (
   <div className="bg-white border rounded-xl shadow p-6 my-6">
-    <h2 className="text-lg font-semibold mb-4">Purchase Order Details</h2>
+    <h2 className="text-lg font-semibold mb-4">Purchase Details</h2>
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
       <div>
-        <p className="text-gray-500">Purchase Order:</p>
+        <p className="text-gray-500">Purchase :</p>
         <p className="font-medium text-gray-800">PO-2025-0001</p>
       </div>
       <div>

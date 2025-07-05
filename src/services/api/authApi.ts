@@ -54,5 +54,6 @@ export const ResetPassword = async (data: ResetPasswordPayload) => {
 
 export const UserInfo = async () => {
   const response = await authClient.get("/Auth/me");
+  console.log(response);
   return response.data;
 };
