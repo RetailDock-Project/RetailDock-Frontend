@@ -4,6 +4,7 @@ interface RegisterPayload {
   name: string;
   email: string;
   password: string;
+  orgRoleId?: string | null;
 }
 
 interface LoginPayload {
