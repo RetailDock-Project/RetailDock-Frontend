@@ -49,25 +49,25 @@ const SalesReturnInvoice:React.FC = () => {
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
-              <th className="px-4 py-3">Invoice #</th>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Customer</th>
-              <th className="px-4 py-3">Total</th>
-              <th className="px-4 py-3">Payment</th>
+              <th className="px-4 py-6">Invoice #</th>
+              <th className="px-4 py-6">Date</th>
+              <th className="px-4 py-6">Customer</th>
+              <th className="px-4 py-6">Total</th>
+              <th className="px-4 py-6">Payment</th>
          
-              <th className="px-4 py-3">Actions</th>
+              <th className="px-4 py-6">Actions</th>
             </tr>
           </thead>
           <tbody>
             {invoices.map((inv, idx) => (
               <tr key={idx} className="border-t">
-                <td className="px-4 py-3 font-semibold text-blue-700">{inv.id}</td>
-                <td className="px-4 py-3">{inv.date}</td>
-                <td className="px-4 py-3">{inv.customer}</td>
-                <td className="px-4 py-3">{inv.total}</td>
-                <td className="px-4 py-3">{inv.payment}</td>
+                <td className="px-4 py-4 font-semibold text-blue-700">{inv.id}</td>
+                <td className="px-4 py-4">{inv.date}</td>
+                <td className="px-4 py-4">{inv.customer}</td>
+                <td className="px-4 py-4">{inv.total}</td>
+                <td className="px-4 py-4">{inv.payment}</td>
                 
-                <td className="px-4 py-3 flex gap-2 items-center text-gray-600">
+                <td className="px-4 py-4 flex gap-4 items-center text-gray-600">
                   <Eye className="cursor-pointer w-5 h-5 hover:text-black" />
                   <Download className="cursor-pointer w-5 h-5 hover:text-black" />
                   <Printer className="cursor-pointer w-5 h-5 hover:text-black" />

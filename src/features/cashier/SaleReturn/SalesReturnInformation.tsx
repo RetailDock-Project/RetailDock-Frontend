@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { SingleDatePicker } from "../../../components/ui/reusable/SingleDatePicker";
 import { ChevronDown } from "lucide-react";
+import { date } from "zod";
 
 type Sale = {
   id: string;
@@ -8,7 +9,7 @@ type Sale = {
 };
 
 type ReturnInformationProps = {
-  Sold: [];
+  Sold: string[];
   reasons: string[];
 };
 
@@ -21,12 +22,12 @@ const SalesData: Sale[] = [
 
 const SalesReturnInformation: React.FC<ReturnInformationProps> = ({
   Sold,
-  reasons,
+  reasons
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSales, setFilteredSales] = useState<Sale[]>([]);
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
-  const [returnDate, setReturnDate] = useState("2025-06-27");
+  const [returnDate, setReturnDate] = useState<Date| null>(new Date("2025-06-27"));
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -105,8 +106,8 @@ const SalesReturnInformation: React.FC<ReturnInformationProps> = ({
         <div>
           <label className="block text-sm font-medium mb-1">Return Date</label>
           <SingleDatePicker
-            value={returnDate}
-            onChange={(date: string) => setReturnDate(date)}
+           
+            onChange={(date: null| Date) => setReturnDate(date)}
           />
         </div>
       </div>
