@@ -1,3 +1,4 @@
+import type { NewRole } from "../../features/admin/RoleModal";
 import authClient from "../api/authClient";
 
 interface GetUsersParams {
@@ -31,7 +32,41 @@ export const getUsersStats = async () => {
 };
 
 export const updateUser = async (data: UpdateUserRolePayload) => {
-  const response = await authClient.post("/User/update-user-role", data);
+  console.log(data);
+  const response = await authClient.put("/User/update-user-role", data);
+  console.log(response);
+  return response.data;
+};
+export const deleteUser = async (userId: string) => {
+  const response = await authClient.delete(`/User/soft-delete/${userId}`);
+  console.log(response);
+  return response.data;
+};
+
+export const getRolesAndPermissions = async () => {
+  const response = await authClient.get(
+    "/Role/organization-roles-with-permissions"
+  );
+  console.log(response);
+  return response.data;
+};
+
+export const getAllPermissions = async () => {
+  const response = await authClient.get("/Role/permissions");
+  console.log(response);
+  return response.data;
+};
+export const updateRoleAndPermissions = async (
+  roleId: string,
+  data: NewRole
+) => {
+  const response = await authClient.put(`/Role/update/${roleId}`, data);
+  console.log(response);
+  return response.data;
+};
+
+export const addRoleAndPermissions = async (data: NewRole) => {
+  const response = await authClient.post(`/Role/add`, data);
   console.log(response);
   return response.data;
 };

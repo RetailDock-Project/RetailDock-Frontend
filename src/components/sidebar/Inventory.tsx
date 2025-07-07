@@ -1,5 +1,11 @@
 import React from "react";
-import { Gauge, PackagePlus, ShoppingCart, RotateCcw } from "lucide-react";
+import {
+  Gauge,
+  PackagePlus,
+  ShoppingCart,
+  RotateCcw,
+  Boxes,
+} from "lucide-react";
 
 import {
   SidebarGroup,
@@ -29,6 +35,11 @@ const inventoryMenuItems = [
     title: "Purchase Return",
     url: "/home/inventory/purchase-returns",
     icon: RotateCcw,
+  },
+  {
+    title: "Products",
+    url: "/home/inventory/products",
+    icon: PackagePlus, // You can use a different icon like Boxes or LayoutGrid
   },
 ];
 

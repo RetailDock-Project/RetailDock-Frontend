@@ -12,7 +12,7 @@ const Products: React.FC = () => {
   return (
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader
-        backTo="/home/inventory"
+        backTo="/home/inventory/dashboard"
         title="Product Catalog"
         subtitle="Manage your product inventory"
         actions={
@@ -28,6 +28,7 @@ const Products: React.FC = () => {
             </Button>
             <Button
               size="sm"
+              onClick={() => navigate("/home/inventory/product/new")}
               variant="primary"
               className="flex items-center gap-2"
             >
@@ -82,7 +83,7 @@ const Products: React.FC = () => {
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <DropdownList
-              options={["Option A", "Option B", "Option C"]}
+              options={[]}
               onSelect={(val) => console.log("Selected:", val)}
               label="Choose Category"
             />
@@ -91,7 +92,7 @@ const Products: React.FC = () => {
           <div>
             <label className="block text-sm font-medium mb-1">Status</label>
             <DropdownList
-              options={["Option A", "Option B", "Option C"]}
+              options={[]}
               onSelect={(val) => console.log("Selected:", val)}
               label="Choose Option"
             />

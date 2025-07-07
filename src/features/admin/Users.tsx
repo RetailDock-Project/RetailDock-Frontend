@@ -11,6 +11,8 @@ import { useUsers } from "../../hooks/useUsers";
 import { useRoles } from "../../hooks/useRoles";
 import { useQuery } from "@tanstack/react-query";
 import { getUsersStats } from "../../services/adminapi/adminApi";
+import { registerUser } from "../../services/api/authApi";
+import toast from "react-hot-toast";
 // Placeholder component
 
 const Users: React.FC = () => {
@@ -24,6 +26,7 @@ const Users: React.FC = () => {
     data: usersData,
     isLoading,
     isError,
+    refetch: usersRefetch,
   } = useUsers({
     search: searchParam,
     roleId: roleId,
@@ -37,9 +40,17 @@ const Users: React.FC = () => {
   const { data: rolesData } = useRoles();
   console.log("roles data", rolesData);
 
-  const handleAddUser = (user: any) => {
+  const handleAddUser = async (user: any) => {
     console.log("New User:", user);
     // Call your API here to add the user
+    try {
+      console.log(user);
+
+      var response = await registerUser(user);
+      console.log(response);
+      toast.success(response?.data);
+      usersRefetch();
+    } catch (error) {}
   };
 
   console.log(usersData);
