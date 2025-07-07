@@ -4,7 +4,7 @@ import { Button } from "../../components/ui/reusable/Button";
 import Modal from "../../components/ui/reusable/Modal";
 import { useRoles } from "../../hooks/useRoles";
 import { formatDate } from "../../utils/formatDate";
-import { updateUser } from "../../services/adminapi/adminApi";
+import { deleteUser, updateUser } from "../../services/adminapi/adminApi";
 
 type User = {
   id: string;
@@ -34,27 +34,46 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
     setLocalUsers(users);
   }, [users]);
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!userToDelete) return;
-    setLocalUsers(localUsers.filter((u) => u.id !== userToDelete.id));
-    setIsDeleteOpen(false);
-    setUserToDelete(null);
+    try {
+      console.log(userToDelete);
+      await deleteUser(userToDelete.id);
+      setLocalUsers(localUsers.filter((u) => u.id !== userToDelete.id));
+      setIsDeleteOpen(false);
+      setUserToDelete(null);
+    } catch (error: any) {}
   };
 
   const openEditModal = (user: User) => {
     setSelectedUser(user);
-    setEditedRole(user.role);
+    setEditedRole("");
     setIsEditOpen(true);
   };
 
   const handleSave = async () => {
-    if (!selectedUser) return;
-    if (!editedRole) return;
+    if (!selectedUser || !editedRole) return;
+
     try {
-      console.log(selectedUser.id, editedRole);
-      //   await updateUser({ userId: selectedUser.id, newRoleId: editedRole });
-    } catch (error: any) {}
+      await updateUser({ userId: selectedUser.id, newRoleId: editedRole });
+
+      // update the role locally
+      setLocalUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === selectedUser.id ? { ...user, role: editedRole } : user
+        )
+      );
+
+      setIsEditOpen(false); // close modal
+      setSelectedUser(null); // reset state
+      setEditedRole(""); // reset dropdown
+    } catch (error: any) {
+      console.error("Failed to update user:", error);
+      // Optional: show toast/error message
+    }
   };
+
+  console.log(editedRole);
 
   return (
     <div className="mt-6">
@@ -80,11 +99,20 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
                 <td className="p-3">{user.email}</td>
                 <td className="p-3">{user.role}</td>
                 <td className="p-3">
-                  <span className="block">
-                    {formatDate(user.created).humanReadable}
-                  </span>
-                  <span>{formatDate(user.created).fullDate}</span>
+                  {user.created ? (
+                    <>
+                      <span className="block">
+                        {formatDate(user.created).humanReadable}
+                      </span>
+                      <span className="text-xs">
+                        {formatDate(user.created).fullDate}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-gray-400">N/A</span>
+                  )}
                 </td>
+
                 <td className="p-3 text-right space-x-2">
                   <Button
                     variant="secondary"
@@ -119,7 +147,7 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
         onClose={() => setIsDeleteOpen(false)}
         head="Delete User"
         subHead="This action cannot be undone."
-        badge={userToDelete?.email}
+        width="max-w-lg"
       >
         <div className="space-y-4 text-sm text-gray-600">
           <p>
@@ -174,7 +202,9 @@ const UserList: React.FC<UserListProps> = ({ users }) => {
               <option value="">Select Role</option>
 
               {rolesData?.data?.map((role: any) => (
-                <option value={role.id}>{role.name}</option>
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
               ))}
             </select>
           </div>

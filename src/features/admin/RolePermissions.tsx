@@ -4,47 +4,41 @@ import { Button } from "../../components/ui/reusable/Button";
 import { PlusCircle, ShieldCheck } from "lucide-react";
 import type { NewRole, Role } from "./RoleModal";
 import RoleModal from "./RoleModal";
-
-const initialRoles: Role[] = [
-  {
-    id: 1,
-    name: "Admin",
-    permissions: [
-      "Manage Users",
-      "Edit Products",
-      "View Reports",
-      "Delete Orders",
-    ],
-  },
-  {
-    id: 2,
-    name: "Manager",
-    permissions: ["Edit Products", "View Reports"],
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import {
+  addRoleAndPermissions,
+  getAllPermissions,
+  getRolesAndPermissions,
+  updateRoleAndPermissions,
+} from "../../services/adminapi/adminApi";
 
 const RolePermissions: React.FC = () => {
-  const [roles, setRoles] = useState<Role[]>(initialRoles);
+  const { data: rolesAndPermissions, refetch } = useQuery({
+    queryKey: ["rolesAndPermissions"],
+    queryFn: getRolesAndPermissions,
+  });
+
   const [showModal, setShowModal] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
 
-  const handleSaveRole = (roleData: NewRole) => {
-    if (editingRole) {
-      // Update existing role
-      setRoles((prev) =>
-        prev.map((r) => (r.id === editingRole.id ? { ...r, ...roleData } : r))
-      );
-    } else {
-      // Add new role
-      const newRole: Role = {
-        ...roleData,
-        id: roles.length + 1,
-      };
-      setRoles([...roles, newRole]);
-    }
-    setEditingRole(null);
-    setShowModal(false);
+  const handleSaveRole = async (roleData: NewRole) => {
+    // You can extend this logic to refetch or mutate roles
+    try {
+      if (editingRole) {
+        await updateRoleAndPermissions(editingRole?.id, roleData);
+      }
+      await addRoleAndPermissions(roleData);
+      setEditingRole(null);
+      setShowModal(false);
+      refetch();
+    } catch (error) {}
   };
+
+  const { data: allPermissions } = useQuery({
+    queryKey: ["allPermissions"],
+    queryFn: () => getAllPermissions(),
+  });
+  console.log(editingRole);
 
   return (
     <div className="p-6 overflow-auto max-h-screen">
@@ -68,7 +62,7 @@ const RolePermissions: React.FC = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        {roles.map((role) => (
+        {rolesAndPermissions?.data?.map((role: any) => (
           <div
             key={role.id}
             className="bg-white border rounded-xl shadow p-4 space-y-2"
@@ -93,8 +87,8 @@ const RolePermissions: React.FC = () => {
             <div className="text-sm text-gray-600">
               <span className="font-medium">Permissions:</span>
               <ul className="list-disc list-inside mt-1 text-gray-700">
-                {role.permissions.map((perm, i) => (
-                  <li key={i}>{perm}</li>
+                {role.permissions?.map((perm: any) => (
+                  <li key={perm.id}>{perm.name}</li>
                 ))}
               </ul>
             </div>
@@ -103,6 +97,7 @@ const RolePermissions: React.FC = () => {
       </div>
 
       <RoleModal
+        allPermissions={allPermissions?.data}
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);

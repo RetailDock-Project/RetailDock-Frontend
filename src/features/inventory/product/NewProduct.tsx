@@ -1,72 +1,135 @@
-import { ArrowLeft, FileDown, FilePlus } from "lucide-react";
-import React from "react";
-import { Button } from "../../../components/ui/reusable/Button";
+import { useState } from "react";
+import { FilePlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import ProductBasicInfoForm from "./ProductBasicInformation";
+import { Button } from "../../../components/ui/reusable/Button";
+import { PageHeader } from "../../../components/ui/reusable/PageHeader";
+import ProductBasicInfoForm from "./ProductBasicInfoForm";
 import ProductImageUploader from "./ProductImageUploader";
 import ProductPricing from "./ProductPricing";
 import ProductStockInfo from "./ProductStockInfo";
+import {
+  createProduct,
+  getAllHsnCode,
+} from "../../../services/api/inventoryapi/inventoryApi";
+import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
+
+export type ProductFormData = {
+  productName: string;
+  sku: string;
+  categoryId: number;
+  unitId: number;
+  hsnCodeId: number;
+    description: string;
+  reorderLevel: number;
+  mrp: number;
+  costPrice: number;
+  sellingPrice: number;
+  productImages: File[]; // or string[] or { url: string }[] depending on usage
+};
 
 const NewProduct: React.FC = () => {
-  const categoryList = ["Smartphones", "Laptops", "Accessories"];
-  const supplierList = ["Samsung Electronics", "Sony India", "Apple Inc."];
   const navigate = useNavigate();
-  return (
-    <div className=" p-6 overflow-auto  scrollbar-hide max-h-screen scrollbar-hidden">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center justify-center">
-          <button
-            onClick={() => navigate("/home/inventory")}
-            className="flex items-center text-xs text-blue-600 hover:underline mb-4"
-          >
-            <ArrowLeft className="mr-1" size={16} /> Back to Inventory
-          </button>
-          <div className="pl-3">
-            <h1 className="text-xl font-semibold mb-0">Add New Product</h1>
-            <span className="text-xs text-gray-500">
-              Create a new product in your inventory
-            </span>
-          </div>
-        </div>
+  const [productData, setProductData] = useState<ProductFormData>({
+    productName: "",
+    sku: "",
+    categoryId: 0,
+    unitId: 0,
+    hsnCodeId: 0,
+    description: "",
+    reorderLevel: 0,
+    mrp: 0,
+    costPrice: 0,
+    sellingPrice: 0,
+    productImages: [],
+  });
 
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="secondary"
-            className="flex items-center gap-2"
-            onClick={() => navigate("/home/inventory/purchase-order/new")}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="sm"
-            variant="primary"
-            className="flex items-center gap-2"
-          >
-            <FilePlus size={16} />
-            Save Product
-          </Button>
-        </div>
-      </div>
-      <div className=" pt-6 min-h-screen grid grid-cols-1 md:grid-cols-3 gap-6">
+  console.log(productData);
+
+  const setProductImages: React.Dispatch<React.SetStateAction<File[]>> = (
+    action
+  ) => {
+    setProductData((prev) => ({
+      ...prev,
+      productImages:
+        typeof action === "function"
+          ? (action as (prev: File[]) => File[])(prev.productImages)
+          : action,
+    }));
+  };
+
+  const handleSave = async () => {
+    console.log("Saving Product:", productData);
+    // TODO: Add validation & call API here
+    try {
+      const response = await createProduct(productData);
+      console.log("Product created successfully", response);
+      toast.success("Product saved!");
+      navigate("/home/inventory/products");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save product");
+    }
+  };
+
+  return (
+    <div className="p-6 overflow-auto scrollbar-hide max-h-screen">
+      <PageHeader
+        backTo="/home/inventory/dashboard"
+        title="Add New Product"
+        subtitle="Create a new product in your inventory"
+        actions={
+          <>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="flex items-center gap-2"
+              onClick={() => navigate("/home/inventory/purchase-order/new")}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              className="flex items-center gap-2"
+              onClick={handleSave}
+            >
+              <FilePlus size={16} />
+              Save Product
+            </Button>
+          </>
+        }
+      />
+
+      <div className="pt-6 min-h-screen grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <ProductBasicInfoForm
-            categories={["Electronics", "Gadgets", "Home Appliances"]}
-            suppliers={["Samsung", "Sony", "LG"]}
-            units={["Piece", "Kg", "Box", "Litre"]}
-            hsnCodes={[
-              { code: "8517", gst: 18 },
-              { code: "8542", gst: 12 },
-              { code: "8528", gst: 28 },
-            ]}
+            productData={productData}
+            setProductData={setProductData}
           />
-          <ProductPricing />
+          <ProductPricing
+            pricingData={{
+              costPrice: productData.costPrice,
+              sellingPrice: productData.sellingPrice,
+              mrp: productData.mrp,
+            }}
+            setPricingData={(updatedFields) =>
+              setProductData((prev) => ({ ...prev, ...updatedFields }))
+            }
+          />
         </div>
+
         <div className="space-y-6">
-          {/* Return Summary & Quick Actions components can go here */}
-          <ProductImageUploader />
-          <ProductStockInfo />
+          <ProductImageUploader
+            images={productData.productImages}
+            setImages={setProductImages}
+          />
+          <ProductStockInfo
+            reorderLevel={productData.reorderLevel}
+            setReorderLevel={(value) =>
+              setProductData((prev) => ({ ...prev, reorderLevel: value }))
+            }
+          />
         </div>
       </div>
     </div>
