@@ -12,13 +12,13 @@ type Customer = {
 interface AddCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (newCustomer: Customer) => void;
+
 }
 
 const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
   isOpen,
   onClose,
-  onSave,
+  
 }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,7 +33,7 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
       LedgerId: ledgerId,
     };
 
-    onSave(newCustomer);
+   
     onClose();
 
     // Clear fields after save

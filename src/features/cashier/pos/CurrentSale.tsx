@@ -40,14 +40,14 @@ const CurrentSale: React.FC = () => {
   const remove = (id: number) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
-
+const discountAmt=100;
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
   return (
-    <div className="bg-white p-4 border rounded-xl shadow-md w-full max-w-sm">
+    <div className="bg-white mt-4 p-4 border rounded-xl shadow-md w-full max-w-sm">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
         🛒 Current Sale
       </h2>
@@ -64,7 +64,7 @@ const CurrentSale: React.FC = () => {
         />
       ))}
 
-      <SaleSummary subtotal={subtotal} gstPercent={18} />
+      <SaleSummary discount={discountAmt} subtotal={subtotal} gstPercent={18} />
 
       <ProceedToPayment onClick={() => alert("Redirecting to payment...")} />
     </div>
