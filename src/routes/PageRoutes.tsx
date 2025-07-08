@@ -42,6 +42,8 @@ import { useEffect, useState } from "react";
 import { UserInfo } from "../services/api/authApi";
 import { setUser } from "../features/user/userSlice";
 import { login, logOut } from "../features/auth/authSice";
+
+import AddLedger from "../features/accountant/components/AddLedger";
 import InvoiceTable from "../features/cashier/Invoice/InvoiceDetails";
 import InvoiceDetails from "../features/cashier/Invoice/InvoiceDetails";
 
@@ -50,6 +52,7 @@ import SalesReturn from "../features/cashier/SaleReturn/SalesReturn";
 import NewSalesReturn from "../features/cashier/SaleReturn/NewSalesReturn";
 import SaleInformation from "../features/cashier/Invoice/salesInvoice/SaleInformation";
 import DebtorDetails from "../features/cashier/Debtors/DebtorDetails.tsx";
+
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -150,6 +153,7 @@ const PageRoutes: React.FC = () => {
             ></Route>
             <Route path="voucher-report" element={<VoucherReport />}></Route>
             <Route path="tax-report" element={<TaxReports />}></Route>
+            <Route path="add-ledger" element={<AddLedger/>}></Route>
           </Route>
 
 
