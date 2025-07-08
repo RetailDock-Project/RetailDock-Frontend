@@ -17,7 +17,8 @@ const LedgerDetails: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Ledger Accounts</h2>
-        <button className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium">
+        <button className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium" 
+        onClick={()=>navigate("/home/accountant/add-ledger")}>
           <Plus className="w-4 h-4" />
           Add New Ledger
         </button>

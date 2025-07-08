@@ -42,6 +42,7 @@ import { useEffect, useState } from "react";
 import { UserInfo } from "../services/api/authApi";
 import { setUser } from "../features/user/userSlice";
 import { login, logOut } from "../features/auth/authSice";
+import AddLedger from "../features/accountant/components/AddLedger";
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -142,6 +143,7 @@ const PageRoutes: React.FC = () => {
             ></Route>
             <Route path="voucher-report" element={<VoucherReport />}></Route>
             <Route path="tax-report" element={<TaxReports />}></Route>
+            <Route path="add-ledger" element={<AddLedger/>}></Route>
           </Route>
 
           <Route path="cashier">
