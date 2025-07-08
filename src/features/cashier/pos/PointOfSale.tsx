@@ -10,6 +10,7 @@ const PointOfSale: React.FC = () => {
     <div className="grid p-6 grid-cols-1 lg:grid-cols-[1fr_350px] gap-6">
       <div className="w-full">
         <POSHeader />
+        
         <POSSearchBar />
         <POSCategories />
         <POSProductList />

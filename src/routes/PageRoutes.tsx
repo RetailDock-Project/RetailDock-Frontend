@@ -42,7 +42,17 @@ import { useEffect, useState } from "react";
 import { UserInfo } from "../services/api/authApi";
 import { setUser } from "../features/user/userSlice";
 import { login, logOut } from "../features/auth/authSice";
+
 import AddLedger from "../features/accountant/components/AddLedger";
+import InvoiceTable from "../features/cashier/Invoice/InvoiceDetails";
+import InvoiceDetails from "../features/cashier/Invoice/InvoiceDetails";
+
+import SalesReturnInformation from "../features/cashier/SaleReturn/SalesReturnInformation";
+import SalesReturn from "../features/cashier/SaleReturn/SalesReturn";
+import NewSalesReturn from "../features/cashier/SaleReturn/NewSalesReturn";
+import SaleInformation from "../features/cashier/Invoice/salesInvoice/SaleInformation";
+import DebtorDetails from "../features/cashier/Debtors/DebtorDetails.tsx";
+
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -146,10 +156,29 @@ const PageRoutes: React.FC = () => {
             <Route path="add-ledger" element={<AddLedger/>}></Route>
           </Route>
 
+
+
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
             <Route path="pos" element={<PointOfSale />} />
+            
+            <Route path="invoices" element={<InvoiceDetails />} />
+
+            <Route path="invoice">
+              <Route path="details" element={<SaleInformation/>}/>
+            </Route>
+            <Route path="customers" element={<DebtorDetails/>} />
+            <Route path="sales-returns" element={<SalesReturn/>} />
+            <Route path="sales-return">
+                   <Route path="new" element={<NewSalesReturn/>}/>
+                       {/* <Route path="info" element={<SalesReturnInformation/>} />  */}
+            </Route>
+        
+        
           </Route>
+
+
+
 
           <Route path="admin">
             <Route path="manage-users" element={<Users />} />

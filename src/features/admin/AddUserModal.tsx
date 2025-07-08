@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Modal from "../../components/ui/reusable/Modal";
 import { Button } from "../../components/ui/reusable/Button";
+import { useRoles } from "../../hooks/useRoles";
 
 type AddUserModalProps = {
   isOpen: boolean;
@@ -9,7 +10,7 @@ type AddUserModalProps = {
   onSubmit: (user: {
     name: string;
     email: string;
-    role: string;
+    orgRoleId: string;
     password: string;
   }) => void;
 };
@@ -19,10 +20,12 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const { data: rolesData } = useRoles();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    role: "Staff",
+    orgRoleId: "",
     password: "",
   });
 
@@ -74,14 +77,18 @@ const AddUserModal: React.FC<AddUserModalProps> = ({
         <div>
           <label className="block text-sm font-medium mb-1">Role</label>
           <select
-            name="role"
-            value={formData.role}
+            name="orgRoleId"
+            value={formData.orgRoleId}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
           >
-            <option value="Admin">Admin</option>
-            <option value="Manager">Manager</option>
-            <option value="Staff">Staff</option>
+            <option value="">Select Role</option>
+
+            {rolesData?.data?.map((role: { id: string; name: string }) => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
+            ))}
           </select>
         </div>
 

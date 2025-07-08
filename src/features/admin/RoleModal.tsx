@@ -2,62 +2,67 @@ import React, { useEffect, useState } from "react";
 import Modal from "../../components/ui/reusable/Modal";
 import { Button } from "../../components/ui/reusable/Button";
 
-export type Role = {
+export type Permission = {
   id: number;
   name: string;
-  permissions: string[];
 };
 
-export type NewRole = Omit<Role, "id">;
+export type Role = {
+  id: string;
+  name: string;
+  permissions: Permission[];
+};
+
+export type NewRole = {
+  name: string;
+  permissionIds: number[];
+};
 
 type RoleModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave: (role: NewRole) => void;
   initialData?: Role | null;
+  allPermissions: Permission[]; // ✅ passed from parent instead of hardcoded
 };
-
-const allPermissions = [
-  "Manage Users",
-  "Edit Products",
-  "View Reports",
-  "Delete Orders",
-  "Manage Inventory",
-  "Access Dashboard",
-];
 
 const RoleModal: React.FC<RoleModalProps> = ({
   isOpen,
   onClose,
   onSave,
   initialData,
+  allPermissions,
 }) => {
   const [roleName, setRoleName] = useState("");
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  const [selectedPermissionIds, setSelectedPermissionIds] = useState<number[]>(
+    []
+  );
 
   useEffect(() => {
     if (initialData) {
       setRoleName(initialData.name);
-      setSelectedPermissions(initialData.permissions);
+      setSelectedPermissionIds(initialData.permissions.map((p) => p.id));
     } else {
       setRoleName("");
-      setSelectedPermissions([]);
+      setSelectedPermissionIds([]);
     }
   }, [initialData]);
 
-  const togglePermission = (permission: string) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permission)
-        ? prev.filter((p) => p !== permission)
-        : [...prev, permission]
+  const togglePermission = (permId: number) => {
+    setSelectedPermissionIds((prev) =>
+      prev.includes(permId)
+        ? prev.filter((id) => id !== permId)
+        : [...prev, permId]
     );
   };
 
   const handleSave = () => {
-    if (!roleName) return;
-    onSave({ name: roleName, permissions: selectedPermissions });
+    if (!roleName || selectedPermissionIds.length === 0) return;
+    onSave({ name: roleName, permissionIds: selectedPermissionIds });
     onClose();
   };
+
+  console.log(allPermissions);
 
   return (
     <Modal
@@ -80,15 +85,15 @@ const RoleModal: React.FC<RoleModalProps> = ({
 
         <div>
           <label className="block text-sm font-medium mb-1">Permissions</label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-            {allPermissions.map((perm, index) => (
-              <label key={index} className="flex items-center gap-2 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 max-h-64 overflow-y-auto pr-2">
+            {allPermissions?.map((perm) => (
+              <label key={perm.id} className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
-                  checked={selectedPermissions.includes(perm)}
-                  onChange={() => togglePermission(perm)}
+                  checked={selectedPermissionIds.includes(perm.id)}
+                  onChange={() => togglePermission(perm.id)}
                 />
-                {perm}
+                {perm.name}
               </label>
             ))}
           </div>
