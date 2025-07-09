@@ -1,59 +1,69 @@
 import React, { useState } from "react";
 import { FiX } from "react-icons/fi";
+import { getBase64ImageSrc } from "../../../utils/getBase64ImageSrc";
 
-const dummyImages = [
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGSDnCl9epU3jv2qgAXqAYF6YrJ7r6B450VA&s",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUiADDSbLkrFBxnESZTA8kDi-PjLXEXnIJzQ&s",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTTihNno_mkTrIIEeW805ANI4-Yq_NhH3PbA&s",
-];
+interface ProductImage {
+  id: number;
+  image: string;
+}
 
-const ProductImages: React.FC = () => {
-  const [images, setImages] = useState(dummyImages);
-  const [mainImage, setMainImage] = useState(dummyImages[0]);
+interface Props {
+  images: ProductImage[];
+}
 
-  const removeImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    setImages(newImages);
-    if (mainImage === images[index]) {
-      setMainImage(newImages[0] || "");
+const ProductImages: React.FC<Props> = ({ images }) => {
+  const [imagesData, setImagesData] = useState<ProductImage[]>(images);
+  const [mainImage, setMainImage] = useState<ProductImage>(images[0]);
+
+  const removeImage = (id: number) => {
+    const newImages = imagesData.filter((img) => img.id !== id);
+    setImagesData(newImages);
+    if (mainImage.id === id) {
+      setMainImage(newImages[0] || { id: 0, image: "" });
     }
   };
+
+  if (!imagesData || imagesData.length === 0) return null;
 
   return (
     <div>
       <h2 className="text-lg font-semibold mt-4 mb-2">Product Images</h2>
-      {mainImage && (
+
+      {mainImage?.image && (
         <div className="mb-4">
           <img
-            src={mainImage}
+            src={getBase64ImageSrc(mainImage.image)}
             alt="Main Product"
-            className="w-full max-w-xs max-h-xs rounded-xl shadow"
+            className="w-full max-w-48 max-h-48 rounded-xl shadow object-cover"
           />
         </div>
       )}
-      <div className="flex gap-4 flex-wrap items-center justify-start">
-        {images.map((src, idx) => (
-          <div key={idx} className="relative">
-            <img
-              src={src}
-              alt={`Thumbnail ${idx}`}
-              onClick={() => setMainImage(src)}
-              className={`w-20 h-20 border-2 cursor-pointer rounded ${
-                mainImage === src ? "border-blue-500" : "border-gray-200"
-              }`}
-            />
-            {/* <button
-              onClick={() => removeImage(idx)}
-              className="absolute top-1 right-1 p-1 bg-white text-red-500 rounded-full hover:bg-red-500 hover:text-white"
-            >
-              <FiX size={12} />
-            </button> */}
-          </div>
-        ))}
-        {/* <div className="w-20 h-20 border-2 border-dashed text-gray-400 rounded flex items-center justify-center text-xs cursor-pointer hover:border-blue-400">
-          + Add
-        </div> */}
-      </div>
+
+      {imagesData.length > 1 && (
+        <div className="flex gap-4 flex-wrap items-center justify-start">
+          {imagesData.map((img) => (
+            <div key={img.id} className="relative">
+              <img
+                src={getBase64ImageSrc(img.image)}
+                alt={`Thumbnail ${img.id}`}
+                onClick={() => setMainImage(img)}
+                className={`w-20 h-20 border-2 cursor-pointer rounded object-cover ${
+                  mainImage.id === img.id
+                    ? "border-blue-500"
+                    : "border-gray-200"
+                }`}
+              />
+              {/* Optional remove button */}
+              {/* <button
+                onClick={() => removeImage(img.id)}
+                className="absolute top-1 right-1 p-1 bg-white text-red-500 rounded-full hover:bg-red-500 hover:text-white"
+              >
+                <FiX size={12} />
+              </button> */}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

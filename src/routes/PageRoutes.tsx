@@ -113,7 +113,9 @@ const PageRoutes: React.FC = () => {
 
             <Route path="product">
               <Route path="new" element={<NewProduct />}></Route>
-              <Route path="productid" element={<ProductDetail />} />
+              <Route path="edit/:id" element={<NewProduct />}></Route>
+
+              <Route path=":id" element={<ProductDetail />} />
             </Route>
           </Route>
 
