@@ -29,7 +29,8 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div
-        className={`bg-white w-full ${width} rounded-xl shadow-xl overflow-hidden`}
+  className={`bg-white w-full ${width} rounded-xl shadow-xl max-h-[90vh] overflow-y-auto`}
+
       >
         {/* Header */}
         <div className="flex items-start justify-between p-6 border-b bg-white">
