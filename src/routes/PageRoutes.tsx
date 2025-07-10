@@ -52,7 +52,8 @@ import SalesReturn from "../features/cashier/SaleReturn/SalesReturn";
 import NewSalesReturn from "../features/cashier/SaleReturn/NewSalesReturn";
 import SaleInformation from "../features/cashier/Invoice/salesInvoice/SaleInformation";
 import DebtorDetails from "../features/cashier/Debtors/DebtorDetails.tsx";
-
+import SupplierManagement from "../features/inventory/supplier/SupplierManagement.tsx";
+import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -128,6 +129,11 @@ const PageRoutes: React.FC = () => {
 
               <Route path=":id" element={<ProductDetail />} />
             </Route>
+
+            <Route path="suppliers">
+              <Route index element={<SupplierManagement />}></Route>
+              <Route path="new" element={<NewSupplier />}></Route>
+            </Route>
           </Route>
 
           {/* <Route path="accountant">
@@ -155,32 +161,25 @@ const PageRoutes: React.FC = () => {
             ></Route>
             <Route path="voucher-report" element={<VoucherReport />}></Route>
             <Route path="tax-report" element={<TaxReports />}></Route>
-            <Route path="add-ledger" element={<AddLedger/>}></Route>
+            <Route path="add-ledger" element={<AddLedger />}></Route>
           </Route>
-
-
 
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
             <Route path="pos" element={<PointOfSale />} />
-            
+
             <Route path="invoices" element={<InvoiceDetails />} />
 
             <Route path="invoice">
-              <Route path="details" element={<SaleInformation/>}/>
+              <Route path="details" element={<SaleInformation />} />
             </Route>
-            <Route path="customers" element={<DebtorDetails/>} />
-            <Route path="sales-returns" element={<SalesReturn/>} />
+            <Route path="customers" element={<DebtorDetails />} />
+            <Route path="sales-returns" element={<SalesReturn />} />
             <Route path="sales-return">
-                   <Route path="new" element={<NewSalesReturn/>}/>
-                       {/* <Route path="info" element={<SalesReturnInformation/>} />  */}
+              <Route path="new" element={<NewSalesReturn />} />
+              {/* <Route path="info" element={<SalesReturnInformation/>} />  */}
             </Route>
-        
-        
           </Route>
-
-
-
 
           <Route path="admin">
             <Route path="manage-users" element={<Users />} />

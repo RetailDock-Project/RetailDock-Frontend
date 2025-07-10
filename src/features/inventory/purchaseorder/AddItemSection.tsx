@@ -1,56 +1,80 @@
 import React, { useState } from "react";
 import { Button } from "../../../components/ui/reusable/Button";
+import SearchSelect from "../../../components/ui/reusable/SearchSelect"; // Adjust path as needed
 
-const products = ["iPhone 15", "Samsung Galaxy", "Pixel 8", "Realme Narzo"];
+type Product = {
+  id: number;
+  name: string;
+};
 
-const AddItemSection: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+type ProductItem = {
+  productId: string;
+  productName: string;
+  quantity: number;
+  unitCost: number;
+  taxRate: number;
+};
+
+type AddItemSectionProps = {
+  products: Product[];
+  onAddItem: (item: ProductItem) => void;
+};
+
+const AddItemSection: React.FC<AddItemSectionProps> = ({
+  products,
+  onAddItem,
+}) => {
+  const [selectedProduct, setSelectedProduct] = useState<{
+    id: string | number;
+    label: string;
+    value: any;
+  } | null>(null);
+
   const [quantity, setQuantity] = useState(1);
-  const [unitCost, setUnitCost] = useState(0);
+  const [taxRate, setTaxRate] = useState(0);
 
-  const filteredProducts = products.filter((p) =>
-    p.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [unitCost, setUnitCost] = useState(0);
+  console.log(products);
+
+  const productOptions = products?.map((p) => ({
+    id: p.id,
+    label: p.name,
+    value: p,
+  }));
 
   const handleAddItem = () => {
-    // Add item logic here
-    alert("Item added!");
+    if (!selectedProduct) return alert("Please select a product");
+    if (quantity < 1) return alert("Quantity must be at least 1");
+    if (unitCost < 0) return alert("Unit cost can't be negative");
+
+    onAddItem({
+      productId: selectedProduct.value.id,
+      productName: selectedProduct.value.name,
+      quantity,
+      unitCost,
+      taxRate,
+    });
+
+    // Reset
+    setSelectedProduct(null);
+    setQuantity(1);
+    setUnitCost(0);
   };
 
   return (
-    <div className="p-6 bg-white border rounded-xl shadow space-y-6">
+    <div className="p-6 bg-white border rounded-xl shadow space-y-6 mt-6">
       <h2 className="text-xl font-semibold text-gray-700">Add Items</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-        {/* Product Search */}
+        {/* SearchSelect Product Dropdown */}
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            Product
-          </label>
-          <input
-            type="text"
+          <SearchSelect
+            label="Product"
             placeholder="Search product"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            options={productOptions}
+            selected={selectedProduct}
+            setSelected={setSelectedProduct}
           />
-          {searchTerm && (
-            <ul className="mt-1 border rounded-md bg-white max-h-40 overflow-auto shadow text-sm">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <li
-                    key={product}
-                    className="px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                    onClick={() => setSearchTerm(product)}
-                  >
-                    {product}
-                  </li>
-                ))
-              ) : (
-                <li className="px-3 py-2 text-gray-400">No products found</li>
-              )}
-            </ul>
-          )}
         </div>
 
         {/* Quantity */}
@@ -82,12 +106,11 @@ const AddItemSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Add Button */}
       <div className="text-right">
         <Button
           size="sm"
           variant="primary"
-          className=" py-2"
+          className="py-2"
           onClick={handleAddItem}
         >
           Add Item

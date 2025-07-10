@@ -1,4 +1,5 @@
 import type { ProductFormData } from "../../../features/inventory/product/NewProduct";
+import type { SupplierDto } from "../../../features/inventory/supplier/SupplierForm";
 import inventoryClient from "./inventoryClient";
 
 interface UnitOfMeasure {
@@ -17,6 +18,24 @@ type ProductFilterParams = {
   search?: string | null;
   categoryId?: number | null;
   stockStatus?: string | null;
+};
+
+export type SupplierFilterParams = {
+  search?: string | null;
+  isActive?: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+};
+
+type PurchaseOrderRequest = {
+  supplierId?: string;
+  orderDate?: string | null;
+
+  items: {
+    productId: string;
+    quantity: number;
+    ratePerPiece: number;
+  }[];
 };
 
 export const getProductsFilters = async (filters: ProductFilterParams = {}) => {
@@ -154,11 +173,67 @@ export const updateProduct = async (
   productId: any,
   productData: ProductFormData
 ) => {
+  const formData = new FormData();
+
+  // Append basic fields
+  formData.append("ProductName", productData.productName);
+  formData.append("ProductCode", productData.sku);
+  formData.append("ProductCategoryId", productData.categoryId.toString());
+  formData.append("UnitOfMeasuresId", productData.unitId.toString());
+  formData.append("HsnCodeId", productData.hsnCodeId.toString());
+  formData.append("Description", productData.description);
+  formData.append("ReOrderLevel", productData.reorderLevel.toString());
+  formData.append("MRP", productData.mrp.toString());
+  formData.append("CostPrice", productData.costPrice.toString());
+  formData.append("SellingPrice", productData.sellingPrice.toString());
+
+  // Append new product images (files only)
+  productData.productImages.forEach((img, index) => {
+    if (img instanceof File) {
+      formData.append("ProductImages", img); // Field name should match backend expectation
+    }
+  });
+
+  // Append existing image IDs (if any)
+  if (productData.existingImageIds && productData.existingImageIds.length > 0) {
+    productData.existingImageIds.forEach((id) => {
+      formData.append("ExistingImageIds", id.toString()); // field name may vary based on backend
+    });
+  }
+
+  // Send the request
   const response = await inventoryClient.put(
     `/Product/update/product?id=${productId}`,
-    productData
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
-  console.log(response);
 
+  console.log(response, "update product reponse");
+  return response.data;
+};
+
+export const createSupplier = async (data: SupplierDto) => {
+  const response = await inventoryClient.post("/Supplier/create", data);
+  console.log(response.data);
+
+  return response.data;
+};
+export const getSupplierWithFilters = async (data: SupplierFilterParams) => {
+  console.log(data);
+
+  const response = await inventoryClient.get("/Supplier/supplier-filter", {
+    params: data,
+  });
+  console.log(response.data);
+
+  return response.data;
+};
+
+export const createPurchaseOrder = async (data: PurchaseOrderRequest) => {
+  const response = await inventoryClient.post("/PurchaseOrder/Create", data); // Adjust endpoint
   return response.data;
 };

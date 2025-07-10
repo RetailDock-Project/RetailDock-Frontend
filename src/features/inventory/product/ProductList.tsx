@@ -96,7 +96,12 @@ const ProductList: React.FC<Props> = ({ products }) => {
                         className="text-blue-600 hover:text-blue-800"
                       />
                     </button>
-                    <button title="Edit">
+                    <button
+                      title="Edit"
+                      onClick={() =>
+                        navigate(`/home/inventory/product/edit/${prod.id}`)
+                      }
+                    >
                       <Pencil
                         size={16}
                         className="text-gray-600 hover:text-gray-800"
