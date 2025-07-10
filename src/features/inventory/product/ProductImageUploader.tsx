@@ -1,45 +1,59 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FiUpload, FiX } from "react-icons/fi";
+import { getBase64ImageSrc } from "../../../utils/getBase64ImageSrc";
+
+export type ProductImage = {
+  id: number;
+  image: string;
+};
 
 type Props = {
-  images: File[];
-  setImages: React.Dispatch<React.SetStateAction<File[]>>;
+  existingImages: ProductImage[];
+  setExistingImages: React.Dispatch<React.SetStateAction<ProductImage[]>>;
+  newImages: File[];
+  setNewImages: React.Dispatch<React.SetStateAction<File[]>>;
+  setExistingImageIds: React.Dispatch<React.SetStateAction<number[]>>; // 👈 new prop
   maxImages?: number;
 };
 
 const ProductImageUploader: React.FC<Props> = ({
-  images,
-  setImages,
+  existingImages,
+  setExistingImages,
+  newImages,
+  setNewImages,
+  setExistingImageIds,
   maxImages = 5,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
 
+  const totalImages = existingImages.length + newImages.length;
+
+  useEffect(() => {
+    // Update parent state with the current retained image IDs
+    setExistingImageIds(existingImages.map((img) => img.id));
+  }, [existingImages, setExistingImageIds]);
+
   const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
+    const files = Array.from(e.target.files || []);
+    const validImages = files.filter((file) => file.type.startsWith("image/"));
 
-    const selectedFiles = Array.from(files);
-    const validImages = selectedFiles.filter((file) =>
-      file.type.startsWith("image/")
-    );
-
-    if (validImages.length !== selectedFiles.length) {
-      setError("Some files were not valid images.");
-      return;
-    }
-
-    if (images.length + validImages.length > maxImages) {
+    if (totalImages + validImages.length > maxImages) {
       setError(`You can upload up to ${maxImages} images only.`);
       return;
     }
 
-    setImages((prev) => [...prev, ...validImages]);
+    setNewImages((prev) => [...prev, ...validImages]);
     setError("");
   };
 
-  const handleRemove = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveExisting = (id: number) => {
+    setExistingImages((prev) => prev.filter((img) => img.id !== id));
+    // no need to manually update setExistingImageIds here because useEffect handles it
+  };
+
+  const handleRemoveNew = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const openFilePicker = () => inputRef.current?.click();
@@ -51,27 +65,50 @@ const ProductImageUploader: React.FC<Props> = ({
       {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
 
       <div className="flex flex-wrap gap-4">
-        {images.map((image, index) => (
+        {/* Existing Images */}
+        {existingImages.map((img) => (
           <div
-            key={index}
+            key={`existing-${img.id}`}
             className="relative w-24 h-24 rounded border overflow-hidden"
           >
             <img
-              src={URL.createObjectURL(image)}
-              alt={`Preview ${index}`}
+              src={getBase64ImageSrc(img.image)}
+              alt={`Existing ${img.id}`}
               className="w-full h-full object-cover"
             />
             <button
-              onClick={() => handleRemove(index)}
+              onClick={() => handleRemoveExisting(img.id)}
               className="absolute top-1 right-1 bg-white/80 hover:bg-red-500 hover:text-white p-1 rounded-full text-xs"
-              title="Remove"
+              title="Remove existing image"
             >
               <FiX />
             </button>
           </div>
         ))}
 
-        {images.length < maxImages && (
+        {/* New Uploaded Images */}
+        {newImages.map((file, index) => (
+          <div
+            key={`new-${index}`}
+            className="relative w-24 h-24 rounded border overflow-hidden"
+          >
+            <img
+              src={URL.createObjectURL(file)}
+              alt={`New ${index}`}
+              className="w-full h-full object-cover"
+            />
+            <button
+              onClick={() => handleRemoveNew(index)}
+              className="absolute top-1 right-1 bg-white/80 hover:bg-red-500 hover:text-white p-1 rounded-full text-xs"
+              title="Remove uploaded image"
+            >
+              <FiX />
+            </button>
+          </div>
+        ))}
+
+        {/* Upload Button */}
+        {totalImages < maxImages && (
           <div
             onClick={openFilePicker}
             className="w-24 h-24 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-500 hover:border-blue-500 hover:text-blue-500 rounded cursor-pointer transition"
