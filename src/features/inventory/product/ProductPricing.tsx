@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 type PricingData = {
   costPrice: number;
@@ -12,14 +12,61 @@ type Props = {
 };
 
 const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
+  const [errors, setErrors] = useState({
+    costPrice: "",
+    sellingPrice: "",
+    mrp: "",
+  });
+
+  const [touched, setTouched] = useState({
+    costPrice: false,
+    sellingPrice: false,
+    mrp: false,
+  });
+
+  // Local state for string input values
+  const [localValues, setLocalValues] = useState({
+    costPrice: pricingData.costPrice.toString(),
+    sellingPrice: pricingData.sellingPrice.toString(),
+    mrp: pricingData.mrp.toString(),
+  });
+
+  useEffect(() => {
+    // Sync when editing existing values (e.g., fetch completed)
+    setLocalValues({
+      costPrice: pricingData.costPrice.toString(),
+      sellingPrice: pricingData.sellingPrice.toString(),
+      mrp: pricingData.mrp.toString(),
+    });
+  }, [pricingData]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Allow only numbers with up to 2 decimal places
-    if (/^\d*\.?\d{0,2}$/.test(value)) {
-      setPricingData({ [name]: parseFloat(value || "0") });
-    }
+    if (!/^\d*\.?\d{0,2}$/.test(value)) return;
+
+    setLocalValues((prev) => ({ ...prev, [name]: value }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    const numericValue = value === "" ? 0 : parseFloat(value);
+    setPricingData({ [name]: numericValue });
   };
+
+  useEffect(() => {
+    const { costPrice, sellingPrice, mrp } = pricingData;
+    const newErrors = { costPrice: "", sellingPrice: "", mrp: "" };
+
+    if (touched.costPrice && touched.sellingPrice && costPrice > sellingPrice) {
+      newErrors.sellingPrice =
+        "Selling price should be greater than or equal to cost price.";
+    }
+
+    if (touched.sellingPrice && touched.mrp && sellingPrice > mrp) {
+      newErrors.mrp = "MRP should be greater than or equal to selling price.";
+    }
+
+    setErrors(newErrors);
+  }, [pricingData, touched]);
 
   return (
     <div className="bg-white p-6 rounded-xl mt-6 border shadow-md space-y-4">
@@ -34,11 +81,16 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
           <input
             type="text"
             name="costPrice"
-            value={pricingData.costPrice}
+            value={localValues.costPrice}
             onChange={handleChange}
             placeholder="Enter cost price"
-            className="w-full border rounded-md px-3 py-2 text-sm"
+            className={`w-full border rounded-md px-3 py-2 text-sm ${
+              errors.costPrice ? "border-red-500" : ""
+            }`}
           />
+          {errors.costPrice && (
+            <p className="text-red-500 text-xs mt-1">{errors.costPrice}</p>
+          )}
         </div>
 
         {/* Selling Price */}
@@ -49,11 +101,16 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
           <input
             type="text"
             name="sellingPrice"
-            value={pricingData.sellingPrice}
+            value={localValues.sellingPrice}
             onChange={handleChange}
             placeholder="Enter selling price"
-            className="w-full border rounded-md px-3 py-2 text-sm"
+            className={`w-full border rounded-md px-3 py-2 text-sm ${
+              errors.sellingPrice ? "border-red-500" : ""
+            }`}
           />
+          {errors.sellingPrice && (
+            <p className="text-red-500 text-xs mt-1">{errors.sellingPrice}</p>
+          )}
         </div>
 
         {/* MRP */}
@@ -62,11 +119,16 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
           <input
             type="text"
             name="mrp"
-            value={pricingData.mrp}
+            value={localValues.mrp}
             onChange={handleChange}
             placeholder="Enter MRP"
-            className="w-full border rounded-md px-3 py-2 text-sm"
+            className={`w-full border rounded-md px-3 py-2 text-sm ${
+              errors.mrp ? "border-red-500" : ""
+            }`}
           />
+          {errors.mrp && (
+            <p className="text-red-500 text-xs mt-1">{errors.mrp}</p>
+          )}
         </div>
       </div>
     </div>
