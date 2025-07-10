@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getProductsFilters } from "../services/api/inventoryapi/inventoryApi";
 
-type ProductFilterParams = {
+export type ProductFilterParams = {
   search?: string | null;
   categoryId?: number | null;
   stockStatus?: string | null;

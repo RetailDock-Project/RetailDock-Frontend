@@ -63,9 +63,12 @@ const NewProduct: React.FC = () => {
       if (isEditMode && id) {
         try {
           const response = await getProductById(id);
-          const p = response.data;
+          console.log(response, "repjdnvkdfjzbn ,sng");
 
-          const images: ProductImage[] = p.productImagesBase64.image || [];
+          const p = response.data;
+          console.log(p);
+
+          const images: ProductImage[] = p.productImagesBase64 || [];
 
           setProductData({
             productName: p.productName,
@@ -132,6 +135,8 @@ const NewProduct: React.FC = () => {
       };
 
       if (isEditMode && id) {
+        console.log(productToSave, "products to saveee", id);
+
         await updateProduct(id, productToSave);
         toast.success("Product updated successfully");
       } else {
