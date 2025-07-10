@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Modal from "../../../components/ui/reusable/Modal";
 import { Button } from "../../../components/ui/reusable/Button";
+import { getCashLedgerId, addNewCashCustomers } from "../../../services/api/cashierApi/cashierApi";
+import toast from "react-hot-toast";
 
 type Customer = {
-  name: string;
+  companyName: string;
   email: string;
   mobile: string;
   LedgerId: string;
@@ -12,35 +14,46 @@ type Customer = {
 interface AddCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
-
 }
 
-const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
-  isOpen,
-  onClose,
-  
-}) => {
+const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-  const [ledgerId, setLedgerId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = () => {
-    const newCustomer: Customer = {
-      name,
-      email,
-      mobile,
-      LedgerId: ledgerId,
-    };
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
 
-   
-    onClose();
+      // 1. Fetch ledger ID
+      const ledgerData = await getCashLedgerId("cash customers");
 
-    // Clear fields after save
-    setName("");
-    setEmail("");
-    setMobile("");
-    
+      const ledgerId = ledgerData.data;
+console.log(ledgerData.data,"fromledgerid")
+      // 2. Create new customer object
+      const newCustomer = {
+        companyName:name,
+        email,
+        phoneNumber: mobile,
+        ledgerId,
+      };
+
+      // 3. Send customer to backend
+      const customerAdded=await addNewCashCustomers(newCustomer);
+      toast.success(customerAdded.message);
+
+      // 4. Reset state and close modal
+      setName("");
+      setEmail("");
+      setMobile("");
+      onClose();
+    } catch (error) {
+      console.error("Error saving customer:", error);
+      // Optionally show error to user
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -50,7 +63,7 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
       head="Add Customer"
       subHead="Enter Name, Email, and Mobile"
       width="max-w-md"
-    >
+    > 
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Name</label>
@@ -78,10 +91,15 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-500"
           />
         </div>
-       
+
         <div className="text-right">
-          <Button variant="primary" size="sm" onClick={handleSubmit}>
-            Save Customer
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving..." : "Save Customer"}
           </Button>
         </div>
       </div>
