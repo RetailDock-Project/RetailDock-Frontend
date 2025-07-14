@@ -1,143 +1,109 @@
-import React, { useState } from "react";
-import { Button } from "../../../components/ui/reusable/Button";
+import React, { useEffect, useState } from "react";
 import { SingleDatePicker } from "../../../components/ui/reusable/SingleDatePicker";
+import { getCustomerByMobile } from "../../../services/api/cashierApi/cashierApi";
+import type { Customer } from "./PointOfSale";
 
-type Customer = {
-  id: number;
-  name: string;
-  phone: string;
-  place: string;
-  email: string;
-  gstNo: string;
+
+type POSHeaderProps = {
+  mobile: string;
+  setMobile: (value: string) => void;
+
+  businessType: string;
+  setBusinessType: (value: string) => void;
+
+  gstType: string;
+  setGstType: (value: string) => void;
+
+  paymentMode: string;
+  setPaymentMode: (value: string) => void;
+
+  selectedDate: Date | null;
+  setSelectedDate: (date: Date | null) => void;
+
+  selectedCustomer: Customer | null;
+  setSelectedCustomer: (customer: Customer | null) => void;
 };
 
-const mockCustomers: Customer[] = [
-  {
-    id: 1,
-    name: "Priya Sharma",
-    phone: "9876543210",
-    place: "Delhi",
-    email: "priya@example.com",
-    gstNo: "29ABCDE1234F1Z5",
-  },
-  {
-    id: 2,
-    name: "Rahul Singh",
-    phone: "9123456789",
-    place: "Mumbai",
-    email: "rahul@example.com",
-    gstNo: "27XYZDE7890G2Z3",
-  },
-];
+const POSHeader: React.FC<POSHeaderProps> = ({   mobile ,setMobile,  businessType ,setBusinessType ,gstType,setGstType,paymentMode ,setPaymentMode,selectedDate ,setSelectedDate,selectedCustomer ,setSelectedCustomer}) => {
+ 
 
-const POSHeader: React.FC = () => {
-  const [mobile, setMobile] = useState("");
-  const [businessType, setBusinessType] = useState("B2C");
-  const [gstType, setGstType] = useState("SGST");
-  const [paymentMode, setPaymentMode] = useState("Cash");
-  const [selectedState,setSelectedDate ]=useState();
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      if (mobile.length === 10) {
+        try {
+          const response = await getCustomerByMobile(mobile);
+          setSelectedCustomer(response.data);
+        } catch (error) {
+          console.error("Error fetching customer:", error);
+        }
+      } else {
+        setSelectedCustomer(null);
+      }
+    };
 
-  const filteredCustomers = mockCustomers.filter((customer) =>
-    customer.phone ==(mobile)
-  );
-
-  const handleCustomerSelect = (customer: Customer) => {
-    setSelectedCustomer(customer);
-   
-  };
+    fetchCustomer();
+  }, [mobile]);
 
   return (
-    <div className="pl-10  p-4 mt-4 bg-white rounded-xl border shadow-lg   ">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 items-start">
+    <div className="px-6 py-4 mt-2 bg-white rounded-lg border shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         <div>
-          <label className="block text-sm font-medium mb-1">Customer Mobile</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Customer Mobile</label>
           <input
             type="text"
             placeholder="Enter mobile"
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
-            className="border rounded-md px-3 py-3 w-56 text-sm border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm border-gray-400"
           />
-          {(mobile.length === 10 || filteredCustomers.length > 0) && (
-            <div className="absolute bg-white border rounded mt-1 w-56 z-10 shadow max-h-40 overflow-auto text-sm">
-              <button
-                onClick={() =>
-                  handleCustomerSelect({
-                    id: 0,
-                  name:"",
-                    phone: "",
-                    place: "",
-                    email: "",
-                    gstNo: "",
-                  })
-                }
-                className="w-full text-left px-3 py-3 hover:bg-gray-100 border-gray-600"
-              >
-              
-              </button>
-              {filteredCustomers.map((cust) => (
-                <button
-                  key={cust.id}
-                  onClick={() => handleCustomerSelect(cust)}
-                  className="w-full text-left px-3 py-3 hover:bg-gray-100 border-gray-600"
-                >
-                  {cust.name} 
-                </button>
-              ))}
-              {filteredCustomers.length === 0 && (
-                <p className="px-3 py-3 text-gray-400">No customer found</p>
-              )}
-            </div>
-          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Customer Name</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Customer Name</label>
           <input
             type="text"
-            value={selectedCustomer?.name || ""}
+            value={selectedCustomer?.customerName || ""}
             disabled
-            className="border rounded-md px-3 py-3 w-56 text-sm bg-gray-100 border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm bg-gray-100 border-gray-300"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
           <input
             type="text"
             value={selectedCustomer?.email || ""}
             disabled
-            className="border rounded-md px-3 py-3 w-56 text-sm bg-gray-100 border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm bg-gray-100 border-gray-300"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Place</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Place</label>
           <input
             type="text"
             value={selectedCustomer?.place || ""}
             disabled
-            className="border rounded-md px-3 py-3 w-56 text-sm bg-gray-100 border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm bg-gray-100 border-gray-300"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">GST No</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">GST No</label>
           <input
             type="text"
-            value={selectedCustomer?.gstNo || ""}
+            value={selectedCustomer?.gstNumber || ""}
             disabled
-            className="border rounded-md px-3 py-3 w-56 text-sm bg-gray-100 border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm bg-gray-100 border-gray-300"
           />
         </div>
 
-          <div>
-          <label className="block text-sm font-medium mb-1 ">Sale Type</label>
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Sale Type</label>
           <select
             value={businessType}
             onChange={(e) => setBusinessType(e.target.value)}
-            className="border rounded-md px-3 py-3 w-56 text-sm border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm border-gray-400"
           >
             <option value="B2C">To Customer</option>
             <option value="B2B">To Company</option>
@@ -145,11 +111,11 @@ const POSHeader: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Sale Location</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Sale Location</label>
           <select
             value={gstType}
             onChange={(e) => setGstType(e.target.value)}
-            className="border rounded-md px-3 py-3 w-56 text-sm border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm border-gray-400"
           >
             <option value="SGST">Inter state</option>
             <option value="CGST">Other state</option>
@@ -158,11 +124,11 @@ const POSHeader: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Payment Mode</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Payment Mode</label>
           <select
             value={paymentMode}
             onChange={(e) => setPaymentMode(e.target.value)}
-            className="border rounded-md px-3 py-3 w-56 text-sm border-gray-600"
+            className="border rounded-md px-3 py-2 w-full text-sm border-gray-400"
           >
             <option value="Cash">Cash</option>
             <option value="Credit">Credit</option>
@@ -170,22 +136,15 @@ const POSHeader: React.FC = () => {
           </select>
         </div>
 
-
-{paymentMode==="Credit"?(
+        {paymentMode === "Credit" && (
           <div>
-             <label className="block text-sm font-medium mb-1">DueDate</label>
-            <div className="w-56  ">
-
-<SingleDatePicker onChange={()=>setSelectedDate(selectedState)} />
+            <label className="block text-xs font-medium text-gray-700 mb-1">Due Date</label>
+            <div className="w-full">
+              <SingleDatePicker onChange={(date) => setSelectedDate(date)} />
             </div>
-         
-        </div>
-):<div></div>}
-
-      
+          </div>
+        )}
       </div>
-
-   
     </div>
   );
 };

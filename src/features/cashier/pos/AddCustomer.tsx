@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "../../../components/ui/reusable/Modal";
 import { Button } from "../../../components/ui/reusable/Button";
-import { getCashLedgerId, addNewCashCustomers } from "../../../services/api/cashierApi/cashierApi";
+import {  addNewCashCustomers, getLedgerByName } from "../../../services/api/cashierApi/cashierApi";
 import toast from "react-hot-toast";
 
 type Customer = {
@@ -27,10 +27,10 @@ const AddCustomerModal: React.FC<AddCustomerModalProps> = ({ isOpen, onClose }) 
       setIsLoading(true);
 
       // 1. Fetch ledger ID
-      const ledgerData = await getCashLedgerId("cash customers");
+      const ledgerData = await getLedgerByName("cash customers");
 
       const ledgerId = ledgerData.data;
-console.log(ledgerData.data,"fromledgerid")
+
       // 2. Create new customer object
       const newCustomer = {
         companyName:name,

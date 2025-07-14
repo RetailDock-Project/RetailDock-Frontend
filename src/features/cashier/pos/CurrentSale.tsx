@@ -1,50 +1,105 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SaleItem from "./SaleItem";
 import SaleSummary from "./SaleSummary";
 import ProceedToPayment from "./ProceedToPayment";
+import type { Product, saleItem } from "./PointOfSale";
 
-type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-};
+type props={
+  newSale:()=>void;
+  isLoading:boolean;
+  saleItems:saleItem[];
+  setSaleItems:React.Dispatch<React.SetStateAction<saleItem[]>>;
+  productSelected:Product[];
+  setProductSelected: React.Dispatch<React.SetStateAction<Product[]>>;
+}
 
-const initialItems: CartItem[] = [
-  { id: 1, name: "Samsung Galaxy M13", price: 12999, quantity: 1 },
-  { id: 2, name: "HP Printer Ink Black", price: 999, quantity: 1 },
-  { id: 3, name: "Mi Power Bank 10000mAh", price: 1499, quantity: 1 },
-];
 
-const CurrentSale: React.FC = () => {
-  const [items, setItems] = useState(initialItems);
 
-  const increment = (id: number) => {
-    setItems((prev) =>
+
+
+
+const CurrentSale: React.FC<props> = ({productSelected,setProductSelected,saleItems,setSaleItems,newSale,isLoading}) => {
+
+  
+
+useEffect(() => {
+  setSaleItems((prev) => {
+    const newItems = [...prev];
+
+    for (const product of productSelected) {
+      const exists = prev.find((item) => item.productId === product.id);
+      if (!exists) {
+        newItems.push({
+          productId: product.id,
+          unitPrice: product.sellingPrice,
+          discountAmount: 0,
+          quantity: 1
+        });
+      }
+    }
+
+    return newItems;
+  });
+}, [productSelected]);
+
+
+  const subtotal = saleItems.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0
+  );
+  const discountAmount = saleItems.reduce(
+    (sum, item) => sum + item.discountAmount* item.quantity,
+    0
+  );
+
+  const taxAmount = saleItems.reduce((sum, item) => {
+  const product = productSelected.find(p => p.id === item.productId);
+  if (!product) return sum;
+  const taxableAmount = (item.unitPrice - item.discountAmount) * item.quantity;
+  const tax = (taxableAmount * product.gstRate) / 100;
+  return sum + tax;
+}, 0);
+
+  const increment = (id: string) => {
+    setSaleItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        item.productId === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  const decrement = (id: number) => {
-    setItems((prev) =>
+  const decrement = (id: string) => {
+  
+    setSaleItems((prev) =>
       prev.map((item) =>
-        item.id === id && item.quantity > 1
+        item.productId  === id && item.quantity >= 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
       )
     );
   };
 
-  const remove = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const remove = (id: string) => {
+    setProductSelected((prev) => prev.filter((item) => item.id !== id));
+    setSaleItems((prev) => prev.filter((item) => item.productId !== id));
   };
-const discountAmt=100;
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
+
+
+
+const onChangePrice = (id: string, value: number) => {
+  setSaleItems((prevItems) =>
+    prevItems.map((item) =>
+      item.productId === id ? { ...item, unitPrice: value } : item
+    )
   );
+};
+const onChangeDiscountAmount = (id: string, value: number) => {
+  setSaleItems((prevItems) =>
+    prevItems.map((item) =>
+      item.productId === id ? { ...item, discountAmount: value } : item
+    )
+  );
+};
 
   return (
     <div className="bg-white mt-4 p-4 border rounded-xl shadow-md w-full max-w-sm">
@@ -52,21 +107,26 @@ const discountAmt=100;
         🛒 Current Sale
       </h2>
 
-      {items.map((item) => (
+      {productSelected.map((item,index) => (
         <SaleItem
-          key={item.id}
-          name={item.name}
-          price={item.price}
-          quantity={item.quantity}
+          key={index}
+          name={item.productName}
+          price={item.sellingPrice}
+          MRP={item.mrp}
+          stock={item.stock}
+          taxRate={item.gstRate}
+         
+        onChangePrice={(val)=>onChangePrice(item.id,val)}
+        onChangeDiscountAmount={(val)=>onChangeDiscountAmount(item.id,val)}
           onIncrement={() => increment(item.id)}
           onDecrement={() => decrement(item.id)}
           onRemove={() => remove(item.id)} // <-- new
         />
       ))}
 
-      <SaleSummary discount={discountAmt} subtotal={subtotal} gstPercent={18} />
+      <SaleSummary discount={discountAmount} subtotal={subtotal} taxAmount={taxAmount} />
 
-      <ProceedToPayment onClick={() => alert("Redirecting to payment...")} />
+      <ProceedToPayment onClick={() => newSale()} isLoading={isLoading}/>
     </div>
   );
 };

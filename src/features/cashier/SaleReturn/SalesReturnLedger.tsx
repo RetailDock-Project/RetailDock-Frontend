@@ -6,7 +6,7 @@ import {
   getSaleLedgerId
 } from '../../../services/api/cashierApi/cashierApi';
 
-type SaleLedgersProps = {
+type SalesReturnLedgerProps = {
   customerName?: string;
   saleLedgerId: string;
   setSaleLedgerId: (id: string) => void;
@@ -15,12 +15,12 @@ type SaleLedgersProps = {
   setTaxLedgerId: (id: string) => void;
   setInventoryLedgerId: (id: string) => void;
 };
-type saleLedgerResponse={
+type saleReturnLedgerResponse={
     id:string;
     ledgerName:string;
 }
 
-const SaleLedgers: React.FC<SaleLedgersProps> = ({
+const SalesReturnLedger: React.FC<SalesReturnLedgerProps> = ({
   saleLedgerId,
   setSaleLedgerId,
   setCOGS_LedgerId,
@@ -28,7 +28,7 @@ const SaleLedgers: React.FC<SaleLedgersProps> = ({
   setTaxLedgerId,
   setInventoryLedgerId,
 }) => {
-  const [saleLedgerList, setSaleLedgerList] = useState<saleLedgerResponse[]>([]);
+  const [saleLedgerList, setSaleLedgerList] = useState<saleReturnLedgerResponse[]>([]);
 
 useEffect(() => {
   if (saleLedgerList && saleLedgerList.length > 0) {
@@ -67,26 +67,15 @@ useEffect(() => {
   }, []);
 
   return (
-    <div className="p-4 mt-[72px] bg-white rounded-xl border border-gray-200 shadow-lg">
-      <h2 className="text-xl font-semibold text-gray-800 mb-3">Sale Ledgers :</h2>
+    <div className="p-4 py-6 bg-white rounded-xl border border-gray-200 shadow-lg">
+      <h2 className="text-xl font-semibold text-gray-800 mb-3">Sale Return Ledgers :</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm font-medium">
+        
+
         {/* Dr Side */}
         <div className="border shadow-md rounded-lg p-4">
           <h3 className="text-lg font-medium text-gray-700 mb-3">Dr (Debit)</h3>
-          <div className="space-y-4">
-            <p className="w-full border border-gray-300 p-2 rounded-lg h-8">
-              {customerName}
-            </p>
-            <p className="w-full border border-gray-300 p-2 rounded-lg">
-              COGS A/c
-            </p>
-          </div>
-        </div>
-
-        {/* Cr Side */}
-        <div className="border shadow-md rounded-lg p-4">
-          <h3 className="text-lg font-medium text-gray-700 mb-3">Cr (Credit)</h3>
           <div className="space-y-4">
             <select
               value={saleLedgerId}
@@ -109,9 +98,23 @@ useEffect(() => {
             </p>
           </div>
         </div>
+
+        {/* Cr Side */}
+     
+           <div className="border shadow-md rounded-lg p-4">
+          <h3 className="text-lg font-medium text-gray-700 mb-3">Cr (cedit)</h3>
+          <div className="space-y-4">
+            <p className="w-full border border-gray-300 p-2 rounded-lg h-8">
+              {customerName}
+            </p>
+            <p className="w-full border border-gray-300 p-2 rounded-lg">
+              COGS A/c
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default SaleLedgers;
+export default SalesReturnLedger;

@@ -52,6 +52,7 @@ import SalesReturn from "../features/cashier/SaleReturn/SalesReturn";
 import NewSalesReturn from "../features/cashier/SaleReturn/NewSalesReturn";
 import SaleInformation from "../features/cashier/Invoice/salesInvoice/SaleInformation";
 import DebtorDetails from "../features/cashier/Debtors/DebtorDetails.tsx";
+import Sales from "../features/cashier/pos/Sales.tsx";
 
 
 const PageRoutes: React.FC = () => {
@@ -162,8 +163,10 @@ const PageRoutes: React.FC = () => {
 
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
-            <Route path="pos" element={<PointOfSale />} />
-            
+            <Route path="pos" element={<Sales/>} />
+            <Route path="poS">
+                      <Route path="new" element={<PointOfSale/>}/>
+            </Route>
             <Route path="invoices" element={<InvoiceDetails />} />
 
             <Route path="invoice">

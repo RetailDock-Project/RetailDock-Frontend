@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Modal from "../../../components/ui/reusable/Modal";
@@ -9,7 +9,11 @@ interface Props {
   onClose: () => void;
 }
 
+
+
 const AddCreditCustomerModal: React.FC<Props> = ({ isOpen, onClose }) => {
+
+      const [isLoading, setIsLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
       companyName: "",
@@ -17,8 +21,8 @@ const AddCreditCustomerModal: React.FC<Props> = ({ isOpen, onClose }) => {
       phoneNumber: "",
       gstNumber: "",
       place: "",
-      openingBalance: "",
-      drCr: "",
+      openingBalance: '0',
+      drCr: "Dr",
       contactName: "",
       bankName: "",
       accountNumber: "",
@@ -34,17 +38,29 @@ const AddCreditCustomerModal: React.FC<Props> = ({ isOpen, onClose }) => {
         .required("Phone number is required"),
       gstNumber: Yup.string(),
       place: Yup.string().required("Place is required"),
-      openingBalance: Yup.number().required("Opening balance is required"),
-    
-      contactName: Yup.string().required("contactName is required"),
-      bankName: Yup.string().required('please fill this Details'),
-      accountNumber: Yup.string().required('please fill this Details'),
-      ifscCode: Yup.string().required('please fill this Details'),
+   
+      contactName: Yup.string().required("Contact Name is required"),
+      bankName: Yup.string().required("Bank Name is required"),
+      accountNumber: Yup.string().required("Account Number is required"),
+      ifscCode: Yup.string().required("IFSC Code is required"),
       upiId: Yup.string(),
       address: Yup.string(),
     }),
-    onSubmit: (values) => {
-      addNewCreditCustomers(values);
+    onSubmit: async (values) => {
+        try{
+                setIsLoading(true);
+              await addNewCreditCustomers(values);
+              formik.resetForm();
+                    onClose();
+      
+       } catch (error) {
+      console.error("Error saving customer:", error);
+      // Optionally show error to user
+    } finally {
+      setIsLoading(false);
+
+    }
+   
     },
   });
 
@@ -60,44 +76,83 @@ const AddCreditCustomerModal: React.FC<Props> = ({ isOpen, onClose }) => {
       <form onSubmit={formik.handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-                { label: "Contact Name", name: "contactName" },
-            { label: "Company Name",placeholder:"fill customer Is Company", name: "companyName" },
+            { label: "Contact Name", name: "contactName" },
+            { label: "Company Name", placeholder: "fill customer Is Company", name: "companyName" },
             { label: "Email", name: "email", type: "email" },
             { label: "Phone Number", name: "phoneNumber" },
-            { label: "GST Number",placeholder:"fill customer Is Company", name: "gstNumber" },
+            { label: "GST Number", placeholder: "fill customer Is Company", name: "gstNumber" },
             { label: "Place", name: "place" },
-            { label: "Opening Balance",placeholder:"If any OpeningBlance", name: "openingBalance" },
-            { label: " opening Balance Dr/Cr", name: "drCr" },
-        
+            { label: "Opening Balance", placeholder: "If any OpeningBlance", name: "openingBalance" },
+            { label: "Opening Balance Dr/Cr", name: "drCr" },
             { label: "Bank Name", name: "bankName" },
             { label: "Account Number", name: "accountNumber" },
             { label: "IFSC Code", name: "ifscCode" },
-            { label: "UPI ID",placeholder:"optional...", name: "upiId" },
-          ].map(({ label, name,placeholder, type = "text" }) => (
-            <div key={name}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-              <input
-                type={type}
-                name={name}
-                placeholder={placeholder}
-                value={(formik.values as any)[name]}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="w-full border px-3 py-2 rounded-md text-sm"
-              />
-              {formik.touched[name as keyof typeof formik.touched] &&
-                formik.errors[name as keyof typeof formik.errors] && (
-                  <p className="text-sm text-red-500">
-                    {formik.errors[name as keyof typeof formik.errors]}
-                  </p>
-                )}
-            </div>
-          ))}
+            { label: "UPI ID", placeholder: "optional...", name: "upiId" },
+          ].map(({ label, name, placeholder, type = "text" }) => {
+            if (name === "drCr") {
+              return (
+                <div key={name}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {label}
+                  </label>
+                  <div className="flex gap-4 mt-1">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="drCr"
+                        value="Dr"
+                        checked={formik.values.drCr === "Dr"}
+                        onChange={formik.handleChange}
+                      />
+                      Dr
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="drCr"
+                        value="Cr"
+                        checked={formik.values.drCr === "Cr"}
+                        onChange={formik.handleChange}
+                      />
+                      Cr
+                    </label>
+                  </div>
+                  {formik.touched.drCr && formik.errors.drCr && (
+                    <p className="text-sm text-red-500">{formik.errors.drCr}</p>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <div key={name}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {label}
+                </label>
+                <input
+                  type={type}
+                  name={name}
+                  placeholder={placeholder}
+                  value={(formik.values as any)[name]}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full border px-3 py-2 rounded-md text-sm"
+                />
+                {formik.touched[name as keyof typeof formik.touched] &&
+                  formik.errors[name as keyof typeof formik.errors] && (
+                    <p className="text-sm text-red-500">
+                      {formik.errors[name as keyof typeof formik.errors]}
+                    </p>
+                  )}
+              </div>
+            );
+          })}
 
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
             <textarea
-              name="address"placeholder="optional..."
+              name="address"
+              placeholder="optional..."
               value={formik.values.address}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -111,11 +166,11 @@ const AddCreditCustomerModal: React.FC<Props> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="mt-6 text-right">
-          <button  type="button" onClick={onClose} className="mr-4 hover:bg-gray-200 p-2 rounded-lg">
+          <button type="button" onClick={onClose} className="mr-4 hover:bg-gray-200 p-2 rounded-lg">
             Cancel
-              </button>
-          <button  type="submit" className="bg-blue-700 text-white p-2 rounded-lg border hover:bg-blue-500" >
-            Save Customer
+          </button>
+          <button disabled={isLoading} type="submit" className={isLoading?"opacity-50 cursor-not-allowed":"bg-blue-700 text-white p-2 rounded-lg border hover:bg-blue-500"}>
+             {isLoading ? "Saving..." : "Save Customer"}
           </button>
         </div>
       </form>
