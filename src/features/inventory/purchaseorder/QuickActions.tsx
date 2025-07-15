@@ -1,46 +1,50 @@
 import React from "react";
-import { RotateCcw, PackagePlus, CalendarClock } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import type { PurchaseOrder } from "./PurchaseOrderTypes";
 
-const QuickActions: React.FC = () => {
+type Props = {
+  purchaseOrder: PurchaseOrder | null;
+};
+
+const QuickActions: React.FC<Props> = ({ purchaseOrder }) => {
   const navigate = useNavigate();
+
+  const handleAddToPurchase = () => {
+    if (!purchaseOrder) return;
+
+    navigate("/home/inventory/purchase/new", {
+      state: {
+        supplierId: purchaseOrder.supplier.id,
+        ledgerId: purchaseOrder.supplier.ledgerId,
+
+        supplier: purchaseOrder.supplier.name,
+        date: purchaseOrder.orderDate,
+        purchaseOrderId: purchaseOrder.purchaseOrderId,
+        items: purchaseOrder.items.map((item) => ({
+          product: item.productName,
+          productId: item.productId,
+          quantity: item.quantity,
+          unitCost: item.ratePerPiece,
+          gstRate: item.gstRate,
+          receivedQuantity: item.receivedQuantity,
+        })),
+      },
+    });
+  };
+
   return (
-    <div className=" p-6 rounded-xl shadow border bg-white mt-6">
+    <div className="p-6 rounded-xl shadow border bg-white mt-6">
       <h2 className="text-lg font-semibold mb-4">⚡ Quick Actions</h2>
 
       <div className="space-y-3">
         <button
-          className="w-full flex items-center gap-2 px-4 py-2 text-sm border rounded-md hover:bg-gray-100 transition"
-          onClick={() =>
-            navigate("/home/inventory/purchase/new", {
-              state: {
-                supplier: "Samsung",
-                date: "2025-07-01",
-                items: [
-                  { product: "Galaxy S24", quantity: 10, unitCost: 25000 },
-                  { product: "TV 55in", quantity: 2, unitCost: 45000 },
-                ],
-              },
-            })
-          }
+          className="w-full flex items-center gap-2 px-4 py-2 text-sm border rounded-md hover:bg-gray-100 transition disabled:opacity-50"
+          onClick={handleAddToPurchase}
+          disabled={!purchaseOrder}
         >
           <RotateCcw size={16} />
           Add To Purchase
-        </button>
-        <button
-          className="w-full flex items-center gap-2 px-4 py-2 text-sm border rounded-md hover:bg-gray-100 transition"
-          onClick={() => alert("Return Created")}
-        >
-          <RotateCcw size={16} />
-          Create Return
-        </button>
-
-        <button
-          className="w-full flex items-center gap-2 px-4 py-2 text-sm border rounded-md hover:bg-gray-100 transition"
-          onClick={() => alert("New Purchase")}
-        >
-          <PackagePlus size={16} />
-          New Purchase
         </button>
       </div>
     </div>

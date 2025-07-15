@@ -1,50 +1,18 @@
 import React from "react";
+import type { OrderItem } from "./PurchaseOrderTypes";
 
-type OrderItem = {
-  name: string;
-  model: string;
-  description: string;
-  batch: string;
-  ordered: number;
-  received: number;
-  unitCost: number;
-  tax: number;
-  total: number;
+type Props = {
+  items: OrderItem[];
 };
 
-const orderItems: OrderItem[] = [
-  {
-    name: "Samsung Galaxy M13",
-    model: "SM-M13-BLK",
-    description: "128GB, Black Color",
-    batch: "SG240510",
-    ordered: 10,
-    received: 10,
-    unitCost: 9500,
-    tax: 17100,
-    total: 95000,
-  },
-  {
-    name: "Samsung Galaxy Charger",
-    model: "SM-CHG-25W",
-    description: "25W Fast Charger",
-    batch: "CH240510",
-    ordered: 15,
-    received: 15,
-    unitCost: 1200,
-    tax: 3240,
-    total: 18000,
-  },
-];
-
-const OrderItems: React.FC = () => {
-  const subtotal = orderItems.reduce((acc, item) => acc + item.total, 0);
-  const totalTax = orderItems.reduce((acc, item) => acc + item.tax, 0);
+const OrderItems: React.FC<Props> = ({ items }) => {
+  const subtotal = items?.reduce((acc, item) => acc + item.totalAmount, 0);
+  const totalTax = items?.reduce((acc, item) => acc + item.taxAmount, 0);
 
   return (
-    <div className=" p-6 rounded-xl shadow border bg-white mt-6">
+    <div className="p-6 rounded-xl shadow border bg-white mt-6">
       <h2 className="text-lg font-semibold mb-4">
-        📦 Order Items ({orderItems.length})
+        📦 Order Items ({items?.length})
       </h2>
 
       <div className="overflow-x-auto">
@@ -60,27 +28,23 @@ const OrderItems: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {orderItems.map((item, index) => (
+            {items?.map((item, index) => (
               <tr key={index} className="border-t">
                 <td className="p-3 border">
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-gray-600">
-                    {item.model}, {item.description}
-                  </p>
-                  <p className="text-xs text-gray-500">Batch: {item.batch}</p>
+                  <p className="font-medium">{item?.productName}</p>
                 </td>
-                <td className="p-3 text-center border">{item.ordered}</td>
+                <td className="p-3 text-center border">{item?.quantity}</td>
                 <td className="p-3 text-center border text-green-700 font-medium">
-                  {item.received}
+                  {item?.receivedQuantity}
                 </td>
                 <td className="p-3 text-right border">
-                  ₹{item.unitCost.toLocaleString()}
+                  ₹{item?.ratePerPiece.toLocaleString()}
                 </td>
                 <td className="p-3 text-right border">
-                  ₹{item.tax.toLocaleString()}
+                  ₹{item?.taxAmount.toLocaleString()}
                 </td>
                 <td className="p-3 text-right border font-semibold">
-                  ₹{item.total.toLocaleString()}
+                  ₹{item?.totalAmount.toLocaleString()}
                 </td>
               </tr>
             ))}
@@ -91,12 +55,10 @@ const OrderItems: React.FC = () => {
       <div className="flex justify-end mt-4 text-sm">
         <div className="space-y-1 text-right">
           <p>
-            <span className="font-medium">Subtotal:</span> ₹
-            {subtotal.toLocaleString()}
+            <span className="font-medium">Subtotal:</span> ₹{subtotal}
           </p>
           <p>
-            <span className="font-medium">Total Tax:</span> ₹
-            {totalTax.toLocaleString()}
+            <span className="font-medium">Total Tax:</span> ₹{totalTax}
           </p>
         </div>
       </div>
