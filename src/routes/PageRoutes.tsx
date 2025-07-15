@@ -69,7 +69,7 @@ const PageRoutes: React.FC = () => {
       } catch (err) {
         console.error("User not authenticated");
         dispatch(logOut());
-        navigate("/auth/login");
+        // navigate("/auth/login");
       }
     };
 
@@ -110,7 +110,7 @@ const PageRoutes: React.FC = () => {
             <Route path="purchase-orders" element={<PurchaseOrder />}></Route>
             <Route path="purchase-order">
               <Route path="new" element={<NewPurchaseOrder />}></Route>
-              <Route path="invoicenumber" element={<PurchaseOrderDetail />} />
+              <Route path=":id" element={<PurchaseOrderDetail />} />
             </Route>
 
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
@@ -121,7 +121,7 @@ const PageRoutes: React.FC = () => {
             <Route path="purchases" element={<Purchase />}></Route>
             <Route path="purchase">
               <Route path="new" element={<NewPurchase />}></Route>
-              <Route path="invoicenumber" element={<PurchaseDetail />} />
+              <Route path=":id" element={<PurchaseDetail />} />
             </Route>
 
             <Route path="product">
@@ -168,13 +168,12 @@ const PageRoutes: React.FC = () => {
 
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
-            <Route path="pos" element={<Sales/>} />
+            <Route path="pos" element={<Sales />} />
             <Route path="poS">
-                      <Route path="new" element={<PointOfSale/>}/>
+              <Route path="new" element={<PointOfSale />} />
             </Route>
 
             <Route path="pos" element={<PointOfSale />} />
-
 
             <Route path="invoices" element={<InvoiceDetails />} />
 

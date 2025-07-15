@@ -159,7 +159,7 @@ const NewPurchaseOrder: React.FC = () => {
                 };
 
                 try {
-                  console.log(payload);
+                  console.log(payload, "purchase order payload");
 
                   await createPurchaseOrder(payload);
                   toast.success("Purchase order created!");
