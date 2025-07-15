@@ -1,81 +1,62 @@
 import React from "react";
 
 type PurchaseItem = {
-  name: string;
-  model: string;
-  description: string;
-  batch: string;
+  id: string;
+  productName: string;
+  ratePerPiece: number;
   quantity: number;
-  unitCost: number;
-  tax: number;
-  total: number;
+  taxAmount: number;
+  totalAmount: number;
+  cgst: number;
+  sgst: number;
+  igst: number;
+  ugst: number;
 };
 
-const purchaseItems: PurchaseItem[] = [
-  {
-    name: "Samsung Galaxy M13",
-    model: "SM-M13-BLK",
-    description: "128GB, Black Color",
-    batch: "SG240510",
-    quantity: 10,
-    unitCost: 9500,
-    tax: 17100,
-    total: 95000,
-  },
-  {
-    name: "Samsung Galaxy Charger",
-    model: "SM-CHG-25W",
-    description: "25W Fast Charger",
-    batch: "CH240510",
-    quantity: 15,
-    unitCost: 1200,
-    tax: 3240,
-    total: 18000,
-  },
-];
+type Props = {
+  items: PurchaseItem[];
+};
 
-const PurchaseItems: React.FC = () => {
-  const subtotal = purchaseItems.reduce((acc, item) => acc + item.total, 0);
-  const totalTax = purchaseItems.reduce((acc, item) => acc + item.tax, 0);
+const PurchaseItems: React.FC<Props> = ({ items }) => {
+  const subtotal = items.reduce((acc, item) => acc + item.totalAmount, 0);
+  const totalTax = items.reduce((acc, item) => acc + item.taxAmount, 0);
 
   return (
     <div className="p-6 rounded-xl shadow border bg-white mt-6">
       <h2 className="text-lg font-semibold mb-4">
-        🛒 Purchase Items ({purchaseItems.length})
+        🛒 Purchase Items ({items.length})
       </h2>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left border">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-3 font-medium border">Product Details</th>
+              <th className="p-3 font-medium border">Product Name</th>
               <th className="p-3 font-medium border text-center">Quantity</th>
-              <th className="p-3 font-medium border text-right">Unit Cost</th>
+              <th className="p-3 font-medium border text-right">Rate</th>
+              <th className="p-3 font-medium border text-right">CGST</th>
+              <th className="p-3 font-medium border text-right">SGST</th>
               <th className="p-3 font-medium border text-right">Tax</th>
               <th className="p-3 font-medium border text-right">Total</th>
             </tr>
           </thead>
           <tbody>
-            {purchaseItems.map((item, index) => (
-              <tr key={index} className="border-t">
-                <td className="p-3 border">
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-gray-600">
-                    {item.model}, {item.description}
-                  </p>
-                  <p className="text-xs text-gray-500">Batch: {item.batch}</p>
-                </td>
+            {items.map((item) => (
+              <tr key={item.id} className="border-t">
+                <td className="p-3 border font-medium">{item.productName}</td>
                 <td className="p-3 text-center border font-medium text-green-700">
                   {item.quantity}
                 </td>
                 <td className="p-3 text-right border">
-                  ₹{item.unitCost.toLocaleString()}
+                  ₹{item.ratePerPiece.toLocaleString()}
                 </td>
+                <td className="p-3 text-right border">{item.cgst}</td>
+                <td className="p-3 text-right border">{item.sgst}</td>
                 <td className="p-3 text-right border">
-                  ₹{item.tax.toLocaleString()}
+                  ₹{item.taxAmount.toLocaleString()}
                 </td>
                 <td className="p-3 text-right border font-semibold">
-                  ₹{item.total.toLocaleString()}
+                  ₹{item.totalAmount.toLocaleString()}
                 </td>
               </tr>
             ))}

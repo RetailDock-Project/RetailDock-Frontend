@@ -11,10 +11,23 @@ import QuickActions from "../purchaseorder/QuickActions";
 import AuditTrail from "../purchaseorder/AuditTrail";
 import PurchaseItems from "./PurchaseItems";
 import PurchaseQuickActions from "./PurchaseQuickActions";
+import { useQuery } from "@tanstack/react-query";
+import { getPurchaseById } from "../../../services/api/inventoryapi/inventoryApi";
 
 const PurchaseDetail: React.FC = () => {
-  const { purchaseId } = useParams(); // if route uses param like /purchase/:purchaseId
+  const { id } = useParams(); // if route uses param like /purchase/:purchaseId
   const navigate = useNavigate();
+
+  const {
+    data: purchase,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["purchase", id],
+    queryFn: () => getPurchaseById(id),
+    enabled: !!id, // ensures query only runs if id exists
+    select: (data) => data.data, // optional: if your API wraps the response in { data }
+  });
 
   return (
     <div className="p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
@@ -24,7 +37,7 @@ const PurchaseDetail: React.FC = () => {
         subtitle="View finalized purchase details and items"
         actions={
           <>
-            <Button
+            {/* <Button
               size="sm"
               variant="primary"
               className="flex items-center gap-2"
@@ -32,39 +45,37 @@ const PurchaseDetail: React.FC = () => {
             >
               <FilePlus size={16} />
               Print
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
             >
               <FileDown size={16} />
               Download Invoice
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
-              onClick={() =>
-                navigate(`/home/inventory/purchases/edit/${purchaseId}`)
-              }
+              onClick={() => navigate(`/home/inventory/purchases/edit/${id}`)}
             >
               <AiOutlineEdit size={16} />
               Edit
-            </Button>
+            </Button> */}
           </>
         }
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-100 min-h-screen">
         <div className="md:col-span-2">
-          <PurchaseDetailInfo />
-          <PurchaseItems />
+          <PurchaseDetailInfo purchase={purchase} />
+          <PurchaseItems items={purchase?.items || []} />
         </div>
         <div>
-          <SupplierDetail supplier={null} />
-          <PurchaseQuickActions />
-          <AuditTrail />
+          <SupplierDetail supplier={purchase?.supplierDetails || null} />
+          {/* <PurchaseQuickActions /> */}
+          {/* <AuditTrail /> */}
         </div>
       </div>
     </div>

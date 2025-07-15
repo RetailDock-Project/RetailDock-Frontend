@@ -44,3 +44,12 @@ export const getAllGroupForLedgerCreation = async () => {
   console.log(response.data.data);
   return response.data.data;
 };
+
+export const getInputGstLedger = async () => {
+  const response = await accountsClient.get(
+    "/Ledger/get/ledgers/ByName?Name=input%20gst"
+  );
+  console.log(response.data, "get ledgerrrr");
+
+  return response.data;
+};

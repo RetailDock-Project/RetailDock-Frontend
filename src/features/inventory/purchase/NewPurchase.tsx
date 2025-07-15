@@ -15,6 +15,9 @@ import type {
 } from "./PurchaseTypes";
 import toast from "react-hot-toast";
 import type { ProductFilterParams } from "../../../hooks/useProducts";
+import { useQuery } from "@tanstack/react-query";
+import { getInventoryTransactionLedgerId } from "../../../services/api/cashierApi/cashierApi";
+import { getInputGstLedger } from "../../../services/api/AccountsApi/accountsApi";
 
 const NewPurchase: React.FC = () => {
   const navigate = useNavigate();
@@ -29,6 +32,20 @@ const NewPurchase: React.FC = () => {
     supplierId: purchaseState?.supplierId || "",
     date: purchaseState?.date || null,
   });
+
+  const { data: inventoryLedgerId } = useQuery({
+    queryKey: ["inventoryLedgerId"],
+    queryFn: getInventoryTransactionLedgerId,
+    select: (data) => data.data.id,
+  });
+
+  const { data: inputGstLedgerId } = useQuery({
+    queryKey: ["inputGstLedgerId"],
+    queryFn: getInputGstLedger,
+    select: (data) => data.data,
+  });
+
+  console.warn(inventoryLedgerId, inputGstLedgerId, "ledger idsssssss");
 
   const [notes, setNotes] = useState<string | null>(null);
   const [supplierInvoiceNumber, setSupplierInvoiceNumber] =
@@ -137,12 +154,24 @@ const NewPurchase: React.FC = () => {
       voucher: {
         voucherDate: updatedVoucher.voucherDate,
         remarks: updatedVoucher.remarks || null,
-        transactionsDebit: updatedVoucher.transactionsDebit.map(
-          (t: VoucherTransaction) => ({
-            ledgerId: t.ledgerId,
-            narration: t.narration || null,
-          })
-        ),
+        transactionsDebit: [
+          ...(inventoryLedgerId
+            ? [
+                {
+                  ledgerId: inventoryLedgerId,
+                  narration: narration || "Inventory Purchase",
+                },
+              ]
+            : []),
+          ...(inputGstLedgerId
+            ? [
+                {
+                  ledgerId: inputGstLedgerId,
+                  narration: narration || "Input GST",
+                },
+              ]
+            : []),
+        ],
         transactionsCredit: updatedVoucher.transactionsCredit.map(
           (t: VoucherTransaction) => ({
             ledgerId: t.ledgerId,
@@ -155,7 +184,7 @@ const NewPurchase: React.FC = () => {
     try {
       console.log(payload);
 
-      // await createPurchase(payload);
+      await createPurchase(payload);
       alert("Purchase saved successfully!");
       // navigate("/home/inventory/purchases");
     } catch (error) {

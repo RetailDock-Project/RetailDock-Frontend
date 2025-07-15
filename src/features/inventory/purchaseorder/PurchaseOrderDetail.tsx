@@ -12,7 +12,11 @@ import QuickActions from "./QuickActions";
 import AuditTrail from "./AuditTrail";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
 import { useQuery } from "@tanstack/react-query";
-import { getPurchaseOrderById } from "../../../services/api/inventoryapi/inventoryApi";
+import {
+  exportPurchaseOrderPdf,
+  getPurchaseOrderById,
+} from "../../../services/api/inventoryapi/inventoryApi";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
 
 const PurchaseOrderDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -30,6 +34,11 @@ const PurchaseOrderDetail: React.FC = () => {
     select: (data) => data.data,
     enabled: !!id,
   });
+
+  const handleExport = () => {
+    downloadExcelFile(() => exportPurchaseOrderPdf(id), "PurchaseOrder.pdf");
+  };
+
   return (
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader
@@ -51,18 +60,19 @@ const PurchaseOrderDetail: React.FC = () => {
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
+              onClick={handleExport}
             >
               <FileDown size={16} />
               Download PDF
             </Button>
-            <Button
+            {/* <Button
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
             >
               <AiOutlineEdit size={16} />
               Edit
-            </Button>
+            </Button> */}
           </>
         }
       />

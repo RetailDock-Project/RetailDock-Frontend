@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
       console.log(userData);
       dispatch(login());
       dispatch(setUser(userData));
-      navigate("/home");
+      navigate("/home/admin/manage-users");
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Login failed");
     } finally {
@@ -126,14 +126,14 @@ const LoginPage: React.FC = () => {
 
       {/* Submit */}
       <button
-      disabled={isLoading}
+        disabled={isLoading}
         type="submit"
         className={`w-full bg-blue-900 ${
-        isLoading?"opacity-50 cursor-not-allowed": "bg-blue-900"
+          isLoading ? "opacity-50 cursor-not-allowed" : "bg-blue-900"
         } hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center text-white`}
         onClick={handleSubmit(onSubmit)}
       >
-        {isLoading?"Login ...":"Login"}
+        {isLoading ? "Login ..." : "Login"}
       </button>
 
       {/* Register Link */}

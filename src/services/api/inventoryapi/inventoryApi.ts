@@ -1,6 +1,7 @@
 import type { ProductFormData } from "../../../features/inventory/product/NewProduct";
 import type { PurchaseRequest } from "../../../features/inventory/purchase/PurchaseTypes";
 import type { SupplierDto } from "../../../features/inventory/supplier/SupplierForm";
+import accountsClient from "../AccountsApi/accountsClient";
 import inventoryClient from "./inventoryClient";
 
 interface UnitOfMeasure {
@@ -263,6 +264,44 @@ export const getPurchaseOrderById = async (id: string) => {
 };
 
 export const createPurchase = async (data: PurchaseRequest) => {
-  const response = await inventoryClient.post("/PurchaseOrder/Create", data);
+  const response = await inventoryClient.post("/Purchase/create", data);
+  console.log(response.data);
+
   return response.data;
+};
+
+export interface GetPurchasesParams {
+  searchTerm?: string;
+  fromDate?: string; // ISO date string like '2025-07-15T00:00:00Z'
+  toDate?: string;
+}
+
+export const getPurchasesWithFilter = async (params: GetPurchasesParams) => {
+  const query = new URLSearchParams();
+
+  if (params.searchTerm) query.append("searchTerm", params.searchTerm);
+  if (params.fromDate) query.append("fromDate", params.fromDate);
+  if (params.toDate) query.append("toDate", params.toDate);
+
+  const response = await inventoryClient.get(
+    `/Purchase/purchases-filter?${query.toString()}`
+  );
+  return response.data;
+};
+
+export const exportPurchaseExcel = async () => {
+  return await inventoryClient.get("/Purchase/organizationId/export", {
+    responseType: "blob",
+  });
+};
+
+export const getPurchaseById = async (id: any) => {
+  const response = await inventoryClient.get(`/Purchase/get/${id}`);
+  return response.data;
+};
+
+export const exportPurchaseOrderPdf = async (id: any) => {
+  return await inventoryClient.get(`/PurchaseOrder/${id}/export-pdf`, {
+    responseType: "blob",
+  });
 };
