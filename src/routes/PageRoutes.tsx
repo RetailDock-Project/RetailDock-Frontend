@@ -165,6 +165,7 @@ const PageRoutes: React.FC = () => {
             <Route path="add-ledger" element={<AddLedger />}></Route>
           </Route>
 
+
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
             <Route path="pos" element={<Sales />} />
@@ -177,7 +178,7 @@ const PageRoutes: React.FC = () => {
             <Route path="invoices" element={<InvoiceDetails />} />
 
             <Route path="invoice">
-              <Route path="details" element={<SaleInformation />} />
+              <Route path="details/:invoiceNumber" element={<SaleInformation />} />
             </Route>
             <Route path="customers" element={<DebtorDetails />} />
             <Route path="sales-returns" element={<SalesReturn />} />

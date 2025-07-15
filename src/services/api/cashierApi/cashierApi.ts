@@ -59,9 +59,14 @@ export const getCustomerByMobile= async (data:string) => {
   console.log(response.data.data,"log from customer fetch by mobile")
   return response.data;
 };
-export const getSaleByInvoiceNumber= async (data:string) => {
+export const getSaleByInvoiceNumber= async (data:string| undefined) => {
   const response = await cashierClient.get(`/Sale/GetsaleByInvoice?invoiceNum=${data}`);
   console.log(response.data.data,"log from get saleBy invoice")
+  return response.data;
+};
+export const getReturnedProductCount= async (saleId:string,productId:string) => {
+  const response = await cashierClient.get(`/SaleReturn/GetreturnedProductCount?saleId=${saleId}&productId=${productId}`);
+
   return response.data;
 };
 
@@ -92,3 +97,42 @@ export const addNewCreditCustomers= async (formData:DebtorFormData) => {
  toast.success(response.data.message);
   return response.data;
 };
+
+
+export const getAllSaleInvoices = async (
+  fullData: boolean | null,
+  skip: number | null,
+  take: number | null
+) => {
+  const params = new URLSearchParams();
+
+  if (fullData !== null) params.append("isFullData", fullData.toString());
+  if (skip !== null) params.append("skip", skip.toString());
+  if (take !== null) params.append("take", take.toString());
+
+  const response = await cashierClient.get(`/Invoice/GetAllSaleInoices?${params}`);
+  return response;
+};
+
+
+
+export const getAllSaleReturnInvoices = async (
+  fullData: boolean | null,
+  skip: number | null,
+  take: number | null
+) => {
+  const params = new URLSearchParams();
+
+  if (fullData !== null) params.append("isFullData", fullData.toString());
+  if (skip !== null) params.append("skip", skip.toString());
+  if (take !== null) params.append("take", take.toString());
+
+  const response = await cashierClient.get(`/Invoice/getallSaleReturnInvoice?${params}`);
+  return response;
+};
+
+export const getSaleInvoiceDetails=async(invoice:string|undefined)=>{
+  const response= await cashierClient.get(`/Invoice/getSaleInvoiceNumber?invoiceNum=${invoice}`);
+  console.log(response.data.data,"getSaleInvoiceDetails");
+  return response.data;
+}

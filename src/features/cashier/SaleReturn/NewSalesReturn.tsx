@@ -12,7 +12,7 @@ import SalesReturnSummary from "./SalesReturnSummary";
 
 import SalesReturnInformation from "./SalesReturnInformation";
 
-import { addNewSalesReturn, getSaleByInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
+import { addNewSalesReturn, getReturnedProductCount, getSaleByInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
 import SalesReturnLedger from "./SalesReturnLedger";
 import ProceedToReturn from "./ProceedToReturn";
 
@@ -25,7 +25,9 @@ type SaleItem = {
   quantity: number;
   unitName:string;
   unitPrice:number;
+  taxRate:number;
   returnQuantity: number;
+  alreadyReturnedQuantity: number;
   reason: string;
   selected: boolean;
   [key: string]: any; // allow other props
@@ -38,6 +40,8 @@ const NewSalesReturn: React.FC = () => {
    const [returnCondition,setReturnCondition]=useState("Good");
     const [returnDate, setReturnDate] = useState<Date| null>(new Date());
      const [returnReason, setReturnReason] = useState("");
+     const [returnedQuantities, setReturnedQuantities] = useState<Record<string, number>>({});
+
   const [items, setItems] = useState<SaleItem[]>([]);
 
 
@@ -65,7 +69,38 @@ const totalValue = selectedItems.reduce(
   (sum, item) => sum + item.returnQuantity * item.unitPrice,
   0
 );
+const taxAmount = selectedItems.reduce(
+  (sum, item) => sum + (item.returnQuantity * item.taxRate/100),
+  0
+);
 
+
+
+
+
+useEffect(() => {
+  const fetchReturnedQuantities = async () => {
+    if (!selectedSale?.saleId || !selectedSale?.saleItems) return;
+
+    const result: Record<string, number> = {};
+
+    await Promise.all(
+      selectedSale.saleItems.map(async (item: any) => {
+        try {
+          const response = await getReturnedProductCount(selectedSale.saleId, item.productId);
+          result[item.productId] = response?.data?? 0; 
+        } catch (err) {
+          console.error(err,"Error fetching returned count for");
+          result[item.productId] = 0;
+        }
+      })
+    );
+
+    setReturnedQuantities(result);
+  };
+
+  fetchReturnedQuantities();
+}, [selectedSale]);
 
 
 useEffect(() => {
@@ -73,13 +108,14 @@ useEffect(() => {
     const extendedItems = selectedSale?.saleItems.map((item: any) => ({
       ...item,
       selected: false,
+      alreadyReturnedQuantity:returnedQuantities[item.productId] || 0,
       returnQuantity: 0,
       reason: "",
 
     }));
     setItems(extendedItems);
   }
-}, [selectedSale]);
+}, [selectedSale,returnedQuantities]);
 
 
     useEffect(()=>{
@@ -137,7 +173,7 @@ const handleSelectAllItems = () => {
   const updated = items.map(item => ({
     ...item,
     selected: !allSelected, 
-    returnQuantity: !allSelected ? item.quantity : 0, 
+    returnQuantity: !allSelected ? (item.quantity - item.alreadyReturnedQuantity) : 0, 
   }));
 
   setItems(updated);
@@ -255,7 +291,7 @@ await addNewSalesReturn(payload);
 
   setInventoryLedgerId={setInventoryLedgerId}
 />
-          <SalesReturnSummary isLoading={isLoading} onClick={addSalesReturn} itemCount={itemCount} totalQuantity={totalQuantity} totalValue={totalValue} />
+          <SalesReturnSummary isLoading={isLoading} onClick={addSalesReturn} itemCount={itemCount} totalQuantity={totalQuantity} totalValue={totalValue} taxAmount={taxAmount}/>
         
         
         </div>
