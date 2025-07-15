@@ -12,7 +12,7 @@ function App() {
     <>
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
-          <Toaster position="bottom-right" reverseOrder={false} />
+          <Toaster position="top-center" reverseOrder={false} />
           <PageRoutes />
         </QueryClientProvider>
       </Provider>
