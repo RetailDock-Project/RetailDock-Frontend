@@ -38,7 +38,8 @@ export const SelectItemsToSaleReturn: React.FC<selectedItemsToSRProps> = ({saleI
           <thead className="bg-gray-50">
             <tr>
               <th className="p-2 text-left">Product</th>
-              <th className="p-2 text-center">Available</th>
+              <th className="p-2 text-center">Sold Item</th>
+              <th className="p-2 text-center">Already Returned</th>
               <th className="p-2 text-center">Return Qty</th>
               <th className="p-2 text-left">Reason</th>
               
@@ -67,6 +68,8 @@ export const SelectItemsToSaleReturn: React.FC<selectedItemsToSRProps> = ({saleI
                 </td>
                 <td className="p-2 text-center">    
                    <p className="text-xs text-gray-500">{item.quantity}</p></td>
+                <td className="p-2 text-center">    
+                   <p className="text-xs text-gray-500">{item.alreadyReturnedQuantity}</p></td>
                 <td className="p-2 text-center">
                   <input
                     type="number"
@@ -74,7 +77,7 @@ export const SelectItemsToSaleReturn: React.FC<selectedItemsToSRProps> = ({saleI
                  disabled={!item.selected}
                     className="w-16 text-center border rounded px-2 py-1"
                     min={0}
-                    max={item.quantity}
+                    max={item.quantity-item.alreadyReturnedQuantity}
                     onChange={(e) => handleChangeQuantity(item.productId,Number(e.target.value))}
                     
                    

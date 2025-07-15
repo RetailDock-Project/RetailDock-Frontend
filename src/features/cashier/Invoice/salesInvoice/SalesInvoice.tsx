@@ -1,6 +1,7 @@
 import { Download, Eye, Printer } from 'lucide-react';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { getAllSaleInvoices } from '../../../../services/api/cashierApi/cashierApi';
 type Invoice = {
   id: string;
   date: string;
@@ -9,6 +10,17 @@ type Invoice = {
   payment: string;
  
 };
+type SalesInvoiceProps={
+  fullData :boolean | null;
+  setFullData:React.Dispatch<React.SetStateAction<boolean | null >>;
+
+  setSkipPage: React.Dispatch<React.SetStateAction<number | null >>;
+  skipPage:number| null;
+
+  takePage:number | null;
+  setTakePage:React.Dispatch<React.SetStateAction<number | null >>;
+
+}
 
 const invoices: Invoice[] = [
   {
@@ -44,7 +56,23 @@ const invoices: Invoice[] = [
   
   },
 ];
-const SalesInvoice:React.FC = () => {
+
+const SalesInvoice:React.FC<SalesInvoiceProps> = ( {fullData,setFullData,skipPage,setSkipPage,takePage,setTakePage}) => 
+  {
+const [saleInvoice,setSaleInvoice]=useState<any>();
+
+  useEffect(() => {
+  const fetchAllSaleInvoice = async () => {
+    try {
+      const response = await getAllSaleInvoices(fullData, skipPage , takePage);
+      setSaleInvoice(response.data.data);
+    } catch (error) {
+      console.log(error, 'error from getall saleInvoice');
+    }
+  };
+
+  fetchAllSaleInvoice();
+}, [fullData, skipPage, takePage]);
 
   const navigate=useNavigate()
   return (
@@ -56,28 +84,30 @@ const SalesInvoice:React.FC = () => {
               <th className="px-4 py-6">Date</th>
               <th className="px-4 py-6">Customer</th>
               <th className="px-4 py-6">Total</th>
-              <th className="px-4 py-6">Payment</th>
+              <th className="px-4 py-6">pendingAmount</th>
               <th className="px-4 py-6">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {invoices.map((inv, idx) => (
-              <tr key={idx} className="border-t">
-                <td className="px-4 py-4 font-semibold text-blue-700">{inv.id}</td>
-                <td className="px-4 py-4">{inv.date}</td>
-                <td className="px-4 py-4">{inv.customer}</td>
-                <td className="px-4 py-4">{inv.total}</td>
-                <td className="px-4 py-4">{inv.payment}</td>
-               
-                <td className="px-4 py-4 flex gap-4 items-center text-gray-600">
-                  <button onClick={()=>navigate("/home/cashier/invoice/details")}>    <Eye className="cursor-pointer w-5 h-5 hover:text-black" /></button>
-              
-                  <Download className="cursor-pointer w-5 h-5 hover:text-black" />
-                  <Printer className="cursor-pointer w-5 h-5 hover:text-black" />
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {saleInvoice?.map((inv: any, idx: number) => (
+    <tr key={idx} className="border-t">
+      <td className="px-4 py-4 font-semibold text-blue-700">{inv.invoiceNumber}</td>
+      <td className="px-4 py-4">{new Date(inv.saleDate).toLocaleDateString()}</td>
+      <td className="px-4 py-4">{inv.customerName}</td>
+      <td className="px-4 py-4">₹{inv.totalAmount}</td>
+      <td className="px-4 py-4">{inv.pendingAmount?? "-"}</td>
+
+      <td className="px-4 py-4 flex gap-4 items-center text-gray-600">
+        <button onClick={() => navigate(`/home/cashier/invoice/details/${inv.invoiceNumber}`)}>
+          <Eye className="cursor-pointer w-5 h-5 hover:text-black" />
+        </button>
+        <Download className="cursor-pointer w-5 h-5 hover:text-black" />
+        <Printer className="cursor-pointer w-5 h-5 hover:text-black" />
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
   )

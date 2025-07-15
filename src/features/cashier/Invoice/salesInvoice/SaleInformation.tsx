@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FilePlus, FileDown } from "lucide-react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,18 +11,36 @@ import CustomerDetails from "./CustomerDetails";
 import SalesQuickActions from "./SalesQuickActions";
 import SaleItems from "./SaleItems";
 import SaleDetailInfo from "./SaleDetailsInfo";
+import { getAllSaleInvoices, getSaleByInvoiceNumber, getSaleInvoiceDetails } from "../../../../services/api/cashierApi/cashierApi";
+
 
 
 const SaleInformation:React.FC = () => {
-  const { purchaseId } = useParams(); // if route uses param like /purchase/:purchaseId
+  const [invoiceInfo,setSaleInfo]=useState<any>();
+  const { invoiceNumber } = useParams();
+  
   const navigate = useNavigate();
+  useEffect(()=>{
+
+   const fetchInvoiceByInvoiceNumber=async (invoiceNumber:string|undefined)=>{
+    try{
+const response=await getSaleInvoiceDetails(invoiceNumber);
+setSaleInfo(response.data);
+
+    }catch(error){
+      console.log(error,"error from get saleByInvoice")
+    }
+   }
+   fetchInvoiceByInvoiceNumber(invoiceNumber);
+  },[invoiceNumber])
 
   return (
+
     <div className="p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader
         backTo="/home/cashier/invoices"
-        title={`Purchase - PUR-2025-0042`}
-        subtitle="View finalized purchase details and items"
+        title={`Sale - ${invoiceNumber}`}
+        subtitle="View finalized Sale details and items"
         actions={
           <>
             <Button
@@ -47,7 +65,7 @@ const SaleInformation:React.FC = () => {
               variant="secondary"
               className="flex items-center gap-2"
               onClick={() =>
-                navigate(`/home/inventory/purchases/edit/${purchaseId}`)
+                navigate(`/home/inventory/purchases/edit/`)
               }
             >
               <AiOutlineEdit size={16} />
@@ -59,7 +77,7 @@ const SaleInformation:React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-100 min-h-screen">
         <div className="md:col-span-2">
-        <SaleDetailInfo/>
+        <SaleDetailInfo invoiceDetails={invoiceInfo}/>
           <SaleItems />
         </div>
         <div>

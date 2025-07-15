@@ -11,6 +11,10 @@ import { Button } from "../../../components/ui/reusable/Button";
 
 const InvoiceDetails: React.FC = () => {
   const [sales, setSales] = useState<boolean>(true);
+
+  const [fullData,setFullData]=useState<boolean| null>(false);
+  const [skipPage,SetSkipPage]=useState<number | null>(null);
+  const [takePage,setTakePage]=useState<number|null>(null);
   const navigate = useNavigate();
 
 
@@ -96,7 +100,7 @@ const InvoiceDetails: React.FC = () => {
 
         {/* Render Invoices */}
         <div className="px-4 pb-4">
-          {sales ? <SalesInvoice /> : <SalesReturnInvoice />}
+          {sales ? <SalesInvoice fullData={fullData} setFullData={setFullData} skipPage={skipPage} setSkipPage={SetSkipPage} takePage={takePage} setTakePage={setTakePage}/> : <SalesReturnInvoice fullData={fullData} setFullData={setFullData} skipPage={skipPage} setSkipPage={SetSkipPage} takePage={takePage} setTakePage={setTakePage}/>}
         </div>
       </div>
     </div>
