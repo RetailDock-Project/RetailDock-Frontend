@@ -14,3 +14,4 @@ export const useProducts = (filters: ProductFilterParams = {}) => {
     select: (data) => data.data,
   });
 };
+

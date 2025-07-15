@@ -126,13 +126,14 @@ const LoginPage: React.FC = () => {
 
       {/* Submit */}
       <button
+      disabled={isLoading}
         type="submit"
         className={`w-full bg-blue-900 ${
-          isLoading ? "bg-blue-300" : "bg-blue-900"
+        isLoading?"opacity-50 cursor-not-allowed": "bg-blue-900"
         } hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center text-white`}
         onClick={handleSubmit(onSubmit)}
       >
-        Login
+        {isLoading?"Login ...":"Login"}
       </button>
 
       {/* Register Link */}
