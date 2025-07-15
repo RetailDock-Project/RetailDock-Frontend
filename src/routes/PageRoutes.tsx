@@ -68,7 +68,7 @@ const PageRoutes: React.FC = () => {
       } catch (err) {
         console.error("User not authenticated");
         dispatch(logOut());
-        navigate("/auth/login");
+        // navigate("/auth/login");
       }
     };
 
@@ -109,7 +109,7 @@ const PageRoutes: React.FC = () => {
             <Route path="purchase-orders" element={<PurchaseOrder />}></Route>
             <Route path="purchase-order">
               <Route path="new" element={<NewPurchaseOrder />}></Route>
-              <Route path="invoicenumber" element={<PurchaseOrderDetail />} />
+              <Route path=":id" element={<PurchaseOrderDetail />} />
             </Route>
 
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>

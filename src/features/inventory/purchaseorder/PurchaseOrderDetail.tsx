@@ -11,10 +11,25 @@ import OrderItems from "./OrderItems";
 import QuickActions from "./QuickActions";
 import AuditTrail from "./AuditTrail";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
+import { useQuery } from "@tanstack/react-query";
+import { getPurchaseOrderById } from "../../../services/api/inventoryapi/inventoryApi";
 
 const PurchaseOrderDetail: React.FC = () => {
-  const { invoicenumber } = useParams();
   const navigate = useNavigate();
+
+  const { id } = useParams<{ id: string }>();
+
+  const {
+    data: order,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["purchaseOrder", id],
+    queryFn: () => getPurchaseOrderById(id!),
+    select: (data) => data.data,
+    enabled: !!id,
+  });
   return (
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader
@@ -53,13 +68,13 @@ const PurchaseOrderDetail: React.FC = () => {
       />
       <div className=" grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-100 min-h-screen">
         <div className="md:col-span-2">
-          <PurchaseOrderDetailInfo />
-          <OrderItems />
+          <PurchaseOrderDetailInfo data={order} />
+          <OrderItems items={order?.items} />
         </div>
         <div>
-          <SupplierDetail />
-          <QuickActions />
-          <AuditTrail />
+          <SupplierDetail supplier={order?.supplier} />
+          <QuickActions purchaseOrder={order} />
+          {/* <AuditTrail /> */}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import type { ProductFormData } from "../../../features/inventory/product/NewProduct";
+import type { PurchaseRequest } from "../../../features/inventory/purchase/PurchaseTypes";
 import type { SupplierDto } from "../../../features/inventory/supplier/SupplierForm";
 import inventoryClient from "./inventoryClient";
 
@@ -19,6 +20,13 @@ type ProductFilterParams = {
   categoryId?: number | null;
   stockStatus?: string | null;
 };
+
+interface PurchaseOrderFilters {
+  searchString?: string;
+  status?: string;
+  startDate?: string; // ISO format e.g. '2025-07-14T00:00:00'
+  endDate?: string; // ISO format e.g. '2025-07-14T23:59:59'
+}
 
 export type SupplierFilterParams = {
   search?: string | null;
@@ -235,5 +243,26 @@ export const getSupplierWithFilters = async (data: SupplierFilterParams) => {
 
 export const createPurchaseOrder = async (data: PurchaseOrderRequest) => {
   const response = await inventoryClient.post("/PurchaseOrder/Create", data); // Adjust endpoint
+  return response.data;
+};
+
+export const fetchFilteredPurchaseOrders = async (
+  filters: PurchaseOrderFilters
+) => {
+  const response = await inventoryClient.get("/PurchaseOrder/all/filters", {
+    params: filters,
+  });
+  console.log(response.data);
+
+  return response.data;
+};
+
+export const getPurchaseOrderById = async (id: string) => {
+  const response = await inventoryClient.get(`/PurchaseOrder/${id}`);
+  return response.data;
+};
+
+export const createPurchase = async (data: PurchaseRequest) => {
+  const response = await inventoryClient.post("/PurchaseOrder/Create", data);
   return response.data;
 };

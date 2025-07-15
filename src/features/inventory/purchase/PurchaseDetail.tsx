@@ -62,7 +62,7 @@ const PurchaseDetail: React.FC = () => {
           <PurchaseItems />
         </div>
         <div>
-          <SupplierDetail />
+          <SupplierDetail supplier={null} />
           <PurchaseQuickActions />
           <AuditTrail />
         </div>
