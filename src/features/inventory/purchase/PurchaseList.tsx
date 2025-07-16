@@ -3,14 +3,14 @@ import { Eye, FileDown } from "lucide-react";
 import { Button } from "../../../components/ui/reusable/Button";
 import { useNavigate } from "react-router-dom";
 
+// Match your actual data shape
 type Purchase = {
   id: string;
-  supplier: string;
-  invoiceNumber: string;
-  date: string;
-  items: number;
+  purchasedate: string;
   totalAmount: number;
-  status: string;
+  purchaseOrderNumber: string | null;
+  supplierInvoiceNumber: string;
+  purchaseInvoiceNumber: string;
 };
 
 type PurchaseListProps = {
@@ -21,7 +21,6 @@ const PurchaseList: React.FC<PurchaseListProps> = ({ purchases }) => {
   const navigate = useNavigate();
 
   const handleDownload = (purchaseId: string) => {
-    // Replace with your actual PDF generation or download logic
     alert(`Downloading PDF for ${purchaseId}`);
   };
 
@@ -33,16 +32,11 @@ const PurchaseList: React.FC<PurchaseListProps> = ({ purchases }) => {
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-left">
             <tr>
-              <th className="p-3 font-medium text-gray-600">Supplier</th>
               <th className="p-3 font-medium text-gray-600">Invoice No</th>
-              <th className="p-3 font-medium text-gray-600 text-center">
-                Items
-              </th>
+              <th className="p-3 font-medium text-gray-600">Purchase No</th>
+              <th className="p-3 font-medium text-gray-600">Date</th>
               <th className="p-3 font-medium text-gray-600 text-right">
                 Amount
-              </th>
-              <th className="p-3 font-medium text-gray-600 text-center">
-                Status
               </th>
               <th className="p-3 font-medium text-gray-600 text-right">
                 Actions
@@ -52,40 +46,31 @@ const PurchaseList: React.FC<PurchaseListProps> = ({ purchases }) => {
           <tbody className="divide-y">
             {purchases.map((purchase) => (
               <tr key={purchase.id}>
-                <td className="p-3">{purchase.supplier}</td>
-                <td className="p-3">{purchase.invoiceNumber}</td>
-                <td className="p-3 text-center">{purchase.items}</td>
+                <td className="p-3">{purchase.supplierInvoiceNumber}</td>
+                <td className="p-3">{purchase.purchaseInvoiceNumber}</td>
+                <td className="p-3">
+                  {new Date(purchase.purchasedate).toLocaleDateString()}
+                </td>
                 <td className="p-3 text-right font-medium text-green-600">
                   ₹{purchase.totalAmount.toLocaleString()}
-                </td>
-                <td className="p-3 text-center">
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      purchase.status === "Paid"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {purchase.status}
-                  </span>
                 </td>
                 <td className="p-3 text-right space-x-2">
                   <Button
                     variant="secondary"
                     size="sm"
                     onClick={() =>
-                      navigate(`/home/inventory/purchase/invoicenumber`)
+                      navigate(`/home/inventory/purchase/${purchase.id}`)
                     }
                   >
                     <Eye size={16} />
                   </Button>
-                  <Button
+                  {/* <Button
                     variant="secondary"
                     size="sm"
                     onClick={() => handleDownload(purchase.id)}
                   >
                     <FileDown size={16} />
-                  </Button>
+                  </Button> */}
                 </td>
               </tr>
             ))}

@@ -141,7 +141,6 @@ const ProductBasicInfoForm: React.FC<Props> = ({
       setProductData((prev) => ({
         ...prev,
         hsnCodeId: Number(value),
-        gst: selected?.gstRate || 0,
       }));
     } else {
       setProductData((prev) => ({

@@ -3,8 +3,13 @@ import StockInfo from "./StockInfo";
 import ProductImages from "./ProductImages";
 import StockHistory from "./StockHistory";
 import ProductDetailsInfo from "./ProductDetailsInfo";
+import type { ProductDetails } from "./ProductDetail";
 
-const ProductDetailsTabs: React.FC = () => {
+interface ProductDetailsTabsProps {
+  product: ProductDetails;
+}
+
+const ProductDetailsTabs: React.FC<ProductDetailsTabsProps> = ({ product }) => {
   const [activeTab, setActiveTab] = useState<"details" | "history">("details");
 
   return (
@@ -36,12 +41,15 @@ const ProductDetailsTabs: React.FC = () => {
       {/* Conditional Rendering */}
       {activeTab === "details" && (
         <>
-          <StockInfo />
-          <ProductImages />
-          <ProductDetailsInfo />
+          <StockInfo
+            stock={product.stock}
+            reOrderLevel={product.reOrderLevel}
+          />{" "}
+          <ProductImages images={product.productImagesBase64} />
+          <ProductDetailsInfo product={product} />
         </>
       )}
-      {activeTab === "history" && <StockHistory />}
+      {activeTab === "history" && <StockHistory id={product.id} />}
     </div>
   );
 };

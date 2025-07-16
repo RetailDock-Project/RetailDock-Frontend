@@ -1,12 +1,13 @@
 import React from "react";
 
-const ProceedToPayment: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+const ProceedToPayment: React.FC<{ onClick: () => void ;isLoading:boolean}> = ({ onClick,isLoading }) => {
   return (
     <button
+    disabled={isLoading}
       onClick={onClick}
-      className="w-full mt-4 bg-blue-600 text-white py-2 rounded-md font-medium text-sm"
+      className={isLoading?"opacity-50 cursor-not-allowed":"w-full mt-4 bg-blue-600 text-white py-2 rounded-md font-medium text-sm"}
     >
-      Proceed to Payment
+     {isLoading?"Adding New Sale":"Add New Sale"}
     </button>
   );
 };

@@ -52,7 +52,9 @@ import SalesReturn from "../features/cashier/SaleReturn/SalesReturn";
 import NewSalesReturn from "../features/cashier/SaleReturn/NewSalesReturn";
 import SaleInformation from "../features/cashier/Invoice/salesInvoice/SaleInformation";
 import DebtorDetails from "../features/cashier/Debtors/DebtorDetails.tsx";
-
+import Sales from "../features/cashier/pos/Sales.tsx";
+import SupplierManagement from "../features/inventory/supplier/SupplierManagement.tsx";
+import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -67,7 +69,7 @@ const PageRoutes: React.FC = () => {
       } catch (err) {
         console.error("User not authenticated");
         dispatch(logOut());
-        navigate("/auth/login");
+        // navigate("/auth/login");
       }
     };
 
@@ -108,7 +110,7 @@ const PageRoutes: React.FC = () => {
             <Route path="purchase-orders" element={<PurchaseOrder />}></Route>
             <Route path="purchase-order">
               <Route path="new" element={<NewPurchaseOrder />}></Route>
-              <Route path="invoicenumber" element={<PurchaseOrderDetail />} />
+              <Route path=":id" element={<PurchaseOrderDetail />} />
             </Route>
 
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
@@ -119,12 +121,19 @@ const PageRoutes: React.FC = () => {
             <Route path="purchases" element={<Purchase />}></Route>
             <Route path="purchase">
               <Route path="new" element={<NewPurchase />}></Route>
-              <Route path="invoicenumber" element={<PurchaseDetail />} />
+              <Route path=":id" element={<PurchaseDetail />} />
             </Route>
 
             <Route path="product">
               <Route path="new" element={<NewProduct />}></Route>
-              <Route path="productid" element={<ProductDetail />} />
+              <Route path="edit/:id" element={<NewProduct />}></Route>
+
+              <Route path=":id" element={<ProductDetail />} />
+            </Route>
+
+            <Route path="suppliers">
+              <Route index element={<SupplierManagement />}></Route>
+              <Route path="new" element={<NewSupplier />}></Route>
             </Route>
           </Route>
 
@@ -153,32 +162,31 @@ const PageRoutes: React.FC = () => {
             ></Route>
             <Route path="voucher-report" element={<VoucherReport />}></Route>
             <Route path="tax-report" element={<TaxReports />}></Route>
-            <Route path="add-ledger" element={<AddLedger/>}></Route>
+            <Route path="add-ledger" element={<AddLedger />}></Route>
           </Route>
-
 
 
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
+            <Route path="pos" element={<Sales />} />
+            <Route path="poS">
+              <Route path="new" element={<PointOfSale />} />
+            </Route>
+
             <Route path="pos" element={<PointOfSale />} />
-            
+
             <Route path="invoices" element={<InvoiceDetails />} />
 
             <Route path="invoice">
-              <Route path="details" element={<SaleInformation/>}/>
+              <Route path="details/:invoiceNumber" element={<SaleInformation />} />
             </Route>
-            <Route path="customers" element={<DebtorDetails/>} />
-            <Route path="sales-returns" element={<SalesReturn/>} />
+            <Route path="customers" element={<DebtorDetails />} />
+            <Route path="sales-returns" element={<SalesReturn />} />
             <Route path="sales-return">
-                   <Route path="new" element={<NewSalesReturn/>}/>
-                       {/* <Route path="info" element={<SalesReturnInformation/>} />  */}
+              <Route path="new" element={<NewSalesReturn />} />
+              {/* <Route path="info" element={<SalesReturnInformation/>} />  */}
             </Route>
-        
-        
           </Route>
-
-
-
 
           <Route path="admin">
             <Route path="manage-users" element={<Users />} />

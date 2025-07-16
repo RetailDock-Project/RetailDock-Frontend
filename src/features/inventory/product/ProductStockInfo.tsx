@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 type ProductStockInfoProps = {
   reorderLevel: number;
@@ -9,9 +9,17 @@ const ProductStockInfo: React.FC<ProductStockInfoProps> = ({
   reorderLevel,
   setReorderLevel,
 }) => {
+  const [localValue, setLocalValue] = useState(reorderLevel.toString());
+
+  useEffect(() => {
+    setLocalValue(reorderLevel.toString());
+  }, [reorderLevel]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    // Only allow positive integers
     if (/^\d*$/.test(value)) {
+      setLocalValue(value);
       setReorderLevel(value === "" ? 0 : parseInt(value, 10));
     }
   };
@@ -27,10 +35,11 @@ const ProductStockInfo: React.FC<ProductStockInfoProps> = ({
             Reorder Level
           </label>
           <input
-            type="number"
+            type="text"
             name="reorderLevel"
-            min="0"
-            value={reorderLevel}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={localValue}
             onChange={handleChange}
             placeholder="Enter reorder level"
             className="w-full border rounded-md px-3 py-2 text-sm"

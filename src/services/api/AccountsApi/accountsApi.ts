@@ -1,19 +1,18 @@
 import type { string } from "zod";
 import accountsClient from "./accountsClient";
 
-interface Transaction{
-    ledgerId:string;
-     amount: number;
-     narration: string;
+interface Transaction {
+  ledgerId: string;
+  amount: number;
+  narration: string;
 }
 
-interface addVoucher{
-    voucherTypeId:string;
-    voucherDate:string;
-    remarks:string;
-    transactionsDebit:Transaction[];
-    transactionsCredit: Transaction[];
-
+interface addVoucher {
+  voucherTypeId: string;
+  voucherDate: string;
+  remarks: string;
+  transactionsDebit: Transaction[];
+  transactionsCredit: Transaction[];
 }
  export interface LedgerDetails {
   contactName: string;
@@ -25,6 +24,7 @@ interface addVoucher{
   ifscCode: string;
   upiId: string;
 }
+
 
  export interface LedgerForm {
   ledgerName: string;
@@ -44,26 +44,35 @@ export const getVoucherTypes= async ()=>{
     return response.data.data
 }
 
+
+ 
+
 //Create A transaction
 
 export const addTransactionEntry = async (data: addVoucher) => {
-  const response = await accountsClient.post("/Voucher/add/new/voucherentry", data);
+  const response = await accountsClient.post(
+    "/Voucher/add/new/voucherentry",
+    data
+  );
   return response.data;
 };
 
 //for getting all cr dr side ledgers
+
 export const getDebitCreditLedgersForTransaction= async (TypeId:string)=>{
     const response= await accountsClient.get("/Ledger/get/ledgers/fortransaction",{params:{VoucherTypeId:TypeId}});
   
     return response.data.data
     
 }
-export const getAllGroupForLedgerCreation= async ()=>{
+export const getAllGroupForLedgerCreation = async ()=>{
     const response= await accountsClient.get("/Accounts/get/all/groups");
    
     return response.data.data
     
 }
+
+
 
 //add ledger api
 export const addLedger = async (data: LedgerForm) => {
@@ -176,3 +185,15 @@ console.log(response.data.data);
 
   return response.data.data;
 };
+
+
+
+export const getInputGstLedger = async () => {
+  const response = await accountsClient.get(
+    "/Ledger/get/ledgers/ByName?Name=input%20gst"
+  );
+  console.log(response.data, "get ledgerrrr");
+
+  return response.data;
+};
+

@@ -24,7 +24,7 @@ const currentUser = {
 };
 
 const inventoryMenuItems = [
-  { title: "Dashboard", url: "/home/inventory/dashboard", icon: Gauge },
+  //   { title: "Dashboard", url: "/home/inventory/dashboard", icon: Gauge },
   {
     title: "Purchase Order",
     url: "/home/inventory/purchase-orders",

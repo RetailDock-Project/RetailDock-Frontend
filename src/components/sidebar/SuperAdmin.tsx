@@ -20,12 +20,12 @@ const currentUser = {
 const superAdminMenuItems = [
   { title: "Dashboard", url: "/home/super-admin/dashboard", icon: Gauge },
   { title: "Customers", url: "/home/super-admin/customers", icon: Users },
-  {
-    title: "Subscription Plans",
-    url: "/home/super-admin/subscriptions",
-    icon: CreditCard,
-  },
-  { title: "Settings", url: "/home/super-admin/settings", icon: Settings },
+  //   {
+  //     title: "Subscription Plans",
+  //     url: "/home/super-admin/subscriptions",
+  //     icon: CreditCard,
+  //   },
+  //   { title: "Settings", url: "/home/super-admin/settings", icon: Settings },
 ];
 
 const hasSuperAdminAccess = () => {

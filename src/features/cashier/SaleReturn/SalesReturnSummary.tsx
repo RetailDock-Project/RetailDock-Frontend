@@ -1,15 +1,22 @@
 import React from "react";
+import ProceedToReturn from "./ProceedToReturn";
 
 type ReturnSummaryProps = {
   itemCount: number;
   totalQuantity: number;
+  taxAmount:number;
   totalValue: number;
+  onClick: () => void ;
+  isLoading:boolean
 };
 
 const SalesReturnSummary: React.FC<ReturnSummaryProps> = ({
   itemCount,
   totalQuantity,
   totalValue,
+  taxAmount,
+  onClick,
+  isLoading
 }) => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-md border">
@@ -25,14 +32,19 @@ const SalesReturnSummary: React.FC<ReturnSummaryProps> = ({
           <span>Total Quantity:</span>
           <span className="font-medium">{totalQuantity}</span>
         </div>
+        <div className="flex justify-between">
+          <span>Total TaxAmount:</span>
+          <span className="font-medium">₹{taxAmount}</span>
+        </div>
 
         <hr className="my-2" />
 
         <div className="flex justify-between text-base font-semibold text-black">
           <span>Total Value:</span>
-          <span>₹{totalValue.toLocaleString()}</span>
+          <span>₹{totalValue + taxAmount}</span>
         </div>
       </div>
+        <ProceedToReturn  isLoading={isLoading} onClick={onClick}/>
     </div>
   );
 };

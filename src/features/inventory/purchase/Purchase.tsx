@@ -1,52 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { FilePlus, RotateCcw, FileDown } from "lucide-react";
 import { Button } from "../../../components/ui/reusable/Button";
 import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker";
 import { SearchInput } from "../../../components/ui/reusable/SearchInput";
-import { DropdownList } from "../../../components/ui/reusable/DropdownList";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
 import PurchaseList from "./PurchaseList";
-
-// Dummy data type and list
-type Purchase = {
-  id: string;
-  date: string;
-  supplier: string;
-  items: number;
-  totalAmount: number;
-  status: "Completed" | "Pending" | "Cancelled";
-};
-
-const samplePurchases = [
-  {
-    id: "PUR-001",
-    supplier: "Samsung Electronics",
-    invoiceNumber: "INV-2458",
-    date: "May 12, 2025",
-    items: 12,
-    totalAmount: 124500,
-    status: "Paid",
-  },
-  {
-    id: "PUR-002",
-    supplier: "Sony India",
-    invoiceNumber: "INV-3211",
-    date: "May 18, 2025",
-    items: 5,
-    totalAmount: 78400,
-    status: "Pending",
-  },
-];
+import { usePurchases } from "../../../hooks/usePurchases"; // ✅ adjust path
+import { exportPurchaseExcel } from "../../../services/api/inventoryapi/inventoryApi";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
 
 const Purchase: React.FC = () => {
   const navigate = useNavigate();
+
+  // 🔸 Filter state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({ startDate: null, endDate: null });
+
+  // 🔹 API Call via React Query
+  const {
+    data: purchases,
+    isLoading,
+    isError,
+  } = usePurchases({
+    searchTerm,
+    fromDate: dateRange.startDate?.toISOString(),
+    toDate: dateRange.endDate?.toISOString(),
+  });
 
   const handleRangeChange = (range: {
     startDate: Date | null;
     endDate: Date | null;
   }) => {
-    console.log("Selected Range:", range);
+    setDateRange(range);
+  };
+
+  const handleExport = () => {
+    downloadExcelFile(exportPurchaseExcel, "PurchaseList.xlsx");
   };
 
   return (
@@ -78,6 +71,7 @@ const Purchase: React.FC = () => {
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
+              onClick={handleExport}
             >
               <FileDown size={16} />
               Export
@@ -85,36 +79,34 @@ const Purchase: React.FC = () => {
           </>
         }
       />
+
       {/* Filters */}
       <div className="rounded-xl shadow border bg-white p-3 mt-4">
         <h3 className="block text-lg">Filters</h3>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded-lg shadow-sm">
           <div>
             <label className="block text-sm font-medium mb-1">Search</label>
-            <SearchInput onSearch={() => {}} />
+            <SearchInput onSearch={(term) => setSearchTerm(term)} />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">Date Range</label>
             <DateRangePicker onChange={handleRangeChange} />
           </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
-            <DropdownList
-              options={["Completed", "Pending", "Cancelled"]}
-              onSelect={(val) => console.log("Selected:", val)}
-              label="Choose Status"
-            />
-          </div>
         </div>
       </div>
-      <PurchaseList purchases={samplePurchases} />
-      {/* Overview section (optional) */}
-      <div className="mt-4">
-        {/* You can add <PurchaseOverview /> component here */}
-      </div>
+
+      {/* List */}
+      {isLoading ? (
+        <p className="mt-4">Loading purchases...</p>
+      ) : isError ? (
+        <p className="mt-4 text-red-600">Failed to load purchases.</p>
+      ) : (
+        <PurchaseList purchases={purchases || []} />
+      )}
+
+      {/* Overview section */}
+      <div className="mt-4">{/* <PurchaseOverview /> */}</div>
     </div>
   );
 };

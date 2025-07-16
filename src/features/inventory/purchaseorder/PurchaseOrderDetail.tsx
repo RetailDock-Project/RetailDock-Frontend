@@ -11,10 +11,34 @@ import OrderItems from "./OrderItems";
 import QuickActions from "./QuickActions";
 import AuditTrail from "./AuditTrail";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
+import { useQuery } from "@tanstack/react-query";
+import {
+  exportPurchaseOrderPdf,
+  getPurchaseOrderById,
+} from "../../../services/api/inventoryapi/inventoryApi";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
 
 const PurchaseOrderDetail: React.FC = () => {
-  const { invoicenumber } = useParams();
   const navigate = useNavigate();
+
+  const { id } = useParams<{ id: string }>();
+
+  const {
+    data: order,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["purchaseOrder", id],
+    queryFn: () => getPurchaseOrderById(id!),
+    select: (data) => data.data,
+    enabled: !!id,
+  });
+
+  const handleExport = () => {
+    downloadExcelFile(() => exportPurchaseOrderPdf(id), "PurchaseOrder.pdf");
+  };
+
   return (
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader
@@ -36,30 +60,31 @@ const PurchaseOrderDetail: React.FC = () => {
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
+              onClick={handleExport}
             >
               <FileDown size={16} />
               Download PDF
             </Button>
-            <Button
+            {/* <Button
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
             >
               <AiOutlineEdit size={16} />
               Edit
-            </Button>
+            </Button> */}
           </>
         }
       />
       <div className=" grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-100 min-h-screen">
         <div className="md:col-span-2">
-          <PurchaseOrderDetailInfo />
-          <OrderItems />
+          <PurchaseOrderDetailInfo data={order} />
+          <OrderItems items={order?.items} />
         </div>
         <div>
-          <SupplierDetail />
-          <QuickActions />
-          <AuditTrail />
+          <SupplierDetail supplier={order?.supplier} />
+          <QuickActions purchaseOrder={order} />
+          {/* <AuditTrail /> */}
         </div>
       </div>
     </div>
