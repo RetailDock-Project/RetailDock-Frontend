@@ -14,11 +14,38 @@ interface addVoucher {
   transactionsDebit: Transaction[];
   transactionsCredit: Transaction[];
 }
+ export interface LedgerDetails {
+  contactName: string;
+  contactNumber: string;
+  address: string;
+  gstNumber: string;
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
+  upiId: string;
+}
 
-export const getVoucherTypes = async () => {
-  const response = await accountsClient.get("/Voucher/get/all/vouchertypes");
-  return response.data.data;
-};
+
+ export interface LedgerForm {
+  ledgerName: string;
+  groupId: string;
+  openingBalance: number;
+  drCr: "Dr" | "Cr"; // Assuming only "Dr" or "Cr" are valid
+  details: LedgerDetails;
+}
+
+
+export interface groupDetails{
+ groupName:string
+ parentId:string
+}
+export const getVoucherTypes= async ()=>{
+    const response= await accountsClient.get("/Voucher/get/all/vouchertypes");
+    return response.data.data
+}
+
+
+ 
 
 //Create A transaction
 
@@ -31,19 +58,135 @@ export const addTransactionEntry = async (data: addVoucher) => {
 };
 
 //for getting all cr dr side ledgers
-export const getDebitCreditLedgersForTransaction = async (TypeId: string) => {
-  const response = await accountsClient.get(
-    "/Ledger/get/ledgers/fortransaction",
-    { params: { VoucherTypeId: TypeId } }
-  );
+
+export const getDebitCreditLedgersForTransaction= async (TypeId:string)=>{
+    const response= await accountsClient.get("/Ledger/get/ledgers/fortransaction",{params:{VoucherTypeId:TypeId}});
+  
+    return response.data.data
+    
+}
+export const getAllGroupForLedgerCreation = async ()=>{
+    const response= await accountsClient.get("/Accounts/get/all/groups");
+   
+    return response.data.data
+    
+}
+
+
+
+//add ledger api
+export const addLedger = async (data: LedgerForm) => {
+    console.log(data)
+  const response = await accountsClient.post("/Ledger/add/new/ledger", data);
+
+  return response.data;
+  
+};
+// add new ledger
+export const addNewSubGroup= async (data: groupDetails) => {
+    console.log(data)
+  const response = await accountsClient.post("/Accounts/add/new/sub/group", data);
+  console.log(response)
+  return response.data;
+  
+};
+
+
+//GetallVouchersIncluding item Vouchers
+export const GetAllVoucherTypes= async () => {
+ 
+  const response = await accountsClient.get("/Voucher/get/all/vouchertypes/with/items");
+ 
+  return response.data.data;
+  
+};
+
+
+//get voucher report by passing voucher typeid with dater range
+export const getVoucherReport = async (
+  fromDate: string,
+  toDate: string,
+  voucherTypeId?: string // Optional if backend allows
+) => {
+  const response = await accountsClient.get("/Voucher/get/voucher/report", {
+    params: {
+      fromDate,
+      toDate,
+      voucherTypeId, // Will be undefined if not passed
+    },
+  });
+
 
   return response.data.data;
 };
-export const getAllGroupForLedgerCreation = async () => {
-  const response = await accountsClient.get("/Accounts/get/all/groups");
-  console.log(response.data.data);
+
+
+
+export const getAllLedgers = async (
+  fromDate: string|null,
+  toDate: string|null,
+ // Optional if backend allows
+) => {
+  const response = await accountsClient.get("/LedgerReport/all/ledger/report", {
+    params: {
+      fromDate,
+      toDate,
+       // Will be undefined if not passed
+    },
+  });
+
+
   return response.data.data;
 };
+
+
+
+//p/l aaccount 
+export const getProfitAndTradingAc = async (
+  fromDate: string|null,
+  toDate: string|null,
+  
+ // Optional if backend allows
+) => {
+  const response = await accountsClient.get("/AccountsReport/get/pandl/account", {
+    params: {
+      fromDate,
+      toDate,
+     
+      
+       // Will be undefined if not passed
+    },
+  });
+   console.log(fromDate)
+console.log(response.data.data);
+
+  return response.data.data;
+};
+
+
+//get balance sheet
+export const getBalanceSheet = async (
+  fromDate: string|null,
+  toDate: string|null,
+  
+ 
+) => {
+  const response = await accountsClient.get("/AccountsReport/get/balacesheet/report", {
+    params: {
+      fromDate,
+      toDate,
+     
+      
+       // Will be undefined if not passed
+    },
+  });
+   console.log(fromDate)
+console.log(response.data.data);
+
+  return response.data.data;
+};
+
+
 
 export const getInputGstLedger = async () => {
   const response = await accountsClient.get(
@@ -53,3 +196,4 @@ export const getInputGstLedger = async () => {
 
   return response.data;
 };
+
