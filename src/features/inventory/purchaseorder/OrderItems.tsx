@@ -6,8 +6,9 @@ type Props = {
 };
 
 const OrderItems: React.FC<Props> = ({ items }) => {
-  const subtotal = items?.reduce((acc, item) => acc + item.totalAmount, 0);
+  const subtotal = items?.reduce((acc, item) => acc + item.netTotal, 0);
   const totalTax = items?.reduce((acc, item) => acc + item.taxAmount, 0);
+  const totalAmount = items?.reduce((acc, item) => acc + item.totalAmount, 0);
 
   return (
     <div className="p-6 rounded-xl shadow border bg-white mt-6">
@@ -23,6 +24,8 @@ const OrderItems: React.FC<Props> = ({ items }) => {
               <th className="p-3 font-medium border text-center">Ordered</th>
               <th className="p-3 font-medium border text-center">Received</th>
               <th className="p-3 font-medium border text-right">Unit Cost</th>
+              <th className="p-3 font-medium border text-right">Net Total</th>
+
               <th className="p-3 font-medium border text-right">Tax</th>
               <th className="p-3 font-medium border text-right">Total</th>
             </tr>
@@ -39,6 +42,10 @@ const OrderItems: React.FC<Props> = ({ items }) => {
                 </td>
                 <td className="p-3 text-right border">
                   ₹{item?.ratePerPiece.toLocaleString()}
+                </td>
+
+                <td className="p-3 text-right border">
+                  ₹{item?.netTotal.toLocaleString()}
                 </td>
                 <td className="p-3 text-right border">
                   ₹{item?.taxAmount.toLocaleString()}
@@ -59,6 +66,9 @@ const OrderItems: React.FC<Props> = ({ items }) => {
           </p>
           <p>
             <span className="font-medium">Total Tax:</span> ₹{totalTax}
+          </p>
+          <p>
+            <span className="font-medium">Total Tax:</span> ₹{totalAmount}
           </p>
         </div>
       </div>
