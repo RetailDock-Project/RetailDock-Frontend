@@ -55,6 +55,7 @@ import DebtorDetails from "../features/cashier/Debtors/DebtorDetails.tsx";
 import Sales from "../features/cashier/pos/Sales.tsx";
 import SupplierManagement from "../features/inventory/supplier/SupplierManagement.tsx";
 import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
+import GroupAndLedgerDetails from "../features/accountant/components/GroupAndLedgerDetails.tsx";
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -153,7 +154,7 @@ const PageRoutes: React.FC = () => {
             <Route path="invoices" element={<Invoices />}></Route>
             <Route path="ledger-details" element={<LedgerDetails />}></Route>
             <Route
-              path="ledgertransactionhistory/id"
+              path="ledgertransactionhistory/:id"
               element={<LedgerTransactionHistory />}
             ></Route>
             <Route
@@ -163,6 +164,7 @@ const PageRoutes: React.FC = () => {
             <Route path="voucher-report" element={<VoucherReport />}></Route>
             <Route path="tax-report" element={<TaxReports />}></Route>
             <Route path="add-ledger" element={<AddLedger />}></Route>
+            <Route path="groupAndLedgerDetails/:id" element={<GroupAndLedgerDetails/>}></Route>
           </Route>
 
 

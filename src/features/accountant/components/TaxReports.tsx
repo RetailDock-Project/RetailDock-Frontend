@@ -3,15 +3,13 @@ import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker
 import { Download } from "lucide-react";
 import TaxSummaryCards from "./TaxSummaryCards";
 import HSNReport from "./HSNReport";
+import { getTaxAndInvoicePurchase, getTaxAndInvoicePurchaseReturns, getTaxAndInvoiceSales, getTaxAndInvoiceSalesReturns } from "../../../services/api/AccountsApi/accountsApi";
+import { useQuery } from "@tanstack/react-query";
 
 
 
 // Mock data now includes voucher type for filtering
-const taxData = [
-    { date: "2025-05-15", customer: "Sabith", reference: "INV-4587", amount: 4250.75, tax: 425.08, type: "Sales" },
-    { date: "2025-05-08", customer: "Ramees", reference: "INV-4586", amount: 2150.40, tax: 215.04, type: "Sales" },
-    { date: "2025-04-20", customer: "Alex", reference: "PUR-1023", amount: 3100.00, tax: 310.00, type: "Purchase" }
-];
+
 
 const TaxReports: React.FC = () => {
     const [type, setType] = useState("Sales");
@@ -21,18 +19,37 @@ const TaxReports: React.FC = () => {
         endDate: Date | null;
     }>({ startDate: null, endDate: null });
 
-    // Filter by selected voucher type and optional date range
-    const filtered = taxData.filter((item) => {
-        const matchesType = item.type === type;
-        const matchesDate =
-            (!dateRange.startDate || new Date(item.date) >= dateRange.startDate) &&
-            (!dateRange.endDate || new Date(item.date) <= dateRange.endDate);
-        return matchesType && matchesDate;
-    });
 
-    const totalAmount = filtered.reduce((acc, cur) => acc + cur.amount, 0);
-    const totalTax = filtered.reduce((acc, cur) => acc + cur.tax, 0);
+    const formattedFromDate = dateRange.startDate
+  ? dateRange.startDate.toISOString()
+  : null;
+const formattedToDate = dateRange.endDate
+  ? dateRange.endDate.toISOString()
+  : null;
 
+
+   const { data: apiData, isLoading, error } = useQuery({
+
+  queryKey: ["taxReport", type, formattedFromDate, formattedToDate],
+  queryFn: () => {
+    switch (type) {
+      case "Sales":
+        return getTaxAndInvoiceSales(formattedFromDate, formattedToDate);
+      case "Purchase":
+        return getTaxAndInvoicePurchase(formattedFromDate, formattedToDate);
+      case "Sales Return":
+        return getTaxAndInvoiceSalesReturns(formattedFromDate, formattedToDate);
+      case "Purchase Return":
+        return getTaxAndInvoicePurchaseReturns(formattedFromDate, formattedToDate);
+      default:
+        return Promise.resolve([]);
+    }
+  },
+  enabled: !!type,
+});
+
+
+  
     return (
         <div className="scroll-m-0 max-h-[600px] overflow-y-auto">
             <TaxSummaryCards inputTax={220.5} outputTax={640.12} />
