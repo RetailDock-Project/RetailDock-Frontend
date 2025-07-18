@@ -246,6 +246,10 @@ export const createPurchaseOrder = async (data: PurchaseOrderRequest) => {
   const response = await inventoryClient.post("/PurchaseOrder/Create", data); // Adjust endpoint
   return response.data;
 };
+export const updatePurchaseOrder = async (data: any) => {
+  const response = await inventoryClient.post("/PurchaseOrder/Update", data); // Adjust endpoint
+  return response.data;
+};
 
 export const fetchFilteredPurchaseOrders = async (
   filters: PurchaseOrderFilters
@@ -304,4 +308,10 @@ export const exportPurchaseOrderPdf = async (id: any) => {
   return await inventoryClient.get(`/PurchaseOrder/${id}/export-pdf`, {
     responseType: "blob",
   });
+};
+
+export const getPurchaseOrderStats = async () => {
+  const response = await inventoryClient.get(`/PurchaseOrder/stats`);
+  console.log(response);
+  return response.data;
 };

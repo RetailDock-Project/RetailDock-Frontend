@@ -38,6 +38,8 @@ const PurchaseOrder: React.FC = () => {
     select: (data) => data.data,
   });
 
+  console.log(purchaseOrders);
+
   const handleRangeChange = (range: {
     startDate: Date | null;
     endDate: Date | null;
@@ -74,6 +76,7 @@ const PurchaseOrder: React.FC = () => {
               <RotateCcw size={16} />
               Purchase Return
             </Button>
+           
             <Button
               size="sm"
               variant="secondary"

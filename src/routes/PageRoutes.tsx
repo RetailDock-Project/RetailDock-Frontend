@@ -8,7 +8,7 @@ import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
 import EmailVerificationStatus from "../features/auth/components/EmailVerificationStatus";
 import MainLayout from "../layouts/MainLayout";
 import PurchaseOrder from "../features/inventory/purchaseorder/PurchaseOrder";
-import NewPurchaseOrder from "../features/inventory/purchaseorder/NewPurchaseOrder";
+import NewPurchaseOrder from "../features/inventory/purchaseorder/PurchaseOrderForm.tsx";
 import PurchaseOrderDetail from "../features/inventory/purchaseorder/PurchaseOrderDetail";
 import PurchaseReturn from "../features/inventory/purchasereturn/PurchaseReturn";
 import NewPurchaseReturn from "../features/inventory/purchasereturn/NewPurchaseReturn";
@@ -55,6 +55,7 @@ import DebtorDetails from "../features/cashier/Debtors/DebtorDetails.tsx";
 import Sales from "../features/cashier/pos/Sales.tsx";
 import SupplierManagement from "../features/inventory/supplier/SupplierManagement.tsx";
 import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
+import PurchaseOrderForm from "../features/inventory/purchaseorder/PurchaseOrderForm.tsx";
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -109,8 +110,12 @@ const PageRoutes: React.FC = () => {
 
             <Route path="purchase-orders" element={<PurchaseOrder />}></Route>
             <Route path="purchase-order">
-              <Route path="new" element={<NewPurchaseOrder />}></Route>
+              <Route path="new" element={<PurchaseOrderForm />}></Route>
               <Route path=":id" element={<PurchaseOrderDetail />} />
+              <Route
+                path="edit/:id"
+                element={<PurchaseOrderForm mode="edit" />}
+              />
             </Route>
 
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
@@ -165,7 +170,6 @@ const PageRoutes: React.FC = () => {
             <Route path="add-ledger" element={<AddLedger />}></Route>
           </Route>
 
-
           <Route path="cashier">
             <Route path="dashboard" element={<CashierDashboard />} />
             <Route path="pos" element={<Sales />} />
@@ -178,7 +182,10 @@ const PageRoutes: React.FC = () => {
             <Route path="invoices" element={<InvoiceDetails />} />
 
             <Route path="invoice">
-              <Route path="details/:invoiceNumber" element={<SaleInformation />} />
+              <Route
+                path="details/:invoiceNumber"
+                element={<SaleInformation />}
+              />
             </Route>
             <Route path="customers" element={<DebtorDetails />} />
             <Route path="sales-returns" element={<SalesReturn />} />

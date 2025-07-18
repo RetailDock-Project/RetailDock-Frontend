@@ -26,7 +26,7 @@ const ProductList: React.FC<Props> = ({ products }) => {
 
   const getStockStatus = (stock: number, reOrderLevel: number) => {
     if (stock === 0) return "Out of Stock";
-    if (stock < reOrderLevel) return "Low Stock";
+    if (stock <= reOrderLevel) return "Low Stock";
     return "In Stock";
   };
 
