@@ -13,26 +13,26 @@ const NewSupplier: React.FC = () => {
   const [loading, setLoading] = useState(false); // 🔁 loading state
 
   const [supplier, setSupplier] = useState<SupplierDto>({
-    name: "",
+    name: "unknown",
     openingBalance: 0,
     isDebit: true,
-    contactName: "",
-    contactNumber: "",
-    address: "",
-    city: "",
-    state: "",
-    country: "",
-    pincode: "",
-    gstNumber: "",
-    bankName: "",
-    accountNumber: "",
-    ifscCode: "",
-    upiId: "",
-    email: "",
+    contactName: null,
+    contactNumber: null,
+    address: null,
+    city: null,
+    state: null,
+    country: null,
+    pincode: null,
+    gstNumber: null,
+    bankName: null,
+    accountNumber: null,
+    ifscCode: null,
+    upiId: null,
+    email: null,
   });
 
   const handleSubmit = async () => {
-    if (!supplier.name || supplier.name.trim() === "") {
+    if (!supplier.name || supplier.name.trim() === null) {
       toast.error("Supplier name is required.");
       return;
     }
@@ -48,22 +48,22 @@ const NewSupplier: React.FC = () => {
 
       //   Optionally reset form
       setSupplier({
-        name: "",
+        name: "unknown",
         openingBalance: 0,
         isDebit: true,
-        contactName: "",
-        contactNumber: "",
-        address: "",
-        city: "",
-        state: "",
-        country: "",
-        pincode: "",
-        gstNumber: "",
-        bankName: "",
-        accountNumber: "",
-        ifscCode: "",
-        upiId: "",
-        email: "",
+        contactName: null,
+        contactNumber: null,
+        address: null,
+        city: null,
+        state: null,
+        country: null,
+        pincode: null,
+        gstNumber: null,
+        bankName: null,
+        accountNumber: null,
+        ifscCode: null,
+        upiId: null,
+        email: null,
       });
     } catch (error: any) {
       console.error("Error creating supplier:", error);
@@ -121,11 +121,7 @@ const NewSupplier: React.FC = () => {
           </div>
         }
       />
-      <SupplierForm
-        supplier={supplier}
-        setSupplier={setSupplier}
-        onSubmit={handleSubmit}
-      />
+      <SupplierForm supplier={supplier} setSupplier={setSupplier} />
     </div>
   );
 };

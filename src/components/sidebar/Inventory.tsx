@@ -41,6 +41,12 @@ const inventoryMenuItems = [
     url: "/home/inventory/products",
     icon: PackagePlus, // You can use a different icon like Boxes or LayoutGrid
   },
+
+  {
+    title: "Suppliers",
+    url: "/home/inventory/suppliers",
+    icon: PackagePlus, // You can use a different icon like Boxes or LayoutGrid
+  },
 ];
 
 const hasInventoryAccess = () => {

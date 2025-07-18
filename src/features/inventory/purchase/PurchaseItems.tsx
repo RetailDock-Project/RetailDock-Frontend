@@ -67,12 +67,16 @@ const PurchaseItems: React.FC<Props> = ({ items }) => {
       <div className="flex justify-end mt-4 text-sm">
         <div className="space-y-1 text-right">
           <p>
-            <span className="font-medium">Subtotal:</span> ₹
-            {subtotal.toLocaleString()}
-          </p>
-          <p>
             <span className="font-medium">Total Tax:</span> ₹
             {totalTax.toLocaleString()}
+          </p>
+          <p>
+            <span className="font-medium">Sub Total:</span> ₹
+            {subtotal - totalTax}
+          </p>
+          <p>
+            <span className="font-medium">Total(including tax):</span> ₹
+            {subtotal.toLocaleString()}
           </p>
         </div>
       </div>

@@ -26,13 +26,15 @@ type PurchaseInformationProps = {
     notes: string | null;
     supplierInvoiceNumber: string;
     gstType: "CGST_SGST" | "IGST" | "UGST_CGST";
-    supplierLedgerId?: string; // NEW
+    supplierLedgerId?: string;
   }) => void;
+  disableSupplierSelect?: boolean; // ✅ new prop
 };
 
 const PurchaseInformation: React.FC<PurchaseInformationProps> = ({
   prefill,
   onChange,
+  disableSupplierSelect = false,
 }) => {
   const [selectedSupplierId, setSelectedSupplierId] = useState<string>(
     prefill?.supplierId || ""
@@ -103,7 +105,7 @@ const PurchaseInformation: React.FC<PurchaseInformationProps> = ({
       notes,
       supplierInvoiceNumber,
       gstType,
-      supplierLedgerId: selectedSupplier?.ledgerId, // NEW
+      supplierLedgerId: selectedSupplier?.ledgerId,
     });
   };
 
@@ -126,8 +128,17 @@ const PurchaseInformation: React.FC<PurchaseInformationProps> = ({
             options={suppliers}
             label="Select Supplier"
             defaultValue={selectedSupplierId}
-            onSelect={(id) => setSelectedSupplierId(id || "")}
+            disabled={disableSupplierSelect} // ✅ disable if from PO
+            onSelect={(id) => {
+              if (!disableSupplierSelect) setSelectedSupplierId(id || "");
+            }}
           />
+          {disableSupplierSelect && (
+            <p className="text-xs text-gray-500 mt-1 italic">
+              Supplier is selected from the purchase order and cannot be
+              changed.
+            </p>
+          )}
           {supplierError && (
             <p className="text-sm text-red-500 mt-1">{supplierError}</p>
           )}
@@ -137,7 +148,10 @@ const PurchaseInformation: React.FC<PurchaseInformationProps> = ({
           <label className="block text-sm font-medium text-gray-600 mb-1">
             Purchase Date <span className="text-red-500">*</span>
           </label>
-          <SingleDatePicker onChange={(date) => setSelectedDate(date)} />
+          <SingleDatePicker
+            onChange={(date) => setSelectedDate(date)}
+            // initialDate={selectedDate ?? undefined}
+          />
           {dateError && (
             <p className="text-sm text-red-500 mt-1">{dateError}</p>
           )}

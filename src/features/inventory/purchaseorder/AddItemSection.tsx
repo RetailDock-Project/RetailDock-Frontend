@@ -5,6 +5,7 @@ import SearchSelect from "../../../components/ui/reusable/SearchSelect";
 type Product = {
   id: number;
   name: string;
+  taxRate: number;
 };
 
 type ProductItem = {
@@ -32,32 +33,36 @@ const AddItemSection: React.FC<AddItemSectionProps> = ({
 
   const [quantity, setQuantity] = useState(1);
   const [unitCost, setUnitCost] = useState(0);
-  const [taxRate, setTaxRate] = useState(0);
 
   const productOptions = products?.map((p) => ({
     id: `product-${p.id}`, // Ensures unique key format
     label: p.name,
     value: p,
+    taxRate: p.taxRate,
   }));
 
   const handleAddItem = () => {
     if (!selectedProduct) return alert("Please select a product");
     if (quantity < 1) return alert("Quantity must be at least 1");
     if (unitCost < 0) return alert("Unit cost can't be negative");
+    console.log(selectedProduct.value.id.toString(), "id");
+    console.log(selectedProduct.value.name, "name");
+    console.log(quantity, "qty");
+    console.log(unitCost, "cost");
+    console.log(selectedProduct.value.taxRate);
 
     onAddItem({
       productId: selectedProduct.value.id.toString(),
       productName: selectedProduct.value.name,
       quantity,
       unitCost,
-      taxRate,
+      taxRate: selectedProduct.value.taxRate,
     });
 
     // Reset fields
     setSelectedProduct(null);
     setQuantity(1);
     setUnitCost(0);
-    setTaxRate(0);
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 type Option = {
@@ -25,6 +25,13 @@ const SearchSelect: React.FC<SearchSelectProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>([]);
 
+  // 🔄 Keep input in sync with selected
+  useEffect(() => {
+    if (selected) {
+      setSearchTerm(selected.label);
+    }
+  }, [selected]);
+
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
     const filtered = options.filter((opt) =>
@@ -39,8 +46,8 @@ const SearchSelect: React.FC<SearchSelectProps> = ({
 
   const handleSelect = (option: Option) => {
     setSelected(option);
-    setSearchTerm(option.label);
-    setFilteredOptions([]);
+    setSearchTerm(option.label); // Set input to selected label
+    setFilteredOptions([]); // Hide list
   };
 
   return (

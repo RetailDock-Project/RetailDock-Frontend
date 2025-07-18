@@ -36,6 +36,8 @@ const PurchaseOrderInformation: React.FC<Props> = ({
     value: s,
   }));
 
+  console.log(selectedSupplier, "selected supliersss");
+
   return (
     <div className="p-6 rounded-xl shadow border bg-white space-y-6">
       <h2 className="text-xl font-semibold text-gray-700">
