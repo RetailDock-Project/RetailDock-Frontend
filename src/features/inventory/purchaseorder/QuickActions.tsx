@@ -17,7 +17,6 @@ const QuickActions: React.FC<Props> = ({ purchaseOrder }) => {
       state: {
         supplierId: purchaseOrder.supplier.id,
         ledgerId: purchaseOrder.supplier.ledgerId,
-
         supplier: purchaseOrder.supplier.name,
         date: purchaseOrder.orderDate,
         purchaseOrderId: purchaseOrder.purchaseOrderId,

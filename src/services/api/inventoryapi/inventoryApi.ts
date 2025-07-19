@@ -1,5 +1,5 @@
 import type { ProductFormData } from "../../../features/inventory/product/NewProduct";
-import type { PurchaseRequest } from "../../../features/inventory/purchase/PurchaseTypes";
+import type { PurchaseRequest, Voucher } from "../../../features/inventory/purchase/PurchaseTypes";
 import type { SupplierDto } from "../../../features/inventory/supplier/SupplierForm";
 import accountsClient from "../AccountsApi/accountsClient";
 import inventoryClient from "./inventoryClient";
@@ -39,13 +39,44 @@ export type SupplierFilterParams = {
 type PurchaseOrderRequest = {
   supplierId?: string;
   orderDate?: string | null;
-
   items: {
     productId: string;
     quantity: number;
     ratePerPiece: number;
   }[];
 };
+
+// Individual item being returned
+export interface PurchaseReturnItem {
+  originalPurchaseItemId: string;
+  productId: string;
+  returnedQuantity: number;
+}
+
+// Transaction details (debit or credit)
+// export interface VoucherTransaction {
+//   ledgerId: string;
+//   narration: string;
+// }
+
+// Voucher details (optional: can be split if reused elsewhere)
+// export interface PurchaseReturnVoucher {
+//   voucherDate: string;
+//   remarks: string;
+//   transactionsDebit: VoucherTransaction[];
+//   transactionsCredit: VoucherTransaction[];
+// }
+
+// Main purchase return request payload
+export interface PurchaseReturnRequest {
+  originalPurchaseId: string;
+  returnDate: string; // "YYYY-MM-DD"
+  supplierId: string;
+  reason: string;
+  notes: string;
+  items: PurchaseReturnItem[];
+  voucher: Voucher;
+}
 
 export const getProductsFilters = async (filters: ProductFilterParams = {}) => {
   console.log(filters);
@@ -247,7 +278,7 @@ export const createPurchaseOrder = async (data: PurchaseOrderRequest) => {
   return response.data;
 };
 export const updatePurchaseOrder = async (data: any) => {
-  const response = await inventoryClient.post("/PurchaseOrder/Update", data); // Adjust endpoint
+  const response = await inventoryClient.put("/PurchaseOrder/Update", data); // Adjust endpoint
   return response.data;
 };
 
@@ -313,5 +344,12 @@ export const exportPurchaseOrderPdf = async (id: any) => {
 export const getPurchaseOrderStats = async () => {
   const response = await inventoryClient.get(`/PurchaseOrder/stats`);
   console.log(response);
+  return response.data;
+};
+
+export const createPurchaseReturn = async (data: PurchaseReturnRequest) => {
+  const response = await inventoryClient.post("/Purchase/return", data);
+  console.log(response.data);
+
   return response.data;
 };
