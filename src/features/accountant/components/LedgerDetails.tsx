@@ -118,7 +118,7 @@ const LedgerDetails: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() =>
-                            navigate(`/home/accountant/ledgertransactionhistory/${ledger.id}`)
+                            navigate(`/home/accountant/ledgertransactionhistory/${ledger.ledgerId}`)
                           }
                           className="relative group"
                         >

@@ -14,7 +14,7 @@ interface addVoucher {
   transactionsDebit: Transaction[];
   transactionsCredit: Transaction[];
 }
- export interface LedgerDetails {
+export interface LedgerDetails {
   contactName: string;
   contactNumber: string;
   address: string;
@@ -26,7 +26,7 @@ interface addVoucher {
 }
 
 
- export interface LedgerForm {
+export interface LedgerForm {
   ledgerName: string;
   groupId: string;
   openingBalance: number;
@@ -35,17 +35,17 @@ interface addVoucher {
 }
 
 
-export interface groupDetails{
- groupName:string
- parentId:string
+export interface groupDetails {
+  groupName: string
+  parentId: string
 }
-export const getVoucherTypes= async ()=>{
-    const response= await accountsClient.get("/Voucher/get/all/vouchertypes");
-    return response.data.data
+export const getVoucherTypes = async () => {
+  const response = await accountsClient.get("/Voucher/get/all/vouchertypes");
+  return response.data.data
 }
 
 
- 
+
 
 //Create A transaction
 
@@ -59,46 +59,48 @@ export const addTransactionEntry = async (data: addVoucher) => {
 
 //for getting all cr dr side ledgers
 
-export const getDebitCreditLedgersForTransaction= async (TypeId:string)=>{
-    const response= await accountsClient.get("/Ledger/get/ledgers/fortransaction",{params:{VoucherTypeId:TypeId}});
-  
-    return response.data.data
-    
+export const getDebitCreditLedgersForTransaction = async (TypeId: string) => {
+  const response = await accountsClient.get("/Ledger/get/ledgers/fortransaction", { params: { VoucherTypeId: TypeId } });
+
+  return response.data.data
+
 }
-export const getAllGroupForLedgerCreation = async ()=>{
-    const response= await accountsClient.get("/Accounts/get/all/groups");
-   
-    return response.data.data
-    
+
+export const getAllGroupForLedgerCreation = async () => {
+  const response = await accountsClient.get("/Accounts/get/all/groups");
+
+  return response.data.data
+
 }
 
 
 
 //add ledger api
 export const addLedger = async (data: LedgerForm) => {
-    console.log(data)
+
   const response = await accountsClient.post("/Ledger/add/new/ledger", data);
 
   return response.data;
-  
+
 };
 // add new ledger
-export const addNewSubGroup= async (data: groupDetails) => {
-    console.log(data)
+export const addNewSubGroup = async (data: groupDetails) => {
+
   const response = await accountsClient.post("/Accounts/add/new/sub/group", data);
-  console.log(response)
+
   return response.data;
-  
+
 };
 
 
 //GetallVouchersIncluding item Vouchers
-export const GetAllVoucherTypes= async () => {
- 
+export const GetAllVoucherTypes = async () => {
+
   const response = await accountsClient.get("/Voucher/get/all/vouchertypes/with/items");
- 
+
+
   return response.data.data;
-  
+
 };
 
 
@@ -123,15 +125,15 @@ export const getVoucherReport = async (
 
 
 export const getAllLedgers = async (
-  fromDate: string|null,
-  toDate: string|null,
- // Optional if backend allows
+  fromDate: string | null,
+  toDate: string | null,
+  // Optional if backend allows
 ) => {
   const response = await accountsClient.get("/LedgerReport/all/ledger/report", {
     params: {
       fromDate,
       toDate,
-       // Will be undefined if not passed
+      // Will be undefined if not passed
     },
   });
 
@@ -143,57 +145,141 @@ export const getAllLedgers = async (
 
 //p/l aaccount 
 export const getProfitAndTradingAc = async (
-  fromDate: string|null,
-  toDate: string|null,
-  
- // Optional if backend allows
+  fromDate: string | null,
+  toDate: string | null,
+
+  // Optional if backend allows
 ) => {
   const response = await accountsClient.get("/AccountsReport/get/pandl/account", {
     params: {
       fromDate,
       toDate,
-     
-      
-       // Will be undefined if not passed
+
+
+      // Will be undefined if not passed
     },
   });
-   console.log(fromDate)
-console.log(response.data.data);
+  console.log(fromDate)
+
 
   return response.data.data;
 };
 
 
+
+
+
 //get balance sheet
 export const getBalanceSheet = async (
-  fromDate: string|null,
-  toDate: string|null,
-  
- 
+  fromDate: string | null,
+  toDate: string | null,
+
+
 ) => {
   const response = await accountsClient.get("/AccountsReport/get/balacesheet/report", {
     params: {
       fromDate,
       toDate,
-     
-      
-       // Will be undefined if not passed
+
+
+      // Will be undefined if not passed
     },
   });
-   console.log(fromDate)
-console.log(response.data.data);
+
+
 
   return response.data.data;
 };
 
 
 
+
+//get input gst ledgers by name
+
 export const getInputGstLedger = async () => {
   const response = await accountsClient.get(
     "/Ledger/get/ledgers/ByName?Name=input%20gst"
   );
-  console.log(response.data, "get ledgerrrr");
+
 
   return response.data;
 };
 
+
+
+// get ledger transactions
+export const getLedgerReportById = async (
+  ledgerId: string,
+  startDate?: string | null,
+  endDateid?: string | null
+) => {
+  const response = await accountsClient.get("/LedgerReport/ledger/report/byid", {
+    params: {
+      ledgerId,
+      startDate,
+      endDateid,
+    },
+  });
+  console.log(response.data.data);
+
+
+
+  return response.data.data;
+};
+
+//get taxreport and invoice of sales
+
+export const getTaxAndInvoiceSales = async (
+  fromDate: string | null,
+  toDate: string | null,
+) => {
+  const response = await accountsClient.get("/Sale/getSaleTaxReport", {
+    params: {
+      fromDate,
+      toDate,
+     },
+  })
+  return response.data.data
+}
+
+//get taxreport and invoice of salesreturns
+export const getTaxAndInvoiceSalesReturns = async (
+  fromDate: string | null,
+  toDate: string | null,
+) => {
+  const response = await accountsClient.get("/SaleReturn/GetAllSaleReturnTaxReport", {
+    params: {
+      fromDate,
+      toDate,
+    },
+  })
+   return response.data.data
+}
+
+
+//get taxreport and invoice of purchases
+export const getTaxAndInvoicePurchase = async (
+  fromDate: string | null,
+  toDate: string | null,
+) => {
+  const response = await accountsClient.get("/Sale/getSaleTaxReport", {
+    params: {
+      fromDate,
+      toDate,
+    },
+  })
+   return response.data.data
+}
+
+export const getTaxAndInvoicePurchaseReturns = async (
+  fromDate: string | null,
+  toDate: string | null,
+) => {
+  const response = await accountsClient.get("/SaleReturn/GetAllSaleReturnTaxReport", {
+    params: {
+      fromDate,
+      toDate,
+    },
+  })
+   return response.data.data
+}
