@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
       {/* Email Field */}
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">
-          Your email
+          Your email | mepaci8809@ofacer.com
         </label>
         <input
           type="email"
@@ -90,7 +90,7 @@ const LoginPage: React.FC = () => {
       {/* Password Field */}
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">
-          Password
+          Password | Sabith@123
         </label>
         <div className="relative">
           <input

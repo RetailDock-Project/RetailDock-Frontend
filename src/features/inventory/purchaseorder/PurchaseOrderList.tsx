@@ -66,7 +66,7 @@ export const PurchaseOrderList: React.FC<PurchaseOrderListProps> = ({
               </td>
               <td className="px-4 py-3 text-gray-800">{order.supplier.name}</td>
               <td className="px-4 py-3 text-green-700 font-medium">
-                ₹{order.totalAmount.toLocaleString()}
+                ₹{order.totalAmount.toFixed(2)}
               </td>
               <td className="px-4 py-3">
                 <span
