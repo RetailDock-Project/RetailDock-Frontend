@@ -1,5 +1,8 @@
 import type { ProductFormData } from "../../../features/inventory/product/NewProduct";
-import type { PurchaseRequest, Voucher } from "../../../features/inventory/purchase/PurchaseTypes";
+import type {
+  PurchaseRequest,
+  Voucher,
+} from "../../../features/inventory/purchase/PurchaseTypes";
 import type { SupplierDto } from "../../../features/inventory/supplier/SupplierForm";
 import accountsClient from "../AccountsApi/accountsClient";
 import inventoryClient from "./inventoryClient";
@@ -350,6 +353,31 @@ export const getPurchaseOrderStats = async () => {
 export const createPurchaseReturn = async (data: PurchaseReturnRequest) => {
   const response = await inventoryClient.post("/Purchase/return", data);
   console.log(response.data);
+
+  return response.data;
+};
+
+export const getPurchaseReturnsFilter = async ({
+  search,
+  fromDate,
+  toDate,
+}: {
+  search?: string;
+  fromDate?: string; // ISO string e.g. "2025-07-01T00:00:00"
+  toDate?: string;
+}) => {
+  const params: Record<string, any> = {};
+
+  if (search) params.search = search;
+  if (fromDate) params.fromDate = fromDate;
+  if (toDate) params.toDate = toDate;
+
+  const response = await inventoryClient.get(
+    `/Purchase/Get/Return/OrganizationId`,
+    {
+      params,
+    }
+  );
 
   return response.data;
 };

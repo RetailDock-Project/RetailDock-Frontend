@@ -120,7 +120,7 @@ const PageRoutes: React.FC = () => {
 
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
             <Route path="purchase-return">
-              <Route path="new" element={<NewPurchaseReturn />}></Route>
+              <Route path="new/:id" element={<NewPurchaseReturn />}></Route>
             </Route>
 
             <Route path="purchases" element={<Purchase />}></Route>
