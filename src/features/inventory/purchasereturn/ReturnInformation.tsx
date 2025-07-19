@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { SingleDatePicker } from "../../../components/ui/reusable/SingleDatePicker";
-import { DropdownList } from "../../../components/ui/reusable/DropdownList";
+import SearchSelect from "../../../components/ui/reusable/SearchSelect";
+
+type PurchaseOrder = {
+  id: string;
+  invoiceNumber: string;
+};
 
 type ReturnInformationProps = {
-  purchaseOrders: string[];
+  purchaseOrders: PurchaseOrder[];
   reasons: string[];
 };
 
@@ -11,10 +16,26 @@ const ReturnInformation: React.FC<ReturnInformationProps> = ({
   purchaseOrders,
   reasons,
 }) => {
-  const [selectedOrder, setSelectedOrder] = useState("");
-  const [returnDate, setReturnDate] = useState("2025-06-27");
+  const [selectedOrder, setSelectedOrder] = useState<{
+    id: string | number;
+    label: string;
+    value: string;
+  } | null>(null);
+
+  const [returnDate, setReturnDate] = useState<Date | null>(new Date());
   const [reason, setReason] = useState("");
   const [notes, setNotes] = useState("");
+
+  // Map purchaseOrders to SearchSelect-friendly format
+  const purchaseOptions = useMemo(
+    () =>
+      purchaseOrders.map((order) => ({
+        id: String(order.id), // ✅ Force id to string
+        label: order.invoiceNumber,
+        value: order.id,
+      })),
+    [purchaseOrders]
+  );
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md border space-y-4">
@@ -23,28 +44,19 @@ const ReturnInformation: React.FC<ReturnInformationProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Purchase Order */}
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Purchase Order *
-          </label>
-          {/* <select
-            value={selectedOrder}
-            onChange={(e) => setSelectedOrder(e.target.value)}
-            className="w-full border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Select purchase order</option>
-            {purchaseOrders.map((order) => (
-              <option key={order} value={order}>
-                {order}
-              </option>
-            ))}
-          </select> */}
-          <DropdownList options={purchaseOrders} onSelect={() => {}} />
+          <SearchSelect
+            label="Purchase *"
+            options={purchaseOptions}
+            selected={selectedOrder}
+            setSelected={setSelectedOrder}
+            placeholder="Search by invoice number..."
+          />
         </div>
 
         {/* Return Date */}
         <div>
           <label className="block text-sm font-medium mb-1">Return Date</label>
-          <SingleDatePicker onChange={() => {}} />
+          <SingleDatePicker onChange={setReturnDate} />
         </div>
       </div>
 

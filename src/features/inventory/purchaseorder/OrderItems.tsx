@@ -68,7 +68,8 @@ const OrderItems: React.FC<Props> = ({ items }) => {
             <span className="font-medium">Total Tax:</span> ₹{totalTax}
           </p>
           <p>
-            <span className="font-medium">Total Tax:</span> ₹{totalAmount}
+            <span className="font-medium">Total Amount:</span> ₹
+            {totalAmount?.toFixed(2)}
           </p>
         </div>
       </div>

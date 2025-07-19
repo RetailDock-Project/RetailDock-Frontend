@@ -82,7 +82,6 @@ const PurchaseOrderForm = ({
   mode?: "create" | "edit";
 }) => {
   const { id } = useParams<{ id?: string }>();
-  console.log(id);
 
   const navigate = useNavigate();
 
@@ -111,6 +110,7 @@ const PurchaseOrderForm = ({
     select: (data) => data.data,
     enabled: mode === "edit" && !!id,
   });
+
   console.log(order);
 
   useEffect(() => {
@@ -134,15 +134,18 @@ const PurchaseOrderForm = ({
           taxRate: item.gstRate,
         }))
       );
-
-      console.log("Order inside useEffect:", order);
     }
   }, [order, mode]);
 
-  console.log(initialData);
-  console.log(selectedSupplier);
-
   const handleAddItem = (newItem: Item) => {
+    console.log("hi");
+    console.log("hi");
+    console.log("hi");
+    console.log("hi");
+    console.log("hi");
+
+    console.log("new itemsssssssssssss", newItem);
+
     setItems((prevItems) => {
       const existingIndex = prevItems.findIndex(
         (item) => item.productId === newItem.productId
@@ -158,6 +161,7 @@ const PurchaseOrderForm = ({
           unitCost: newItem.unitCost,
           taxRate: newItem.taxRate,
         };
+        console.log(updatedItems);
 
         return updatedItems;
       }
@@ -194,10 +198,19 @@ const PurchaseOrderForm = ({
       return;
     }
 
-    const payload = {
-      purchaseOrderId: initialData?.purchaseOrderId,
+    const payloadBase = {
       supplierId: selectedSupplier?.id,
       orderDate: selectedDate?.toISOString(),
+      items: items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        ratePerPiece: item.unitCost,
+      })),
+    };
+
+    const payloadWithIds = {
+      ...payloadBase,
+      purchaseOrderId: initialData?.purchaseOrderId,
       items: items.map((item) => ({
         purchaseOrderItemId: item.purchaseOrderItemId ?? null,
         productId: item.productId,
@@ -208,20 +221,23 @@ const PurchaseOrderForm = ({
 
     try {
       if (mode === "edit") {
-        console.log(payload);
-
-        // await updatePurchaseOrder(payload);
+        console.log(payloadWithIds);
+        await updatePurchaseOrder(payloadWithIds);
         toast.success("Purchase order updated!");
+        navigate(
+          `/home/inventory/purchase-order/${initialData?.purchaseOrderId}`
+        );
       } else {
-        // await createPurchaseOrder(payload);
+        console.log(payloadBase);
+        await createPurchaseOrder(payloadBase);
         toast.success("Purchase order created!");
       }
-      //   navigate("/home/inventory/purchase-orders");
-    } catch (err) {
-      toast.error("Failed to save purchase order.");
-      console.error(err);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
     }
   };
+
+  console.log(items);
 
   return (
     <div className="p-6">
