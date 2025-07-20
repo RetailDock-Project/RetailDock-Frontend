@@ -1,93 +1,60 @@
 import React, { useState } from "react";
-
-
+import { useQuery } from "@tanstack/react-query";
 import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker";
-
-const voucherTypes = ["All", "Sales Invoice", "Payment", "Expense"];
-
-const mockTransactions = [
-  {
-    date: "2025-05-22",
-    voucher: "SI-4587",
-    description: "Sales Invoice #4587",
-    relatedAccount: "Sales Revenue",
-    debit: 0,
-    credit: 1250.0,
-  },
-  {
-    date: "2025-05-21",
-    voucher: "BP-1089",
-    description: "Payment to Supplier #1089",
-    relatedAccount: "Accounts Payable",
-    debit: 2780.5,
-    credit: 0,
-  },
-  {
-    date: "2025-05-20",
-    voucher: "EP-254",
-    description: "Utility Bill Payment",
-    relatedAccount: "Utility Expenses",
-    debit: 345.75,
-    credit: 0,
-  },
-  {
-    date: "2025-05-19",
-    voucher: "SI-4586",
-    description: "Sales Invoice #4586",
-    relatedAccount: "Sales Revenue",
-    debit: 0,
-    credit: 970.25,
-  },
-  {
-    date: "2025-05-18",
-    voucher: "BP-1088",
-    description: "Payment to Supplier #1088",
-    relatedAccount: "Accounts Payable",
-    debit: 1850.0,
-    credit: 0,
-  },
-  {
-    date: "2025-05-17",
-    voucher: "SI-4585",
-    description: "Sales Invoice #4585",
-    relatedAccount: "Sales Revenue",
-    debit: 0,
-    credit: 1430.5,
-  },
-];
+import { GetAllVoucherTypes, getVoucherReport } from "../../../services/api/AccountsApi/accountsApi";
 
 const VoucherReport: React.FC = () => {
-  const [selectedVoucherType, setSelectedVoucherType] = useState("All");
-   const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({
-          startDate: null,
-          endDate: null,
-      });
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null,
+  });
 
-  const filtered = mockTransactions.filter((txn) =>
-    selectedVoucherType === "All"
-      ? true
-      : txn.voucher.startsWith(selectedVoucherType.split(" ")[0])
-  );
+  const [voucherTypeId, setVoucherTypeId] = useState<string>("");
+
+  // Fetch all voucher types
+  const { data: GetAllVoucherType } = useQuery<any>({
+    queryKey: ["voucherTypes"],
+    queryFn: GetAllVoucherTypes,
+  });
+
+  // Fetch report data based on voucherTypeId and dateRange
+  const { data: reportData, isLoading, isError } = useQuery({
+    queryKey: ["voucherReport", dateRange, voucherTypeId],
+    queryFn: () => {
+      const fromDate = dateRange.startDate?.toISOString() ?? "";
+      const toDate = dateRange.endDate?.toISOString() ?? "";
+      return getVoucherReport(fromDate, toDate, voucherTypeId);
+    },
+    enabled: !!voucherTypeId,
+  });
 
   return (
     <div className="bg-white p-6 rounded-lg border shadow-sm">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
         <h2 className="text-xl font-semibold text-gray-800">Voucher Report</h2>
+
         <div className="flex items-center gap-4">
           <select
             className="border px-3 py-2 rounded text-sm text-gray-700"
-            value={selectedVoucherType}
-            onChange={(e) => setSelectedVoucherType(e.target.value)}
+            value={voucherTypeId}
+            onChange={(e) => setVoucherTypeId(e.target.value)}
           >
-            {voucherTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
+            <option value="">-- Select Voucher Type --</option>
+            {GetAllVoucherType?.map((type: any) => (
+              <option key={type.id} value={type.id}>
+                {type.displayName}
               </option>
             ))}
           </select>
-          {/* Replace this div with your actual date range picker */}
+
           <div className="border px-3 py-2 rounded text-sm text-gray-700">
-            <DateRangePicker onChange={(range) => setDateRange(range)} />
+            <DateRangePicker
+
+              onChange={(range) => setDateRange(range)}
+            />
           </div>
         </div>
       </div>
@@ -97,25 +64,49 @@ const VoucherReport: React.FC = () => {
           <thead className="bg-gray-50 text-gray-700">
             <tr>
               <th className="px-4 py-2">Date</th>
-              <th className="px-4 py-2">Voucher</th>
-              <th className="px-4 py-2">Description</th>
-              <th className="px-4 py-2">Related Account</th>
+              <th className="px-4 py-2">Voucher Number</th>
+              <th className="px-4 py-2">LedgerAccount</th>
+
               <th className="px-4 py-2 text-right">Debit</th>
               <th className="px-4 py-2 text-right">Credit</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {filtered.map((txn, i) => (
+            {isLoading && (
+              <tr>
+                <td colSpan={6} className="text-center py-4">
+                  Loading...
+                </td>
+              </tr>
+            )}
+
+            {isError && (
+              <tr>
+                <td colSpan={6} className="text-center py-4 text-red-600">
+                  Failed to load report.
+                </td>
+              </tr>
+            )}
+
+            {!isLoading && !isError && reportData?.length === 0 && (
+              <tr>
+                <td colSpan={6} className="text-center py-4 text-gray-500">
+                  No data available for selected filters.
+                </td>
+              </tr>
+            )}
+
+            {reportData?.map((txn: any, i: number) => (
               <tr key={i}>
-                <td className="px-4 py-2">{txn.date}</td>
-                <td className="px-4 py-2">{txn.voucher}</td>
-                <td className="px-4 py-2">{txn.description}</td>
-                <td className="px-4 py-2">{txn.relatedAccount}</td>
+                <td className="px-4 py-2"> {new Date(txn.voucherDate).toISOString().split("T")[0]}</td>
+                <td className="px-4 py-2">{txn.voucherNumber}</td>
+                <td className="px-4 py-2">{txn.ledgerName}</td>
+
                 <td className="px-4 py-2 text-right">
-                  {txn.debit > 0 ? `$${txn.debit.toLocaleString()}` : ""}
+                  {txn.isDebit ? `₹${txn.amount.toLocaleString()}` : ""}
                 </td>
                 <td className="px-4 py-2 text-right">
-                  {txn.credit > 0 ? `$${txn.credit.toLocaleString()}` : ""}
+                  {!txn.isDebit ? `₹${txn.amount.toLocaleString()}` : ""}
                 </td>
               </tr>
             ))}

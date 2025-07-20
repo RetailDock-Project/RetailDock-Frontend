@@ -29,6 +29,8 @@ const PurchaseDetail: React.FC = () => {
     select: (data) => data.data, // optional: if your API wraps the response in { data }
   });
 
+  console.log(purchase);
+
   return (
     <div className="p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader

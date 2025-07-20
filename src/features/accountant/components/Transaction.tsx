@@ -9,6 +9,7 @@ import {
 import { SingleDatePicker } from "../../../components/ui/reusable/SingleDatePicker";
 import toast from "react-hot-toast";
 import { Button } from "../../../components/ui/reusable/Button";
+import { useNavigate } from "react-router-dom";
 
 type LedgerRow = {
   id: number;
@@ -19,7 +20,7 @@ const Transaction: React.FC = () => {
   const [voucherTypeId, setVoucherTypeId] = useState<string | null>(null);
   const [voucherDate, setVoucherDate] = useState<Date | null>(null);
   const [remarks, setRemarks] = useState("");
-
+  const navigate = useNavigate();
 
   const [drRows, setDrRows] = useState<LedgerRow[]>([
     { id: Date.now(), account: "", amount: "" },
@@ -120,10 +121,14 @@ const Transaction: React.FC = () => {
 
     try {
       const result = await addTransactionEntry(payload);
-
       toast.success("Voucher saved successfully");
 
-      // Optionally reset form here
+      // ✅ Reset all fields after success
+
+      setVoucherDate(null);
+      setRemarks("");
+      setDrRows([{ id: Date.now(), account: "", amount: "" }]);
+      setCrRows([{ id: Date.now() + 1, account: "", amount: "" }]);
     } catch (error) {
       console.error("Failed to save:", error);
       alert("Error saving voucher");
@@ -143,14 +148,22 @@ const Transaction: React.FC = () => {
 
       {/* Voucher Type Section */}
       <div className="mb-6 w-full relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end">
-          {/* Date Picker on top right */}
-          <div className="w-full md:w-auto md:ml-auto mb-4 md:mb-0">
+        <div className="w-full md:w-auto md:ml-auto mb-4">
+          <div className="flex flex-col items-end gap-2">
+            <button
+              className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium"
+              onClick={() => navigate("/home/accountant/add-ledger")}
+            >
+              <Plus className="w-4 h-4" />
+              Add New Ledger
+            </button>
+             <div>
             <SingleDatePicker onChange={(date) => setVoucherDate(date)} />
-
-
+              </div>
           </div>
         </div>
+
+
 
         {/* Label and Select Box */}
         <label className="text-sm font-medium text-gray-700 block mb-1">Voucher Type</label>
@@ -263,7 +276,7 @@ const Transaction: React.FC = () => {
                 )}
               </div>
             ))}
-          
+
 
             <button
               type="button"

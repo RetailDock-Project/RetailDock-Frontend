@@ -2,6 +2,8 @@ import React from "react";
 import { FaEye, FaFilePdf } from "react-icons/fa";
 import { formatDate } from "../../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
+import { exportPurchaseOrderPdf } from "../../../services/api/inventoryapi/inventoryApi";
 
 type PurchaseOrderListProps = {
   data: PurchaseOrders[];
@@ -39,6 +41,9 @@ export const PurchaseOrderList: React.FC<PurchaseOrderListProps> = ({
       </div>
     );
   }
+  const handleExport = (id: string) => {
+    downloadExcelFile(() => exportPurchaseOrderPdf(id), "PurchaseOrder.pdf");
+  };
 
   const navigate = useNavigate();
   return (
@@ -61,12 +66,12 @@ export const PurchaseOrderList: React.FC<PurchaseOrderListProps> = ({
                   {order.purchaseOrderNumber}
                 </div>
                 <div className="text-gray-500 text-xs">
-                  Ordered: {formatDate(order.orderDate).humanReadable}
+                  Ordered: {formatDate(order.orderDate).fullDate}
                 </div>
               </td>
               <td className="px-4 py-3 text-gray-800">{order.supplier.name}</td>
               <td className="px-4 py-3 text-green-700 font-medium">
-                ₹{order.totalAmount.toLocaleString()}
+                ₹{order.totalAmount.toFixed(2)}
               </td>
               <td className="px-4 py-3">
                 <span
@@ -99,7 +104,7 @@ export const PurchaseOrderList: React.FC<PurchaseOrderListProps> = ({
                 <button
                   className="inline-flex items-center text-sm text-red-600 hover:underline"
                   title="Download PDF"
-                  onClick={() => console.log("Download PDF")}
+                  onClick={() => handleExport(order.purchaseOrderId)}
                 >
                   <FaFilePdf className="mr-1" />
                   PDF

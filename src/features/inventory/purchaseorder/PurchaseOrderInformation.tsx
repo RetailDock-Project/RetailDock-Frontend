@@ -15,6 +15,9 @@ type Props = {
   setSelectedDate: (date: Date | null) => void;
   notes: string;
   setNotes: (notes: string) => void;
+  formErrors?: {
+    supplier?: string;
+  };
 };
 
 const PurchaseOrderInformation: React.FC<Props> = ({
@@ -25,6 +28,7 @@ const PurchaseOrderInformation: React.FC<Props> = ({
   setSelectedDate,
   notes,
   setNotes,
+  formErrors,
 }) => {
   const supplierOptions = suppliers?.map((s) => ({
     id: s.id,
@@ -32,13 +36,15 @@ const PurchaseOrderInformation: React.FC<Props> = ({
     value: s,
   }));
 
+  console.log(selectedSupplier, "selected supliersss");
+
   return (
     <div className="p-6 rounded-xl shadow border bg-white space-y-6">
       <h2 className="text-xl font-semibold text-gray-700">
         Purchase Information
       </h2>
 
-      <div className="flex gap-2">
+      <div className="flex gap-4">
         {/* Supplier */}
         <div className="w-[50%]">
           <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -59,6 +65,9 @@ const PurchaseOrderInformation: React.FC<Props> = ({
             }
             setSelected={(option) => setSelectedSupplier(option.value)}
           />
+          {formErrors?.supplier && (
+            <p className="text-red-500 text-sm mt-1">{formErrors.supplier}</p>
+          )}
         </div>
 
         {/* Purchase Date */}

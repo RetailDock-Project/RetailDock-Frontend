@@ -38,6 +38,8 @@ const PurchaseOrder: React.FC = () => {
     select: (data) => data.data,
   });
 
+  console.log(purchaseOrders);
+
   const handleRangeChange = (range: {
     startDate: Date | null;
     endDate: Date | null;
@@ -74,14 +76,15 @@ const PurchaseOrder: React.FC = () => {
               <RotateCcw size={16} />
               Purchase Return
             </Button>
-            <Button
+
+            {/* <Button
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
             >
               <FileDown size={16} />
               Export
-            </Button>
+            </Button> */}
           </>
         }
       />
@@ -110,7 +113,7 @@ const PurchaseOrder: React.FC = () => {
               options={[
                 { id: "Pending", name: "Pending" },
                 { id: "Partial", name: "Partial" },
-                { id: "Completed", name: "Completed" },
+                { id: "Complete", name: "Completed" },
               ]}
               includeDefaultOption={true}
               defaultOptionLabel="Select an option"

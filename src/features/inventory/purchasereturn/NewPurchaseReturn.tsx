@@ -9,6 +9,7 @@ import ReturnQuickActions from "./ReturnQuickActions";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
 import { PurchaseOrderDetails } from "./PurchaseOrderDetails";
 import { SelectItemsToReturn } from "./SelectItemsToReturn";
+import { createPurchaseReturn } from "../../../services/api/inventoryapi/inventoryApi";
 
 const NewPurchaseReturn: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +19,12 @@ const NewPurchaseReturn: React.FC = () => {
 
   const handleSelectAllItems = () => {
     console.log("Selecting all items...");
+  };
+
+  const addPurchaseReturn = async () => {
+    try {
+      //   await createPurchaseReturn(data);
+    } catch (error) {}
   };
   return (
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
@@ -51,13 +58,17 @@ const NewPurchaseReturn: React.FC = () => {
       <div className=" pt-6 min-h-screen grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <ReturnInformation
-            purchaseOrders={["PO-2025-0001", "PO-2025-0002"]}
+            purchaseOrders={[
+              { id: "1", invoiceNumber: "PO-2025-0001" },
+              { id: "2", invoiceNumber: "PO-2025-0002" },
+            ]}
             reasons={[
               "Defective item",
               "Wrong item delivered",
               "Excess quantity",
             ]}
           />
+
           <PurchaseOrderDetails />
           <SelectItemsToReturn />
         </div>

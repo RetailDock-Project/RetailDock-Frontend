@@ -1,24 +1,33 @@
+import { useQuery } from "@tanstack/react-query";
 import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker";
 import { Download, Eye, Plus, Pencil } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAllLedgers } from "../../../services/api/AccountsApi/accountsApi";
 
 const LedgerDetails: React.FC = () => {
   const navigate = useNavigate();
-  const [dateRange, setDateRange] = useState<{
-    startDate: Date | null;
-    endDate: Date | null;
-  }>({
-    startDate: null,
-    endDate: null,
+  const [dateRange, setDateRange] = useState<{ fromDate: Date | null; toDate: Date | null }>({
+    fromDate: null,
+    toDate: null,
   });
+
+  const fromDate = dateRange.fromDate?.toISOString().split("T")[0] || "";
+  const toDate = dateRange.toDate?.toISOString().split("T")[0] || "";
+
+  const { data: allLedgers, error, isLoading } = useQuery({
+    queryKey: ["allLedgers", fromDate, toDate],
+    queryFn: () => getAllLedgers(fromDate, toDate),
+    // will wait until both dates are selected
+  });
+
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Ledger Accounts</h2>
-        <button className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium" 
-        onClick={()=>navigate("/home/accountant/add-ledger")}>
+        <button className="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium"
+          onClick={() => navigate("/home/accountant/add-ledger")}>
           <Plus className="w-4 h-4" />
           Add New Ledger
         </button>
@@ -63,61 +72,75 @@ const LedgerDetails: React.FC = () => {
 
           {/* DateRangePicker */}
           <div className="w-full sm:w-auto">
-            <DateRangePicker onChange={(range) => setDateRange(range)} />
+            <DateRangePicker
+              onChange={(range) =>
+                setDateRange({
+                  fromDate: range.startDate,
+                  toDate: range.endDate,
+                })
+              }
+            />
+
           </div>
         </div>
 
         {/* Table */}
         <div>
-          <table className="min-w-full text-sm text-left table-auto">
-            <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
-              <tr>
-                <th className="px-2 py-3 min-w-[100px]">Account Name</th>
-                <th className="px-2 py-3 min-w-[100px]">Opening</th>
-                <th className="px-2 py-3 min-w-[100px]">Total Dr</th>
-                <th className="px-2 py-3 min-w-[100px]">Total Cr</th>
-                <th className="px-2 py-3 min-w-[100px]">Closing</th>
-                <th className="px-2 py-3 min-w-[100px]">Last Updated</th>
-                <th className="px-2 py-3 min-w-[100px]"> Updated By</th>
-                <th className="px-2 py-3 min-w-[100px]">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              <tr className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-gray-700 font-medium">
-                  Sales Revenue
-                </td>
-                <td className="px-4 py-3 text-gray-700">₹5,000.00 Dr</td>
-                <td className="px-4 py-3 text-gray-700">₹10,000.00</td>
-                <td className="px-4 py-3 text-gray-700">₹3,000.00</td>
-                <td className="px-4 py-3 text-gray-700">₹12,000.00 Cr</td>
-                <td className="px-4 py-3 text-gray-700">2025-06-20</td>
-                <td className="px-4 py-3 text-gray-700">Ramees</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() =>
-                        navigate("/home/accountant/ledgertransactionhistory/id")
-                      }
-                      className="relative group"
-                    >
-                      <Eye className="w-4 h-4 text-gray-500 hover:text-blue-600 cursor-pointer" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
-                        View Details
+          {isLoading ? (
+            <div className="text-center py-6 text-gray-600">Loading ledger data...</div>
+          ) : (
+            <table className="min-w-full text-sm text-left table-auto">
+              <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+                <tr>
+                  <th className="px-2 py-3 min-w-[100px]">Account Name</th>
+                  <th className="px-2 py-3 min-w-[100px]">Opening Balance </th>
+                  <th className="px-2 py-3 min-w-[100px]">Total Dr Of Period</th>
+                  <th className="px-2 py-3 min-w-[100px]">Total Cr  Of Period</th>
+                  <th className="px-2 py-3 min-w-[100px]">Closing Balance</th>
+               
+                  <th className="px-2 py-3 min-w-[100px]">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {allLedgers?.map((ledger: any) => (
+                  <tr key={ledger.ledgerId} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-gray-700 font-medium">{ledger.ledgerName}</td>
+                    <td className="px-4 py-3 text-gray-700">
+                      ₹{ledger.openingBalance?.toLocaleString()} {ledger.openingType}
+                    </td>
+                    <td className="px-4 py-3 text-gray-700">₹{ledger.periodDr?.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-gray-700">₹{ledger.periodCr?.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-gray-700">
+                      ₹{ledger.closingBalance?.toLocaleString()} {ledger.closingType}
+                    </td>
+                   
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() =>
+                            navigate(`/home/accountant/ledgertransactionhistory/${ledger.ledgerId}`)
+                          }
+                          className="relative group"
+                        >
+                          <Eye className="w-4 h-4 text-gray-500 hover:text-blue-600 cursor-pointer" />
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
+                            View Details
+                          </div>
+                        </button>
+                        <div className="relative group">
+                          <Pencil className="w-4 h-4 text-gray-500 hover:text-orange-600 cursor-pointer" />
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
+                            Update Ledger Details
+                          </div>
+                        </div>
                       </div>
-                    </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
 
-                    <div className="relative group">
-                      <Pencil className="w-4 h-4 text-gray-500 hover:text-orange-600 cursor-pointer" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap">
-                        Update Ledger Details
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
         </div>
 
         {/* Export Button */}

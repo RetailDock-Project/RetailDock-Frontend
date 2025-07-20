@@ -3,29 +3,28 @@ import React, { useState } from "react";
 export type SupplierDto = {
   name: string;
   openingBalance?: number;
-  isDebit?: boolean;
-  contactName?: string;
-  contactNumber?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  pincode?: string;
-  gstNumber?: string;
-  bankName?: string;
-  accountNumber?: string;
-  ifscCode?: string;
-  upiId?: string;
-  email?: string;
+  isDebit?: boolean | null;
+  contactName?: string | null;
+  contactNumber?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  pincode?: string | null;
+  gstNumber?: string | null;
+  bankName?: string | null;
+  accountNumber?: string | null;
+  ifscCode?: string | null;
+  upiId?: string | null;
+  email?: string | null;
 };
 
 type Props = {
   supplier: SupplierDto;
   setSupplier: React.Dispatch<React.SetStateAction<SupplierDto>>;
-  onSubmit: (e: React.FormEvent) => void;
 };
 
-const SupplierForm: React.FC<Props> = ({ supplier, setSupplier, onSubmit }) => {
+const SupplierForm: React.FC<Props> = ({ supplier, setSupplier }) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,17 +75,9 @@ const SupplierForm: React.FC<Props> = ({ supplier, setSupplier, onSubmit }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate()) {
-      onSubmit(e);
-    }
-  };
-
   return (
     <form
       id="supplier-form"
-      onSubmit={handleSubmit}
       className="bg-white rounded-2xl border shadow-lg p-8 mt-6 space-y-8"
     >
       <div>
@@ -229,14 +220,14 @@ const SupplierForm: React.FC<Props> = ({ supplier, setSupplier, onSubmit }) => {
         </div>
       </div>
 
-      <div className="pt-4">
+      {/* <div className="pt-4">
         <button
           type="submit"
           className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
         >
           Submit
         </button>
-      </div>
+      </div> */}
     </form>
   );
 };

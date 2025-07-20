@@ -35,6 +35,8 @@ const PurchaseOrderDetail: React.FC = () => {
     enabled: !!id,
   });
 
+  console.log(order);
+
   const handleExport = () => {
     downloadExcelFile(() => exportPurchaseOrderPdf(id), "PurchaseOrder.pdf");
   };
@@ -43,7 +45,7 @@ const PurchaseOrderDetail: React.FC = () => {
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader
         backTo="/home/inventory/purchase-orders"
-        title="Purchase Order - PO-2025-0001"
+        title={`Purchase Order - ${order?.purchaseOrderNumber}`}
         subtitle="View purchase order details and items"
         actions={
           <>
@@ -55,6 +57,20 @@ const PurchaseOrderDetail: React.FC = () => {
             >
               <FilePlus size={16} />
               Print
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="flex items-center gap-2"
+              onClick={() =>
+                navigate(`/home/inventory/purchase-order/edit/${id}`, {
+                  state: {
+                    purchaseOrderNumber: `${order?.purchaseOrderNumber}`,
+                  },
+                })
+              }
+            >
+              Edit
             </Button>
             <Button
               size="sm"

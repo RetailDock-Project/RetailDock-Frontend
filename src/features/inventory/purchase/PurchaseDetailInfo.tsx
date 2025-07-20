@@ -18,18 +18,18 @@ const PurchaseDetailInfo: React.FC<Props> = ({ purchase }) => {
           <span className="font-medium">Purchase ID:</span>{" "}
           {purchase.purchaseInvoiceNumber || "N/A"}
         </div>
-        <div>
+        {/* <div>
           <span className="font-medium">Purchase Status:</span>{" "}
           <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">
             Received
           </span>
-        </div>
+        </div> */}
         <div>
           <span className="font-medium">Supplier:</span>{" "}
           {purchase.supplierDetails?.name || "N/A"}
         </div>
         <div>
-          <span className="font-medium">Invoice Number:</span>{" "}
+          <span className="font-medium">Invoice Number (supplier):</span>{" "}
           {purchase.supplierInvoiceNumber || "N/A"}
         </div>
         <div>

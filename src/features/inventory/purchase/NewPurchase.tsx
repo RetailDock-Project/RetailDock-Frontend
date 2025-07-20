@@ -14,7 +14,6 @@ import type {
   VoucherTransaction,
 } from "./PurchaseTypes";
 import toast from "react-hot-toast";
-import type { ProductFilterParams } from "../../../hooks/useProducts";
 import { useQuery } from "@tanstack/react-query";
 import { getInventoryTransactionLedgerId } from "../../../services/api/cashierApi/cashierApi";
 import { getInputGstLedger } from "../../../services/api/AccountsApi/accountsApi";
@@ -22,8 +21,9 @@ import { getInputGstLedger } from "../../../services/api/AccountsApi/accountsApi
 const NewPurchase: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSaving, setIsSaving] = useState(false);
+
   const purchaseState = location.state || {};
-  console.log(purchaseState);
 
   const [purchaseInfo, setPurchaseInfo] = useState<{
     supplierId: string;
@@ -45,8 +45,6 @@ const NewPurchase: React.FC = () => {
     select: (data) => data.data,
   });
 
-  console.warn(inventoryLedgerId, inputGstLedgerId, "ledger idsssssss");
-
   const [notes, setNotes] = useState<string | null>(null);
   const [supplierInvoiceNumber, setSupplierInvoiceNumber] =
     useState<string>("");
@@ -56,14 +54,12 @@ const NewPurchase: React.FC = () => {
   const [supplierLedgerId, setSupplierLedgerId] = useState<string | null>(
     purchaseState?.ledgerId || null
   );
-
   const [dueDate, setDueDate] = useState<string | null>(
     purchaseState?.dueDate || null
   );
   const [narration, setNarration] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string | null>("");
 
-  useState<string>("");
   const [purchaseItems, setPurchaseItems] = useState<PurchaseItem[]>(
     purchaseState?.items || []
   );
@@ -79,6 +75,7 @@ const NewPurchase: React.FC = () => {
   }, [purchaseState?.items]);
 
   const purchaseOrderId = purchaseState?.purchaseOrderId || null;
+  const isFromPurchaseOrder = !!purchaseOrderId;
 
   const handlePurchaseInfoChange = useCallback(
     (info: {
@@ -94,21 +91,16 @@ const NewPurchase: React.FC = () => {
       setSupplierInvoiceNumber(info.supplierInvoiceNumber);
       setGstType(info.gstType);
       setSelectedDate(info.date ? info.date.toISOString() : null);
-      setSupplierLedgerId(info.supplierLedgerId || null); // ✅ added
+      setSupplierLedgerId(info.supplierLedgerId || null);
     },
     []
   );
 
   const handleItemsChange = useCallback((items: PurchaseItem[]) => {
-    console.log(items);
-
     setPurchaseItems((prev) =>
       JSON.stringify(prev) === JSON.stringify(items) ? prev : items
     );
   }, []);
-
-  console.log(purchaseItems, "purchase orders darraaaaaaaaaaaaaaaaaaaaa");
-  console.log(purchaseOrderId);
 
   const handleSubmit = useCallback(async () => {
     if (
@@ -120,19 +112,23 @@ const NewPurchase: React.FC = () => {
       return;
     }
 
-    // Clone the voucher object to avoid direct mutation
-    const updatedVoucher = {
+    setIsSaving(true); // 🟡 Start loading
+
+    const shouldAddSupplierCredit =
+      !voucher.transactionsCredit.length && supplierLedgerId;
+
+    const updatedVoucher: Voucher = {
       ...voucher,
       transactionsCredit: [
-        ...voucher.transactionsCredit,
-        ...(purchaseOrderId === null && supplierLedgerId
+        ...(shouldAddSupplierCredit
           ? [
               {
-                ledgerId: supplierLedgerId,
+                ledgerId: supplierLedgerId!,
                 narration: "Supplier Ledger",
               },
             ]
           : []),
+        ...voucher.transactionsCredit,
       ],
     };
 
@@ -182,14 +178,14 @@ const NewPurchase: React.FC = () => {
     };
 
     try {
-      console.log(payload);
-
       await createPurchase(payload);
-      alert("Purchase saved successfully!");
-      // navigate("/home/inventory/purchases");
+      toast.success("Purchase saved successfully!");
+      navigate("/home/inventory/purchases");
     } catch (error) {
       console.error("Error saving purchase:", error);
-      alert("Failed to save purchase.");
+      toast.error("Failed to save purchase.");
+    } finally {
+      setIsSaving(false); // 🔴 End loading
     }
   }, [
     purchaseInfo,
@@ -200,10 +196,11 @@ const NewPurchase: React.FC = () => {
     supplierInvoiceNumber,
     gstType,
     voucher,
-    navigate,
     selectedDate,
-    purchaseState.ledgerId, // <- Add this to dependency
     supplierLedgerId,
+    inventoryLedgerId,
+    inputGstLedgerId,
+    navigate,
   ]);
 
   return (
@@ -228,8 +225,9 @@ const NewPurchase: React.FC = () => {
               icon={<MdOutlineSave className="text-base" />}
               className="flex items-center gap-2 py-2"
               onClick={handleSubmit}
+              disabled={isSaving} // disable button while saving
             >
-              Save Purchase
+              {isSaving ? "Saving..." : "Save Purchase"}
             </Button>
           </>
         }
@@ -245,6 +243,7 @@ const NewPurchase: React.FC = () => {
               ledgerId: purchaseState.ledgerId,
             }}
             onChange={handlePurchaseInfoChange}
+            disableSupplierSelect={isFromPurchaseOrder} // ✅ Disable selection
           />
 
           <AddPurchaseItem
@@ -258,7 +257,7 @@ const NewPurchase: React.FC = () => {
               .map((i) => `${i.productId}-${i.product}`)
               .join(",")}
             items={purchaseItems}
-            gstType="CGST_SGST" // or "IGST"
+            gstType="CGST_SGST"
           />
         </div>
       </div>

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Button } from "../../../components/ui/reusable/Button";
-import SearchSelect from "../../../components/ui/reusable/SearchSelect"; // Adjust path as needed
+import SearchSelect from "../../../components/ui/reusable/SearchSelect";
 
 type Product = {
   id: number;
   name: string;
+  taxRate: number;
 };
 
 type ProductItem = {
@@ -27,35 +28,38 @@ const AddItemSection: React.FC<AddItemSectionProps> = ({
   const [selectedProduct, setSelectedProduct] = useState<{
     id: string | number;
     label: string;
-    value: any;
+    value: Product;
   } | null>(null);
 
   const [quantity, setQuantity] = useState(1);
-  const [taxRate, setTaxRate] = useState(0);
-
   const [unitCost, setUnitCost] = useState(0);
-  console.log(products);
 
   const productOptions = products?.map((p) => ({
-    id: p.id,
+    id: `product-${p.id}`, // Ensures unique key format
     label: p.name,
     value: p,
+    taxRate: p.taxRate,
   }));
 
   const handleAddItem = () => {
     if (!selectedProduct) return alert("Please select a product");
     if (quantity < 1) return alert("Quantity must be at least 1");
     if (unitCost < 0) return alert("Unit cost can't be negative");
+    console.log(selectedProduct.value.id.toString(), "id");
+    console.log(selectedProduct.value.name, "name");
+    console.log(quantity, "qty");
+    console.log(unitCost, "cost");
+    console.log(selectedProduct.value.taxRate);
 
     onAddItem({
-      productId: selectedProduct.value.id,
+      productId: selectedProduct.value.id.toString(),
       productName: selectedProduct.value.name,
       quantity,
       unitCost,
-      taxRate,
+      taxRate: selectedProduct.value.taxRate,
     });
 
-    // Reset
+    // Reset fields
     setSelectedProduct(null);
     setQuantity(1);
     setUnitCost(0);
@@ -66,8 +70,8 @@ const AddItemSection: React.FC<AddItemSectionProps> = ({
       <h2 className="text-xl font-semibold text-gray-700">Add Items</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-        {/* SearchSelect Product Dropdown */}
-        <div className="md:col-span-2">
+        {/* Product dropdown */}
+        <div className="md:col-span-3">
           <SearchSelect
             label="Product"
             placeholder="Search product"
@@ -86,8 +90,8 @@ const AddItemSection: React.FC<AddItemSectionProps> = ({
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             min={1}
+            className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -100,10 +104,26 @@ const AddItemSection: React.FC<AddItemSectionProps> = ({
             type="number"
             value={unitCost}
             onChange={(e) => setUnitCost(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             min={0}
+            step="0.01"
+            className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
+        {/* Tax Rate
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Tax Rate (%)
+          </label>
+          <input
+            type="number"
+            value={taxRate}
+            onChange={(e) => setTaxRate(Number(e.target.value))}
+            min={0}
+            step="0.01"
+            className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div> */}
       </div>
 
       <div className="text-right">

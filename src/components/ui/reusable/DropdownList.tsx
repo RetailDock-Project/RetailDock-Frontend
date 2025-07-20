@@ -14,6 +14,7 @@ type DropdownProps = {
   className?: string;
   includeDefaultOption?: boolean;
   defaultOptionLabel?: string;
+  disabled?: boolean;
 };
 
 export const DropdownList: React.FC<DropdownProps> = ({
@@ -24,17 +25,14 @@ export const DropdownList: React.FC<DropdownProps> = ({
   className = "",
   includeDefaultOption = false,
   defaultOptionLabel = "All",
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(
     defaultValue || null
   );
 
-  console.log("optionsssss", options);
-
   const baseOptions = Array.isArray(options) ? options : [];
-  console.log("base   optionsssss", baseOptions);
-
   const safeOptions: Option[] = includeDefaultOption
     ? [{ id: null, name: defaultOptionLabel }, ...baseOptions]
     : baseOptions;
@@ -45,7 +43,11 @@ export const DropdownList: React.FC<DropdownProps> = ({
     onSelect(selectedId);
   }, [selectedId]);
 
-  const toggleDropdown = () => setIsOpen((prev) => !prev);
+  const toggleDropdown = () => {
+    if (!disabled) {
+      setIsOpen((prev) => !prev);
+    }
+  };
 
   const handleSelect = (option: Option) => {
     setSelectedId(option.id);
@@ -57,7 +59,13 @@ export const DropdownList: React.FC<DropdownProps> = ({
     <div className={`relative w-full inline-block ${className}`}>
       <button
         onClick={toggleDropdown}
-        className="w-full px-4 py-2 border text-sm rounded-xl flex justify-between items-center bg-white shadow hover:shadow-md transition"
+        disabled={disabled}
+        className={`w-full px-4 py-2 border text-sm rounded-xl flex justify-between items-center transition 
+          ${
+            disabled
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-white shadow hover:shadow-md"
+          }`}
       >
         {selectedOption?.name || label || "Select an option"}
         <FaChevronDown
@@ -67,7 +75,7 @@ export const DropdownList: React.FC<DropdownProps> = ({
         />
       </button>
 
-      {isOpen && (
+      {isOpen && !disabled && (
         <ul className="absolute z-10 mt-1 w-full bg-white border rounded-xl shadow-lg max-h-60 overflow-auto">
           {safeOptions.map((option, index) => (
             <li

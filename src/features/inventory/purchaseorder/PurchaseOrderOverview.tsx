@@ -1,4 +1,6 @@
 import React from "react";
+import { getPurchaseOrderStats } from "../../../services/api/inventoryapi/inventoryApi";
+import { useQuery } from "@tanstack/react-query";
 
 type OverviewCard = {
   title: string;
@@ -7,26 +9,38 @@ type OverviewCard = {
   color?: string;
 };
 
-const stats: OverviewCard[] = [
-  {
-    title: "Total Orders",
-    primary: "5",
-    secondary: "0 this month",
-  },
-  {
-    title: "Total Value",
-    primary: "₹2,20,400",
-    secondary: "Avg. ₹44,080",
-  },
-  {
-    title: "Pending Orders",
-    primary: "2",
-    secondary: "₹55,400 value",
-    color: "text-yellow-600",
-  },
-];
-
 export const PurchaseOrderOverview: React.FC = () => {
+  const { data: purchaseOrderStats, isLoading } = useQuery({
+    queryKey: ["purchaseOrderStats"],
+    queryFn: () => getPurchaseOrderStats(),
+    select: (data) => data.data,
+  });
+
+  if (isLoading || !purchaseOrderStats) {
+    return <div>Loading...</div>;
+  }
+
+  const stats: OverviewCard[] = [
+    {
+      title: "Total Orders",
+      primary: purchaseOrderStats.totalOrders.toString(),
+      secondary: `${purchaseOrderStats.currentMonthOrders} this month`,
+    },
+    {
+      title: "Total Value",
+      primary: `₹${purchaseOrderStats.totalValue.toLocaleString("en-IN")}`,
+      secondary: `Avg. ₹${purchaseOrderStats.avgValue.toFixed(2)}`,
+    },
+    {
+      title: "Pending Orders",
+      primary: purchaseOrderStats.pendingOrders.toString(),
+      secondary: `₹${purchaseOrderStats.pendingValue.toLocaleString(
+        "en-IN"
+      )} value`,
+      color: "text-yellow-600",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       {stats.map((card, idx) => (

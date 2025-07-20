@@ -24,7 +24,7 @@ const currentUser = {
 };
 
 const inventoryMenuItems = [
-  //   { title: "Dashboard", url: "/home/inventory/dashboard", icon: Gauge },
+  { title: "Dashboard", url: "/home/inventory/dashboard", icon: Gauge },
   {
     title: "Purchase Order",
     url: "/home/inventory/purchase-orders",
@@ -39,6 +39,12 @@ const inventoryMenuItems = [
   {
     title: "Products",
     url: "/home/inventory/products",
+    icon: PackagePlus, // You can use a different icon like Boxes or LayoutGrid
+  },
+
+  {
+    title: "Suppliers",
+    url: "/home/inventory/suppliers",
     icon: PackagePlus, // You can use a different icon like Boxes or LayoutGrid
   },
 ];
