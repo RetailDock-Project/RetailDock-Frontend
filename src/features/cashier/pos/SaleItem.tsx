@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 
+import toast from "react-hot-toast";
+
 type Props = {
-  name: string;
-  price: number;
-  MRP:number;
-  stock:number;
-  taxRate:number;
- 
+product:any
+ saleItem:any
   onChangePrice:(val:number)=>void;
   onChangeDiscountAmount:(val:number)=>void;
   onIncrement: () => void;
@@ -16,12 +14,8 @@ type Props = {
 };
 
 const SaleItem: React.FC<Props> = ({
-  name,
-  price,
-  MRP,
-  stock,
-  taxRate,
- 
+  product,
+ saleItem,
  onChangePrice,
  onChangeDiscountAmount,
   onIncrement,
@@ -29,30 +23,60 @@ const SaleItem: React.FC<Props> = ({
   onRemove,
 }) => {
 
-const [productPrice,setProductPrice]=useState(price);
-const [productDiscountPrice,setProductDiscountPrice]=useState(0);
-const [quantity,setQuantity]=useState(1);
-const changeProductPrice=(price:number)=>{
-setProductPrice(price);
-onChangePrice(price);
+const productPrice = saleItem?.unitPrice;
+const productDiscountPrice = saleItem?.discountAmount;
+const quantity = saleItem?.quantity;
+
+
+
+
+const changeProductPrice = (value: number) => {
+  if (value > product.mrp) {
+    toast.error("Price cannot exceed MRP");
+    return;
+  }
+  
+  if (value < product.costPrice) {
+    toast.error("Price is under CostPrice");
+    return;
+  }
+  
+
+
+  
+
+  onChangePrice(value);
+};
+
+const onChangeProductDiscountPrice = (value: number) => {
+  const priceAfterDiscount = productPrice - value;
+  if (priceAfterDiscount < product.costPrice) {
+    toast.error("Discount too high. Price goes below cost!");
+  onChangeDiscountAmount(value);
+  }
+  onChangeDiscountAmount(value);
+};
+
+
+const onRemoveProduct=()=>{
+  
+  onRemove();
 }
-const onChangeProductDicountPrice=(price:number)=>{
-setProductDiscountPrice(price);
-onChangeDiscountAmount(price);
-}
+
   return (
 <div className="border p-2 rounded-md mb-2 shadow-sm bg-white text-xs">
   <div className="flex justify-between items-center mb-1">
     <div>
-      <p className="font-semibold text-gray-800">{name}</p>
-      <p className="text-gray-500">MRP: ₹{MRP.toLocaleString()}</p>
+      <p className="font-semibold text-gray-800">{product?.productName}</p>
+      <p className="text-gray-500">MRP: ₹{product?.mrp.toLocaleString()}/{product?.unitOfMeasures} <span className="pl-2">stock:{product?.stock} </span>  <span className="pl-2">cost:{product?.costPrice}</span>  </p>
+ 
     </div>
 
     <div className="flex items-center gap-1">
       <button
         onClick={()=>{
           onDecrement();
-          setQuantity((prev)=>prev !=0 ? prev - 1 : prev );
+      
         }}
         className="w-5 h-5 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded"
       >
@@ -60,10 +84,12 @@ onChangeDiscountAmount(price);
       </button>
       <span className="text-sm">{quantity}</span>
       <button
+   
         onClick={()=>{
           onIncrement();
-          setQuantity((prev)=>prev+1);
-          // setQuantity((prev)=>prev < stock?prev + 1: prev);
+          
+          // setQuantity((prev)=>prev+1);
+        
         }}
         className="w-5 h-5 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded"
       >
@@ -77,7 +103,9 @@ onChangeDiscountAmount(price);
     <label className="block text-gray-600 text-xs mb-0.5">Price</label>
     <input
       type="number"
-      value={productPrice}
+  value={productPrice}
+      max={product.mrp}
+      min={0}
       onChange={(e) => changeProductPrice(Number(e.target.value))}
       className="w-24 px-2 py-0.5 border border-gray-300 rounded text-xs"
     />
@@ -87,9 +115,11 @@ onChangeDiscountAmount(price);
   <div>
     <label className="block text-gray-600 text-xs mb-0.5">Discount</label>
     <input
+    
+    min={0}
       type="number"
-      value={productDiscountPrice}
-      onChange={(e) => onChangeProductDicountPrice(Number(e.target.value))}
+        value={productDiscountPrice}
+      onChange={(e) => onChangeProductDiscountPrice(Number(e.target.value))}
       className="w-24 px-2 py-0.5 border border-gray-300 rounded text-xs"
     />
   </div>
@@ -98,7 +128,7 @@ onChangeDiscountAmount(price);
   <div>
     <label className="block text-gray-600 text-xs mb-0.5">Tax</label>
     <div className="w-20 px-2 py-0.5 border border-gray-300 rounded text-xs bg-gray-100">
-      {taxRate}%
+      {product?.taxRate}%
     </div>
   </div>
 </div>
@@ -113,7 +143,7 @@ onChangeDiscountAmount(price);
       </p>
     </div>
     <button
-      onClick={onRemove}
+      onClick={()=>onRemoveProduct()}
       className="text-red-500 hover:text-red-700"
       title="Remove"
     >

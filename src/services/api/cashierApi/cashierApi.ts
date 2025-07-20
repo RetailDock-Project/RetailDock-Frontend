@@ -56,12 +56,12 @@ export const getSaleLedgerId = async () => {
 
 export const getCustomerByMobile= async (data:string) => {
   const response = await cashierClient.get(`/Customers/viewCustomerByMobile?mobile=${data}`);
-  console.log(response.data.data,"log from customer fetch by mobile")
+
   return response.data;
 };
 export const getSaleByInvoiceNumber= async (data:string| undefined) => {
   const response = await cashierClient.get(`/Sale/GetsaleByInvoice?invoiceNum=${data}`);
-  console.log(response.data.data,"log from get saleBy invoice")
+ 
   return response.data;
 };
 export const getReturnedProductCount= async (saleId:string,productId:string) => {
@@ -77,18 +77,16 @@ export const addNewCashCustomers= async (data:cashCustomers) => {
 };
 export const addNewSale= async (data:any) => {
   const response = await cashierClient.post("/Sale/AddNewSale",data);
-  console.log(response.data.message,"message from create new sale")
- toast.success(response.data.message);
+
   return response.data;
 };
 
 
-export const addNewSalesReturn= async (data:any) => {
-  const response = await cashierClient.post("/SaleReturn/AddSaleReturn",data);
-  console.log(response.data.message,"message from create new salesReturn")
- toast.success(response.data.message);
+export const addNewSalesReturn = async (data: any) => {
+  const response = await cashierClient.post("/SaleReturn/AddSaleReturn", data);
   return response.data;
 };
+
 
 
 export const addNewCreditCustomers= async (formData:DebtorFormData) => {
@@ -111,7 +109,8 @@ export const getAllSaleInvoices = async (
   if (take !== null) params.append("take", take.toString());
 
   const response = await cashierClient.get(`/Invoice/GetAllSaleInoices?${params}`);
-  return response;
+
+  return response.data;
 };
 
 
@@ -128,7 +127,7 @@ export const getAllSaleReturnInvoices = async (
   if (take !== null) params.append("take", take.toString());
 
   const response = await cashierClient.get(`/Invoice/getallSaleReturnInvoice?${params}`);
-  return response;
+  return response.data;
 };
 
 export const getSaleInvoiceDetails=async(invoice:string|undefined)=>{
@@ -136,3 +135,50 @@ export const getSaleInvoiceDetails=async(invoice:string|undefined)=>{
   console.log(response.data.data,"getSaleInvoiceDetails");
   return response.data;
 }
+export const getSaleInvoiceNumber=async(saleMode:string|undefined)=>{
+  const response= await cashierClient.get(`/Sale/GetsaleInvoiceNumber?saleMode=${saleMode}`);
+  return response.data;
+}
+export const getSaleReturnInvoiceNumber=async(saleMode:string|undefined)=>{
+  const response= await cashierClient.get(`/SaleReturn/GetsalesReturnInvoice?saleMode=${saleMode}`);
+
+  return response.data;
+}
+
+
+
+export const getUserSaleReturnDetails=async(  fullData: boolean | null,
+  skip: number | null,
+  take: number | null
+)=>{
+  const params = new URLSearchParams();
+
+  if (fullData !== null) params.append("isFullData", fullData.toString());
+  if (skip !== null) params.append("skip", skip.toString());
+  if (take !== null) params.append("take", take.toString());
+
+  const response = await cashierClient.get(`/SaleReturn/GetAllSaleReturn${params}`);
+  return response.data;
+};
+
+
+
+
+export const getSaleReturnDetailsByDate = async (
+  fromDate: Date | null,
+  toDate: Date | null,
+  isFullData: boolean | null
+) => {
+  const params: Record<string, string> = {};
+
+  if (isFullData !== null) params["isFullData"] = isFullData.toString();
+  if (fromDate !== null) params["fromDate"] = fromDate.toISOString();
+  if (toDate !== null) params["toDate"] = toDate.toISOString();
+
+  const response = await cashierClient.get(`/SaleReturn/GetAllSaleReturnByDate`, {
+    params,
+  });
+  console.log(response.data.data, "✅ return from getSaleReturnDetailsByDate");
+  return response.data;
+};
+

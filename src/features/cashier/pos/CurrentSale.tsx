@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import SaleItem from "./SaleItem";
 import SaleSummary from "./SaleSummary";
-import ProceedToPayment from "./ProceedToPayment";
+import ProceedToPayment from "./AddNewSale";
 import type { Product, saleItem } from "./PointOfSale";
+import toast from "react-hot-toast";
+import AddNewSale from "./AddNewSale";
 
 type props={
   newSale:()=>void;
   isLoading:boolean;
   saleItems:saleItem[];
+  creditCustomer:boolean;
+  paymentMode:string;
   setSaleItems:React.Dispatch<React.SetStateAction<saleItem[]>>;
   productSelected:Product[];
   setProductSelected: React.Dispatch<React.SetStateAction<Product[]>>;
@@ -18,7 +22,7 @@ type props={
 
 
 
-const CurrentSale: React.FC<props> = ({productSelected,setProductSelected,saleItems,setSaleItems,newSale,isLoading}) => {
+const CurrentSale: React.FC<props> = ({productSelected,setProductSelected,saleItems,setSaleItems,newSale,isLoading,creditCustomer,paymentMode}) => {
 
   
 
@@ -61,6 +65,9 @@ useEffect(() => {
 }, 0);
 
   const increment = (id: string) => {
+     const product = productSelected.find(p => p.id === id);
+  if (!product) return;
+  
     setSaleItems((prev) =>
       prev.map((item) =>
         item.productId === id ? { ...item, quantity: item.quantity + 1 } : item
@@ -87,35 +94,54 @@ useEffect(() => {
 
 
 const onChangePrice = (id: string, value: number) => {
+  const product = productSelected.find(p => p.id === id);
+  if (!product) return;
+
+  // Prevent price from exceeding MRP or falling below costPrice
+  if (value > product.mrp ) return;
+ if(value < product.costPrice)
+ {
+  toast.error("price is lessthan cost price");
+ }
   setSaleItems((prevItems) =>
     prevItems.map((item) =>
       item.productId === id ? { ...item, unitPrice: value } : item
     )
   );
 };
+
+
 const onChangeDiscountAmount = (id: string, value: number) => {
+    const product = saleItems.find(p => p.productId === id);
+    const goods = productSelected.find(p => p.id === id);
+  if (!product || !goods) return;
+  
   setSaleItems((prevItems) =>
-    prevItems.map((item) =>
+    prevItems.map((item) => 
       item.productId === id ? { ...item, discountAmount: value } : item
-    )
+)
   );
+
+     
+
 };
 
   return (
-    <div className="bg-white mt-4 p-4 border rounded-xl shadow-md w-full max-w-sm">
+  <div className="bg-white mt-[72px] p-4 border rounded-xl shadow-md w-full max-w-sm  ">
+    
+
+
+
+ 
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
         🛒 Current Sale
       </h2>
-
-      {productSelected.map((item,index) => (
+ <div className="overflow-y-auto max-h-[280px] pr-1">
+      {productSelected.map((item:any,index) => (
         <SaleItem
           key={index}
-          name={item.productName}
-          price={item.sellingPrice}
-          MRP={item.mrp}
-          stock={item.stock}
-          taxRate={item.gstRate}
-         
+         product={item}
+         saleItem={saleItems.find((curr)=>curr.productId==item.id)}
         onChangePrice={(val)=>onChangePrice(item.id,val)}
         onChangeDiscountAmount={(val)=>onChangeDiscountAmount(item.id,val)}
           onIncrement={() => increment(item.id)}
@@ -123,10 +149,13 @@ const onChangeDiscountAmount = (id: string, value: number) => {
           onRemove={() => remove(item.id)} // <-- new
         />
       ))}
-
+   </div>
       <SaleSummary discount={discountAmount} subtotal={subtotal} taxAmount={taxAmount} />
 
-      <ProceedToPayment onClick={() => newSale()} isLoading={isLoading}/>
+      <AddNewSale onClick={() => newSale()} isLoading={isLoading} />
+         
+ 
+
     </div>
   );
 };

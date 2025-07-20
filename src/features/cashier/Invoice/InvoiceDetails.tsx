@@ -10,6 +10,12 @@ import Filter from "../../../components/ui/reusable/Filter";
 import { Button } from "../../../components/ui/reusable/Button";
 
 const InvoiceDetails: React.FC = () => {
+
+    const [searchTerm, setSearchTerm] = useState<string>('');
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({ startDate: null, endDate: null });
   const [sales, setSales] = useState<boolean>(true);
 
   const [fullData,setFullData]=useState<boolean| null>(false);
@@ -70,7 +76,13 @@ const InvoiceDetails: React.FC = () => {
 
       <div>
 
-        <Filter/>
+           <Filter
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+      />
+
       </div>
 
 
@@ -100,7 +112,8 @@ const InvoiceDetails: React.FC = () => {
 
         {/* Render Invoices */}
         <div className="px-4 pb-4">
-          {sales ? <SalesInvoice fullData={fullData} setFullData={setFullData} skipPage={skipPage} setSkipPage={SetSkipPage} takePage={takePage} setTakePage={setTakePage}/> : <SalesReturnInvoice fullData={fullData} setFullData={setFullData} skipPage={skipPage} setSkipPage={SetSkipPage} takePage={takePage} setTakePage={setTakePage}/>}
+          {sales ? <SalesInvoice fullData={fullData} setFullData={setFullData} skipPage={skipPage} setSkipPage={SetSkipPage} takePage={takePage} setTakePage={setTakePage}/> : 
+          <SalesReturnInvoice fullData={fullData} setFullData={setFullData} skipPage={skipPage} setSkipPage={SetSkipPage} takePage={takePage} setTakePage={setTakePage}/>}
         </div>
       </div>
     </div>

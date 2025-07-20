@@ -2,6 +2,8 @@ import { Download, Eye, Printer } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { getAllSaleInvoices } from '../../../../services/api/cashierApi/cashierApi';
+import { useAllSaleInvoices } from '../../Hooks/useGetAllSaleInvoices';
+import Loader from '../../../../components/ui/reusable/Loader';
 type Invoice = {
   id: string;
   date: string;
@@ -22,59 +24,21 @@ type SalesInvoiceProps={
 
 }
 
-const invoices: Invoice[] = [
-  {
-    id: "INV-1001",
-    date: "2024-05-20",
-    customer: "Walk-in",
-    total: "₹14,997",
-    payment: "Card",
-  
-  },
-  {
-    id: "INV-1002",
-    date: "2024-05-20",
-    customer: "John Smith",
-    total: "₹4,497",
-    payment: "Cash",
-  
-  },
-  {
-    id: "INV-1003",
-    date: "2024-05-19",
-    customer: "Priya Patel",
-    total: "₹18,997",
-    payment: "Card",
-  
-  },
-  {
-    id: "INV-1004",
-    date: "2024-05-19",
-    customer: "Rahul Sharma",
-    total: "₹3,499",
-    payment: "UPI",
-  
-  },
-];
-
 const SalesInvoice:React.FC<SalesInvoiceProps> = ( {fullData,setFullData,skipPage,setSkipPage,takePage,setTakePage}) => 
   {
-const [saleInvoice,setSaleInvoice]=useState<any>();
+const [invoices, setInvoices] = useState<any[]>([]);
+      const navigate=useNavigate();
 
-  useEffect(() => {
-  const fetchAllSaleInvoice = async () => {
-    try {
-      const response = await getAllSaleInvoices(fullData, skipPage , takePage);
-      setSaleInvoice(response.data.data);
-    } catch (error) {
-      console.log(error, 'error from getall saleInvoice');
-    }
-  };
+const { data, isLoading, error } = useAllSaleInvoices(fullData, skipPage, takePage);
+useEffect(()=>{
+if(data){
+setInvoices(data)
+}
+},[data])
+if (isLoading) return <p><Loader/></p>;
+if (error) return <p>Error fetching invoices</p>;
 
-  fetchAllSaleInvoice();
-}, [fullData, skipPage, takePage]);
 
-  const navigate=useNavigate()
   return (
     <div className="overflow-x-auto bg-white shadow rounded-lg">
         <table className="w-full text-sm text-left">
@@ -89,7 +53,7 @@ const [saleInvoice,setSaleInvoice]=useState<any>();
             </tr>
           </thead>
           <tbody>
-  {saleInvoice?.map((inv: any, idx: number) => (
+  {invoices?.map((inv: any, idx: number) => (
     <tr key={idx} className="border-t">
       <td className="px-4 py-4 font-semibold text-blue-700">{inv.invoiceNumber}</td>
       <td className="px-4 py-4">{new Date(inv.saleDate).toLocaleDateString()}</td>

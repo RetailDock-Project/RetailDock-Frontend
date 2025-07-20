@@ -21,14 +21,14 @@ type ReturnInformationProps = {
   setReturnCondition: React.Dispatch<React.SetStateAction<string>>;
   searchTerm:string;
 setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-setReturnDate:React.Dispatch<React.SetStateAction<Date|null>>;
+handleReturnDate:(date:Date )=>void;
 returnReason:string;
 setReturnReason: React.Dispatch<React.SetStateAction<string>>;
 };
 
 
 const SalesReturnInformation: React.FC<ReturnInformationProps> = ({
- searchTerm,setSearchTerm,setReturnDate,returnReason,setReturnReason,returncondition,setReturnCondition
+ searchTerm,setSearchTerm,handleReturnDate,returnReason,setReturnReason,returncondition,setReturnCondition
 }) => {
 
 
@@ -114,7 +114,7 @@ const SalesReturnInformation: React.FC<ReturnInformationProps> = ({
           <label className="block text-sm font-medium mb-1">Return Date</label>
           <SingleDatePicker
            
-            onChange={(date: null| Date) => setReturnDate(date)}
+            onChange={(date: Date | null) => handleReturnDate(date??new Date())}
           />
         </div>
       </div>

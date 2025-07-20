@@ -11,7 +11,9 @@ import CustomerDetails from "./CustomerDetails";
 import SalesQuickActions from "./SalesQuickActions";
 import SaleItems from "./SaleItems";
 import SaleDetailInfo from "./SaleDetailsInfo";
-import { getAllSaleInvoices, getSaleByInvoiceNumber, getSaleInvoiceDetails } from "../../../../services/api/cashierApi/cashierApi";
+
+import { useSaleInvoiceInfo } from "../../Hooks/UseSaleInvoice";
+import Loader from "../../../../components/ui/reusable/Loader";
 
 
 
@@ -20,20 +22,15 @@ const SaleInformation:React.FC = () => {
   const { invoiceNumber } = useParams();
   
   const navigate = useNavigate();
-  useEffect(()=>{
+  const {data,isLoading,error}=useSaleInvoiceInfo(invoiceNumber);
 
-   const fetchInvoiceByInvoiceNumber=async (invoiceNumber:string|undefined)=>{
-    try{
-const response=await getSaleInvoiceDetails(invoiceNumber);
-setSaleInfo(response.data);
-
-    }catch(error){
-      console.log(error,"error from get saleByInvoice")
-    }
-   }
-   fetchInvoiceByInvoiceNumber(invoiceNumber);
-  },[invoiceNumber])
-
+useEffect(()=>{
+if(data){
+setSaleInfo(data);
+}
+},[data])
+if(isLoading) return<p><Loader/></p>
+if(error) return<p>error While fetching..</p>
   return (
 
     <div className="p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
@@ -78,7 +75,7 @@ setSaleInfo(response.data);
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-100 min-h-screen">
         <div className="md:col-span-2">
         <SaleDetailInfo invoiceDetails={invoiceInfo}/>
-          <SaleItems />
+          <SaleItems items={invoiceInfo?.saleItems} totalAmount={invoiceInfo?.totalAmount} subTotal={invoiceInfo?.taxableAmount} discountAmount={invoiceInfo?.discountAmount} taxAmount={invoiceInfo?.totalTaxAmount}/>
         </div>
         <div>
           <CustomerDetails />
