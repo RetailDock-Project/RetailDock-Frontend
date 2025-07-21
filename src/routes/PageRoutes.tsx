@@ -58,9 +58,7 @@ import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
 
 import GroupAndLedgerDetails from "../features/accountant/components/GroupAndLedgerDetails.tsx";
 import PurchaseOrderForm from "../features/inventory/purchaseorder/PurchaseOrderForm.tsx";
-
-
-
+import PurchaseReturnDetail from "../features/inventory/purchasereturn/PurchaseReturnDetails.tsx";
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -125,7 +123,8 @@ const PageRoutes: React.FC = () => {
 
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
             <Route path="purchase-return">
-              <Route path="new" element={<NewPurchaseReturn />}></Route>
+              <Route path="new/:id" element={<NewPurchaseReturn />}></Route>
+              <Route path=":id" element={<PurchaseReturnDetail/>}></Route>
             </Route>
 
             <Route path="purchases" element={<Purchase />}></Route>
@@ -182,7 +181,12 @@ const PageRoutes: React.FC = () => {
             <Route path="voucher-report" element={<VoucherReport />}></Route>
 
             <Route path="add-ledger" element={<AddLedger />}></Route>
-           
+
+            <Route
+              path="groupAndLedgerDetails/:id"
+              element={<GroupAndLedgerDetails />}
+            ></Route>
+
           </Route>
 
           <Route path="cashier">

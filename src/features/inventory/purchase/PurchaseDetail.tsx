@@ -76,7 +76,7 @@ const PurchaseDetail: React.FC = () => {
         </div>
         <div>
           <SupplierDetail supplier={purchase?.supplierDetails || null} />
-          {/* <PurchaseQuickActions /> */}
+          <PurchaseQuickActions id={id} />
           {/* <AuditTrail /> */}
         </div>
       </div>
