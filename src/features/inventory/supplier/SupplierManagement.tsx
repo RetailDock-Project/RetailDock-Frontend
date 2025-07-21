@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import { FilePlus, FileDown } from "lucide-react";
+import { FilePlus } from "lucide-react";
 import { Button } from "../../../components/ui/reusable/Button";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
 import { SearchInput } from "../../../components/ui/reusable/SearchInput";
 import { DropdownList } from "../../../components/ui/reusable/DropdownList";
 import { useNavigate } from "react-router-dom";
 import { useSuppliers } from "../../../hooks/useSuppliers";
-import type { SupplierFilterParams } from "../../../services/api/inventoryapi/inventoryApi";
+import {
+  SupplierStatusChange,
+  type SupplierFilterParams,
+} from "../../../services/api/inventoryapi/inventoryApi";
 
 export const SupplierManagement: React.FC = () => {
   const navigate = useNavigate();
 
-  // State for filters
   const [filters, setFilters] = useState<SupplierFilterParams>({
     search: null,
     isActive: undefined,
@@ -19,7 +21,7 @@ export const SupplierManagement: React.FC = () => {
     pageSize: undefined,
   });
 
-  const { data, isLoading, isError } = useSuppliers(filters);
+  const { data, isLoading, isError, refetch } = useSuppliers(filters); // ✅ add refetch
 
   const handleSearch = (term: string) => {
     setFilters((prev) => ({
@@ -39,24 +41,30 @@ export const SupplierManagement: React.FC = () => {
       isActive: value,
     }));
   };
-  console.log(filters.isActive);
+
+  const handleSupplierStatus = async (id: string) => {
+    try {
+      await SupplierStatusChange(id);
+      refetch(); // ✅ refresh supplier list after update
+    } catch (error) {
+      console.error("Failed to change status", error);
+    }
+  };
 
   return (
     <div className="p-6 overflow-auto max-h-screen scrollbar-hide">
       <PageHeader
         title="Supplier Management"
         actions={
-          <>
-            <Button
-              size="sm"
-              variant="primary"
-              className="flex items-center gap-2"
-              onClick={() => navigate("/home/inventory/suppliers/new")}
-            >
-              <FilePlus size={16} />
-              Add Supplier
-            </Button>
-          </>
+          <Button
+            size="sm"
+            variant="primary"
+            className="flex items-center gap-2"
+            onClick={() => navigate("/home/inventory/suppliers/new")}
+          >
+            <FilePlus size={16} />
+            Add Supplier
+          </Button>
         }
       />
 
@@ -75,10 +83,10 @@ export const SupplierManagement: React.FC = () => {
                 { id: "active", name: "Active" },
                 { id: "inactive", name: "Inactive" },
               ]}
+              includeDefaultOption={true}
+              defaultOptionLabel="All"
               label="Select Status"
-              onSelect={(val) => {
-                handleStatusChange(val);
-              }}
+              onSelect={handleStatusChange}
             />
           </div>
         </div>
@@ -99,31 +107,30 @@ export const SupplierManagement: React.FC = () => {
                 <th className="px-4 py-2">Phone</th>
                 <th className="px-4 py-2">Email</th>
                 <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">Action</th>
               </tr>
             </thead>
             <tbody>
               {isLoading && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-4 text-center">
+                  <td colSpan={6} className="px-4 py-4 text-center">
                     Loading suppliers...
                   </td>
                 </tr>
               )}
-
               {isError && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-4 text-center text-red-500"
                   >
                     Error loading suppliers.
                   </td>
                 </tr>
               )}
-
               {data?.length === 0 && !isLoading && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-4 text-center">
+                  <td colSpan={6} className="px-4 py-4 text-center">
                     No suppliers found.
                   </td>
                 </tr>
@@ -147,6 +154,15 @@ export const SupplierManagement: React.FC = () => {
                     >
                       {supplier.isActive ? "Active" : "Inactive"}
                     </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <Button
+                      size="sm"
+                      variant={supplier.isActive ? "danger" : "secondary"}
+                      onClick={() => handleSupplierStatus(supplier.id)}
+                    >
+                      {supplier.isActive ? "Deactivate" : "Activate"}
+                    </Button>
                   </td>
                 </tr>
               ))}

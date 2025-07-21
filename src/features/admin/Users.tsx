@@ -103,7 +103,7 @@ const Users: React.FC = () => {
           <h2 className="text-2xl font-bold text-red-600">
             {usersStats?.data?.inactiveUsers ?? 0}
           </h2>
-          <span className="text-gray-600">Inactive</span>
+          <span className="text-gray-600">Removed</span>
         </div>
       </div>
 

@@ -16,7 +16,7 @@ const InventoryDashboard: React.FC = () => {
         actions={
           <>
             <div className="flex gap-2">
-              <DateRangePicker onChange={() => {}} />
+              {/* <DateRangePicker onChange={() => {}} /> */}
               <Button
                 onClick={() => navigate("/home/inventory/product/new")}
                 size="sm"
