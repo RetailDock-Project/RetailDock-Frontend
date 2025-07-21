@@ -28,7 +28,7 @@ import Statements from "../features/accountant/components/FinancialStatements";
 import FinancialStatements from "../features/accountant/components/FinancialStatements";
 import VoucherReport from "../features/accountant/components/VoucherReport";
 
-import TaxReports from "../features/accountant/components/TaxReports";
+
 import CashierDashboard from "../features/cashier/dashboard/CashierDashboard";
 import PointOfSale from "../features/cashier/pos/PointOfSale";
 import Purchase from "../features/inventory/purchase/Purchase";
@@ -169,11 +169,20 @@ const PageRoutes: React.FC = () => {
             <Route
               path="financial-statements"
               element={<FinancialStatements />}
-            ></Route>
+            >
+              
+              
+
+            </Route>
+            <Route path="financial-statement">
+               <Route path="groupAndLedgerDetails/:groupId" element={<GroupAndLedgerDetails />}>
+               </Route>
+            </Route>
+           
             <Route path="voucher-report" element={<VoucherReport />}></Route>
-            <Route path="tax-report" element={<TaxReports />}></Route>
+
             <Route path="add-ledger" element={<AddLedger />}></Route>
-            <Route path="groupAndLedgerDetails/:id" element={<GroupAndLedgerDetails/>}></Route>
+           
           </Route>
 
           <Route path="cashier">

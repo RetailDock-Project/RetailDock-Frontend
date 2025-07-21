@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { DateRangePicker } from '../../../components/ui/reusable/DateRangePicker'
 import { getLedgerReportById } from '../../../services/api/AccountsApi/accountsApi'
+import Loader from '../../../components/ui/reusable/Loader'
+
 
 
 const LedgerTransactionHistory: React.FC = () => {
@@ -27,7 +29,7 @@ const LedgerTransactionHistory: React.FC = () => {
     enabled: !!ledgerId,
   })
 
-  if (isLoading) return <div className="p-6">Loading...</div>
+  if (isLoading) return <div className="p-6"><Loader/></div>
   if (isError) return <div className="p-6 text-red-600">Failed to load ledger data.</div>
 
   return (

@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllLedgers } from "../../../services/api/AccountsApi/accountsApi";
 import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../../components/ui/reusable/Loader";
 
 const TrialBalance: React.FC = () => {
+    const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<{
     fromDate: Date | null;
     toDate: Date | null;
@@ -51,7 +54,7 @@ const TrialBalance: React.FC = () => {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-6 text-sm text-gray-500">Loading...</div>
+        <div className="text-center py-6 text-sm text-gray-500"><Loader/></div>
       ) : error ? (
         <div className="text-red-500 text-sm">Failed to fetch data</div>
       ) : (
@@ -66,7 +69,9 @@ const TrialBalance: React.FC = () => {
             </thead>
             <tbody className="divide-y">
               {closingData.map((item: any, index: number) => (
-                <tr key={index}>
+                <tr key={index} onClick={() =>
+                            navigate(`/home/accountant/ledgertransactionhistory/${item.ledgerId}`)
+                          }>
                   <td className="px-4 py-2 text-gray-700">{item.ledgerName}</td>
                   <td className="px-4 py-2 text-right text-gray-800">
                     {item.closingType === "Dr"
