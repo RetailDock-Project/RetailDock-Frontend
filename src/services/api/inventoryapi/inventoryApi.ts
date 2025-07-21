@@ -381,3 +381,27 @@ export const getPurchaseReturnsFilter = async ({
 
   return response.data;
 };
+
+export const SupplierStatusChange = async (id: string) => {
+  const response = await inventoryClient.patch(
+    `/Supplier/${id}/block-or-unblock`
+  );
+  console.log(response);
+  return response.data;
+};
+
+export const getPurchaseReturnDetail = async (id: string) => {
+  const { data } = await inventoryClient.get(`/Purchase/Get/Return/${id}`);
+  return data;
+};
+
+export const getRecentInventoryTransaction = async () => {
+  const { data } = await inventoryClient.get(`/Purchase/recent/organizationId`);
+  return data;
+};
+
+export const exportPurchasePdf = async (id: any) => {
+  return await inventoryClient.get(`/Purchase/download-purchase/${id}`, {
+    responseType: "blob",
+  });
+};

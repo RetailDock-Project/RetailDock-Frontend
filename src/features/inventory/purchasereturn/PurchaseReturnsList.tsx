@@ -1,5 +1,6 @@
 import React from "react";
 import { FaEye } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 type PurchaseReturn = {
   id: string;
@@ -16,6 +17,7 @@ type Props = {
 };
 
 const PurchaseReturnsList: React.FC<Props> = ({ list }) => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white p-6 rounded-xl shadow border mt-6 overflow-x-auto">
       <h2 className="text-lg font-semibold mb-4">📋 Purchase Return List</h2>
@@ -43,7 +45,12 @@ const PurchaseReturnsList: React.FC<Props> = ({ list }) => {
                 ₹{ret.totalAmount.toLocaleString()}
               </td>
               <td className="p-3 border text-center">
-                <button className="text-blue-600 flex justify-center items-center hover:underline text-sm">
+                <button
+                  className="text-blue-600 flex justify-center items-center hover:underline text-sm"
+                  onClick={() =>
+                    navigate(`/home/inventory/purchase-return/${ret.id}`)
+                  }
+                >
                   <FaEye /> <span className="ml-2">View</span>
                 </button>
               </td>
