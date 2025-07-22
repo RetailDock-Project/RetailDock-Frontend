@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getBalanceSheet } from "../../../services/api/AccountsApi/accountsApi";
 import { DateRangePicker } from "../../../components/ui/reusable/DateRangePicker";
+import { Key } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../../components/ui/reusable/Loader";
 
 const BalanceSheet: React.FC = () => {
+  const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<{
     fromDate: Date | null;
     toDate: Date | null;
@@ -25,6 +29,15 @@ const BalanceSheet: React.FC = () => {
   const liabilities = data?.items?.filter((item: any) => item.side === "Liability") || [];
   const totalAssets = data?.totalAssets || 0;
   const totalLiabilities = data?.totalLiabilities || 0;
+
+
+
+  const handleClick = (groupId: any) => {
+    if (groupId) {
+     navigate(`/home/accountant/financial-statement/groupAndLedgerDetails/${groupId}`) // Your route with ID
+    }
+  };
+
 
   return (
     <div className="bg-white border rounded-lg p-6 shadow-sm">
@@ -48,7 +61,7 @@ const BalanceSheet: React.FC = () => {
       </div>
 
       {isLoading ? (
-        <div className="text-center text-sm text-gray-500 py-4">Loading...</div>
+        <div className="text-center text-sm text-gray-500 py-4"><Loader/></div>
       ) : error ? (
         <div className="text-red-500 text-sm">Failed to fetch data</div>
       ) : (
@@ -67,8 +80,12 @@ const BalanceSheet: React.FC = () => {
                   Assets
                 </td>
               </tr>
-              {assets.map((item: any, index: number) => (
-                <tr key={index}>
+              {assets.map((item: any) => (
+                <tr
+                  key={item.immediateGroupId}
+                  onClick={() => handleClick(item.immediateGroupId)}
+                  className="hover:bg-gray-100 cursor-pointer"
+                >
                   <td className="px-4 py-2 text-gray-700">{item.groupName}</td>
                   <td className="px-4 py-2 text-right text-gray-800">
                     ₹{item.netAmount.toLocaleString()}
@@ -88,8 +105,12 @@ const BalanceSheet: React.FC = () => {
                   Liabilities
                 </td>
               </tr>
-              {liabilities.map((item: any, index: number) => (
-                <tr key={index}>
+              {liabilities.map((item: any) => (
+                <tr
+                  key={item.immediateGroupId}
+                  onClick={() => handleClick(item.immediateGroupId)}
+                  className="hover:bg-gray-100 cursor-pointer"
+                >
                   <td className="px-4 py-2 text-gray-700">{item.groupName}</td>
                   <td className="px-4 py-2 text-right text-gray-800">
                     ₹{item.netAmount.toLocaleString()}
@@ -103,6 +124,7 @@ const BalanceSheet: React.FC = () => {
                 </td>
               </tr>
             </tbody>
+
           </table>
         </div>
       )}

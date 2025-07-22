@@ -283,3 +283,19 @@ export const getTaxAndInvoicePurchaseReturns = async (
   })
    return response.data.data
 }
+
+
+export const getGroupAndLedgersReport = async (
+   groupId: string,
+  fromDate: string | null,
+  toDate: string | null,
+) => {
+  const response = await accountsClient.get("/LedgerReport/all/ledgerandgroup/report/bygroupid", {
+    params: {
+      groupId,
+      fromDate,
+      toDate,
+    },
+  })
+   return response.data.data
+}
