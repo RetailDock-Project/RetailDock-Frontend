@@ -6,9 +6,10 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { loginUser, UserInfo } from "../../services/api/authApi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../features/auth/authSice";
 import { setUser } from "../../features/user/userSlice";
+import type { RootState } from "../../store/store";
 
 // Zod schema for validation
 const loginSchema = z.object({
@@ -34,6 +35,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const user = useSelector((state: RootState) => state.user.user);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -72,7 +74,7 @@ const LoginPage: React.FC = () => {
       {/* Email Field */}
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">
-          Your email | mepaci8809@ofacer.com
+          Your email
         </label>
         <input
           type="email"
@@ -90,7 +92,7 @@ const LoginPage: React.FC = () => {
       {/* Password Field */}
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">
-          Password | Sabith@123
+          Password
         </label>
         <div className="relative">
           <input

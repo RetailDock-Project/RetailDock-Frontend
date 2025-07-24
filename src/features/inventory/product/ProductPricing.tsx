@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 type PricingData = {
-  costPrice: number;
   sellingPrice: number;
   mrp: number;
 };
@@ -26,7 +25,6 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
 
   // Local state for string input values
   const [localValues, setLocalValues] = useState({
-    costPrice: pricingData.costPrice.toString(),
     sellingPrice: pricingData.sellingPrice.toString(),
     mrp: pricingData.mrp.toString(),
   });
@@ -34,7 +32,6 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
   useEffect(() => {
     // Sync when editing existing values (e.g., fetch completed)
     setLocalValues({
-      costPrice: pricingData.costPrice.toString(),
       sellingPrice: pricingData.sellingPrice.toString(),
       mrp: pricingData.mrp.toString(),
     });
@@ -53,13 +50,13 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
   };
 
   useEffect(() => {
-    const { costPrice, sellingPrice, mrp } = pricingData;
+    const { sellingPrice, mrp } = pricingData;
     const newErrors = { costPrice: "", sellingPrice: "", mrp: "" };
 
-    if (touched.costPrice && touched.sellingPrice && costPrice > sellingPrice) {
-      newErrors.sellingPrice =
-        "Selling price should be greater than or equal to cost price.";
-    }
+    // if (touched.costPrice && touched.sellingPrice && costPrice > sellingPrice) {
+    //   newErrors.sellingPrice =
+    //     "Selling price should be greater than or equal to cost price.";
+    // }
 
     if (touched.sellingPrice && touched.mrp && sellingPrice > mrp) {
       newErrors.mrp = "MRP should be greater than or equal to selling price.";
@@ -74,7 +71,7 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Cost Price */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium mb-1">
             Cost Price (₹)
           </label>
@@ -91,7 +88,7 @@ const ProductPricing: React.FC<Props> = ({ pricingData, setPricingData }) => {
           {errors.costPrice && (
             <p className="text-red-500 text-xs mt-1">{errors.costPrice}</p>
           )}
-        </div>
+        </div> */}
 
         {/* Selling Price */}
         <div>

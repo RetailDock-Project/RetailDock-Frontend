@@ -178,6 +178,8 @@ const NewPurchase: React.FC = () => {
     };
 
     try {
+      console.log(payload);
+
       await createPurchase(payload);
       toast.success("Purchase saved successfully!");
       navigate("/home/inventory/purchases");
