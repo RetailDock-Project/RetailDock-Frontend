@@ -1,8 +1,16 @@
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 import { FaEye } from "react-icons/fa6";
+import { downloadSaleInvoice, getSaleListByDate } from "../../../services/api/cashierApi/cashierApi";
+import { formatDate } from "../../../utils/formatDate";
+import Loader from "../../../components/ui/reusable/Loader";
+import { useNavigate } from "react-router-dom";
+import { Download, Eye } from "lucide-react";
+import { FaDownload } from "react-icons/fa";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
 
-type SalesReturn = {
-  returnId: string;
+type Salessaleurn = {
+  saleurnId: string;
   createdBy: string;
   createdAt: string;
   purchaseId: string;
@@ -10,98 +18,138 @@ type SalesReturn = {
   SalesDate: string;
  Customer: string;
   gst: string;
-  returnDate: string;
+  saleurnDate: string;
 
   reason: string;
   itemCount: number;
   unitCount: number;
   totalValue: number;
 };
+type saleListProps={
+  searchTerm:string;
+  fromDate:Date | null;
+  toDate : Date | null;
 
-const returns: SalesReturn[] = [
-  {
-    returnId: "RET-2025-0001",
-    createdBy: "Jane Smith",
-    createdAt: "Jun 10, 2025 at 10:15 AM",
-    purchaseId: "P-2025-0145",
-    invoiceNumber: "INV-2458",
-    SalesDate: "May 10, 2025",
- Customer: "Samsung Electronics",
-    gst: "27AABCS1234C1Z5",
-    returnDate: "Jun 12, 2025",
-
-    reason: "Defective units",
-    itemCount: 2,
-    unitCount: 5,
-    totalValue: 90900,
-  },
-];
+}
 
 
-const SalesList: React.FC = () => {
+const SalesList: React.FC<saleListProps>= ({fromDate,toDate,searchTerm}) => {
+  const [skipPage,setSkipPage]=useState<number |null> (null);
+  const [takePage,setTakePage]=useState<number |null> (null);
+
+  const navigate=useNavigate()
+  const useGetAllSaleListByDate=(
+
+)=>{
+  return useQuery({
+    queryKey:["getSaleByDate",fromDate,toDate,skipPage,takePage],
+    queryFn:()=>getSaleListByDate(fromDate,toDate,false,skipPage,takePage),
+    select:(data)=>data.data,
+    enabled:true
+  })
+}
+
+
+const downloadInvoice= async (invoiceNum:string)=>{
+ await downloadExcelFile(()=>downloadSaleInvoice(invoiceNum),`SaleOnvoice${invoiceNum}.Pdf`)
+}
+
+const {data,isLoading} =useGetAllSaleListByDate();
+  const filteredData = data?.filter((sale: any) => {
+    const search = searchTerm.toLowerCase();
+  return (
+      sale.customerName?.toLowerCase().includes(search) ||
+      sale.invoiceNumber?.toLowerCase().includes(search) 
+     
+    );
+  });
+
+  if (isLoading) return <Loader />;
   return (
     <div className="bg-white p-6 rounded-xl shadow border mt-6 overflow-x-auto">
       <h2 className="text-lg font-semibold mb-4">📋 Sales  List</h2>
       <table className="min-w-[1200px] w-full  text-sm border">
         <thead className="bg-gray-100">
           <tr>
+               <th className="p-3 border text-left">Sale Date</th>
             <th className="p-3 border text-left">Sales Details</th>
-            <th className="p-3 border text-left">Original Purchase</th>
+         
             <th className="p-3 border text-left">Customer</th>
-            <th className="p-3 border text-left">Sale Date</th>
+            {/* <th className="p-3 border text-left">Sale Date</th> */}
             {/* <th className="p-3 border text-left">Status</th> */}
-            <th className="p-3 border text-left">Reason</th>
             <th className="p-3 border text-left">Items</th>
             <th className="p-3 border text-right">Total Value</th>
             <th className="p-3 border text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {returns.map((ret, index) => (
+          {filteredData?.map((sale:any, index:number) => (
             <tr key={index} className="border-t">
+
               <td className="p-3 border">
-                <p className="font-medium">{ret.returnId}</p>
                 <p className="text-gray-600 text-xs">
-                  Created by {ret.createdBy}
+                 {formatDate( sale.saleDate).fullDate}
                 </p>
-                <p className="text-gray-500 text-xs">{ret.createdAt}</p>
+                <p className="text-gray-500 text-xs">{sale.SalesDate}</p>
               </td>
+
               <td className="p-3 border">
-                <p className="font-medium">{ret.purchaseId}</p>
+                <p className="font-medium text-blue-700">{sale.invoiceNumber}</p>
                 <p className="text-gray-600 text-xs">
-                  Invoice: {ret.invoiceNumber}
+                  payment: {sale.paymentType}
                 </p>
-                <p className="text-gray-500 text-xs">{ret.SalesDate}</p>
               </td>
+              
               <td className="p-3 border">
-                <p className="font-medium">{ret.Customer}</p>
-                <p className="text-gray-500 text-xs">GST: {ret.gst}</p>
+                <p className="font-medium">{sale.customerName}</p>
+                <p className="text-gray-500 text-xs"> {sale.contactNumber}</p>
+                <p className="text-gray-500 text-xs"> {sale.place}</p>
+                {sale.gstNumber && (
+  <p className="text-gray-500 text-xs">
+    Gst: {sale.gstNumber}
+  </p>
+)}
               </td>
-              <td className="p-3 border">{ret.returnDate}</td>
+              {/* <td className="p-3 border">{sale.saleurnDate}</td> */}
               {/* <td className="p-3 border">
                 <span
                   className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    statusColorMap[ret.]
+                    statusColorMap[sale.]
                   }`}
                 >
-                  {ret.}
+                  {sale.}
                 </span>
               </td> */}
-              <td className="p-3 border text-gray-700">{ret.reason}</td>
+              {/* <td className="p-3 border text-gray-700">{sale.reason}</td> */}
               <td className="p-3 border">
                 <p>
-                  <span className="font-medium">{ret.itemCount}</span> items
+                  <span className="font-medium">{sale.saleItems.length}</span> items
                 </p>
-                <p className="text-xs text-gray-600">{ret.unitCount} units</p>
+                <p className="text-xs text-gray-600">{sale.saleItems.reduce((accu:number,curr:any)=>(accu+curr.quantity),0)} units</p>
               </td>
               <td className="p-3 border text-right font-semibold">
-                ₹{ret.totalValue.toLocaleString()}
+                ₹{sale.totalAmount.toLocaleString()}
               </td>
-              <td className="p-3 border text-center">
-                <button className="text-blue-600 flex justify-center items-center hover:underline text-sm">
-                  <FaEye /> <span className="ml-2">View</span>
-                </button>
-              </td>
+<td className="p-3 border text-center">
+  <div className="flex justify-center items-center gap-3">
+    <button
+      onClick={() => navigate(`/home/cashier/invoice/details/${sale.invoiceNumber}`)}
+      className="text-gray-500 hover:text-gray-700 transition"
+      title="View Invoice"
+    >
+      <Eye className="w-5 h-5" />
+    </button>
+
+    <button
+      onClick={() => downloadInvoice(sale.invoiceNumber)}
+      className="text-gray-500 hover:text-gray-700 transition"
+      title="Download Invoice"
+    >
+      <FaDownload className="w-5 h-5" />
+    </button>
+  </div>
+</td>
+
             </tr>
           ))}
         </tbody>

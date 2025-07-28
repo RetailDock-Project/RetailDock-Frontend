@@ -1,4 +1,5 @@
 import React from "react";
+import { formatDate } from "../../../../utils/formatDate";
 
 
 
@@ -15,14 +16,10 @@ const SaleDetailInfo: React.FC<saleDetailInfoProps> = ({invoiceDetails}) => {
       </h2>
 
       <div className="grid md:grid-cols-2 gap-y-3 text-sm">
+      
         <div>
-          <span className="font-medium">Sale ID:</span><span className="font-medium text- pl-2">{invoiceDetails?.saleId}</span> 
-        </div>
-        <div>
-          <span className="font-medium">Sale Status:</span>{" "}
-          <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">
-            Received
-          </span>
+             <span className="font-medium">Sale Date:</span> {formatDate(invoiceDetails?.saleDate).fullDate}
+        
         </div>
         <div>
           <span className="font-medium">Customer:</span> {invoiceDetails?.customerName}
@@ -31,21 +28,21 @@ const SaleDetailInfo: React.FC<saleDetailInfoProps> = ({invoiceDetails}) => {
           <span className="font-medium">Invoice Number:</span> <span className="font-medium text-violet-700 text- pl-2">{invoiceDetails?.invoiceNumber}</span>
         </div>
         <div>
-          <span className="font-medium">Sale Date:</span> {new Date(invoiceDetails?.saleDate).toLocaleDateString()}
+     <span className="font-medium">Sale Status:</span>{" "}
+          <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">
+           Completed
+          </span>
         </div>
-        {invoiceDetails?.paymentMode=="Credit" &&
+        {invoiceDetails?.paymentMod=="Credit" &&
         <div>
-          <span className="font-medium">Received Date:</span> {invoiceDetails?.dueDate}
+          <span className="font-medium">Due Date:</span> {formatDate(invoiceDetails?.dueDate).fullDate}
         </div>
 }
         <div>
-          <span className="font-medium">Payment Method:</span><span>{invoiceDetails?.paymentMode}</span>
+          <span className="font-medium">Payment Method:</span><span>{invoiceDetails?.paymentMod}</span>
         </div>
         <div>
-          <span className="font-medium">Payment Status:</span>{" "}
-          <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">
-            Paid
-          </span>
+       
         </div>
       </div>
 

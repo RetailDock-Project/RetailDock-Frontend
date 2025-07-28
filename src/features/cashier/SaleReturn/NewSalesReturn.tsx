@@ -12,12 +12,13 @@ import SalesReturnSummary from "./SalesReturnSummary";
 
 import SalesReturnInformation from "./SalesReturnInformation";
 
-import { addNewSalesReturn, getReturnedProductCount, getSaleByInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
+import { addNewSalesReturn, downloadSaleReturnInvoice, getReturnedProductCount, getSaleByInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
 import SalesReturnLedger from "./SalesReturnLedger";
 import ProceedToReturn from "./ProceedToReturn";
 import { useSaleInvoiceInfo } from "../Hooks/UseSaleInvoice";
 import toast from "react-hot-toast";
 import { useSaleReturnInvoice } from "../Hooks/useSaleReturnInvoice";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
 
 
 
@@ -44,7 +45,7 @@ const NewSalesReturn: React.FC = () => {
     const [returnDate, setReturnDate] = useState<Date| null>(new Date());
      const [returnReason, setReturnReason] = useState("");
      const [returnedQuantities, setReturnedQuantities] = useState<Record<string, number>>({});
-const [returnInvoiceNum,setReturnInvoiceNum]=useState("");
+const [paymentMode,setPaymentMode]=useState("Cash");
   const [items, setItems] = useState<SaleItem[]>([]);
 
 
@@ -143,12 +144,12 @@ const handleReturnDate = (date: Date) => {
     toast.error("Invalid sale date");
     return;
   }
-
-  if (date < saleDate || date > new Date()) {
-    toast.error("Select correct Return Date");
-  } else {
-    setReturnDate(date);
-  }
+ setReturnDate(date);
+  // if (date < saleDate || date > new Date()) {
+  //   toast.error("Select correct Return Date");
+  // } else {
+   
+  // }
 };
 
 
@@ -200,7 +201,7 @@ const handleSelectAllItems = () => {
 const payload = {
   saleInvoiceNumber: selectedSale?.invoiceNumber,
   returnInvoiceNumber:saleReturnInvoice,
-  returnPayment: "Cash", 
+  returnPayment: paymentMode, 
   returnDate,
   text: returnReason,
   returnCondition,
@@ -239,9 +240,22 @@ const payload = {
 
 const addSalesReturn = async () => {
   try {
-    setIsLoading(true);
+    const hasValidReturnItems = () =>
+  items.some(item => item.selected && item.returnQuantity > 0);
+    if(hasValidReturnItems()){
+ setIsLoading(true);
     const response = await addNewSalesReturn(payload);
-    toast.success(response.message); // on success
+    
+ toast.success(response.message); 
+//  await downloadExcelFile(()=>downloadSaleReturnInvoice(saleReturnInvoice),`SaleReturn${saleReturnInvoice}.Pdf`)
+ setSearchTerm('');
+ setSelectedSale(null);
+ setItems([]);
+    }else{
+       toast.error('select atleast one quantity'); 
+    }
+   
+   // on success
   } catch (error: any) {
     const errorMessage =
       error?.response?.data?.message || "Something went wrong!";
@@ -295,6 +309,9 @@ const addSalesReturn = async () => {
           handleReturnDate={handleReturnDate}
           returnReason={returnReason}
           setReturnReason={setReturnReason}
+          paymentMode={paymentMode}
+          setPaymentMode={setPaymentMode}
+          isCreditCustomer={selectedSale?.isCreditCustomer}
           
           />
           <SalesDetails customerInfo={selectedSale}/>

@@ -11,7 +11,9 @@ import AddCreditCustomerModal from "../Debtors/AddCustomerModal";
 import AddCustomerModal from "./AddCustomer";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
 import toast from "react-hot-toast";
-import { addNewSale, getSaleInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
+import { addNewSale, downloadSaleInvoice, getSaleInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
+import SalesInvoice from "../Invoice/salesInvoice/SalesInvoice";
 
 export type Customer = {
   id: number;
@@ -105,7 +107,7 @@ useEffect(() => {
   };
 
   fetchInvoice();
-}, [salesMode]);
+}, [salesMode,mobileNum]);
 
 useEffect(()=>{
 
@@ -166,11 +168,23 @@ const buildSalePayload = () => {
 
 const createNewSale=async()=>{
   try{
+
+    const isValidSale=()=>
+ saleItems.some(item => (item.quantity>0 &&  item.productId));
+    
+    
+    if(isValidSale()){
+
+    
      setIsLoading(true);
   const payload=buildSalePayload();
   const response=await addNewSale(payload);
   toast.success(response.message)
-
+  downloadExcelFile(()=> downloadSaleInvoice(invoiceNumber),`SaleInvoice${invoiceNumber}.pdf`);
+  setMobileNum("");
+    }else{
+      toast.error(" select atleast one product");
+    }
 
   }catch(error:any){
    const errorMessage= error?.response?.data?.message || "Something went wrong!";

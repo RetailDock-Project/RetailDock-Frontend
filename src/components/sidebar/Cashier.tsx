@@ -20,7 +20,7 @@ const currentUser = {
 const cashierMenuItems = [
   { title: "Dashboard", url: "/home/cashier/dashboard", icon: Gauge },
   { title: "POS", url: "/home/cashier/pos", icon: ShoppingBag },
-  { title: "Invoices", url: "/home/cashier/invoices", icon: FileText },
+
   { title: "Customers", url: "/home/cashier/customers", icon: Users },
   { title: "Sales Return", url: "/home/cashier/sales-returns", icon: Undo2 },
 ];

@@ -58,6 +58,7 @@ import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
 
 import GroupAndLedgerDetails from "../features/accountant/components/GroupAndLedgerDetails.tsx";
 import PurchaseOrderForm from "../features/inventory/purchaseorder/PurchaseOrderForm.tsx";
+import SaleReturnItemViewInfo from "../features/cashier/SaleReturn/SaleReturnItemView/SaleReturnItemViewInfo.tsx";
 
 
 
@@ -198,6 +199,12 @@ const PageRoutes: React.FC = () => {
             <Route path="sales-return">
               <Route path="new" element={<NewSalesReturn />} />
               {/* <Route path="info" element={<SalesReturnInformation/>} />  */}
+            </Route>
+             <Route path="sales-return">
+              <Route
+                path="details/:ReturninvoiceNumber"
+                element={<SaleReturnItemViewInfo />}
+              />
             </Route>
           </Route>
 

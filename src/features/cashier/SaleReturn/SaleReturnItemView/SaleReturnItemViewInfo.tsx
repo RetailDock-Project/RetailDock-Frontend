@@ -6,20 +6,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../../components/ui/reusable/Button";
 import { PageHeader } from "../../../../components/ui/reusable/PageHeader";
 
-import AuditTrail from "../../../../components/ui/reusable/AuditTrail";
-import CustomerDetails from "./CustomerDetails";
-import SalesQuickActions from "./SalesQuickActions";
-import SaleItems from "./SaleItems";
-import SaleDetailInfo from "./SaleDetailsInfo";
 
-import { useSaleInvoiceInfo } from "../../Hooks/UseSaleInvoice";
 import Loader from "../../../../components/ui/reusable/Loader";
 
+import SaleReturnItemDetail from "./SaleReturnItemDetail";
+import ReturnItems from "./ReturnItems";
+import CustomerDetails from "../../Invoice/salesInvoice/CustomerDetails";
+import { useSaleReturnInvoiceInfo } from "../../Hooks/useSaleReturnInvoiceInfo";
+import SalesReturnQuickActions from "./SalesReturnQuickAction";
 
 
-const SaleInformation:React.FC = () => {
-  const [invoiceInfo,setSaleInfo]=useState<any>();
-  const { invoiceNumber } = useParams();
+
+const SaleReturnItemViewInfo:React.FC = () => {
+  const [returnInfo,setReturnInfo]=useState<any>();
+  const { ReturninvoiceNumber } = useParams();
 
   const [customerName,setCustomerName]=useState<string| null>(null);
   const [gstNumber,setGstNumber]=useState<string | null>(null);
@@ -28,11 +28,11 @@ const SaleInformation:React.FC = () => {
   const [Email,setEmail]=useState<string | null>(null);
   
   const navigate = useNavigate();
-  const {data,isLoading,error}=useSaleInvoiceInfo(invoiceNumber);
+  const {data,isLoading,error}=useSaleReturnInvoiceInfo(ReturninvoiceNumber);
 
 useEffect(()=>{
 if(data){
-setSaleInfo(data);
+setReturnInfo(data);
 setCustomerName(data.customerName);
 setGstNumber(data.gstNumber?? null);
 setMobileNum(data.contactNumber);
@@ -46,16 +46,15 @@ if(error) return<p>error While fetching..</p>
 
     <div className="p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <PageHeader
-        backTo="/home/cashier/pos"
-        title={`Sale - ${invoiceNumber}`}
-        subtitle="View finalized Sale details and items"
+        backTo="/home/cashier/sales-returns"
+        title={`SaleReturn - ${ReturninvoiceNumber}`}
+        subtitle="View finalized Sale Return details and items"
         actions={
           <>
             <Button
               size="sm"
               variant="primary"
               className="flex items-center gap-2"
-              onClick={() => console.log("Print purchase")}
             >
               <FilePlus size={16} />
               Print
@@ -85,12 +84,12 @@ if(error) return<p>error While fetching..</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-100 min-h-screen">
         <div className="md:col-span-2">
-        <SaleDetailInfo invoiceDetails={invoiceInfo}/>
-          <SaleItems saleId={invoiceInfo?.saleId} items={invoiceInfo?.saleItems} totalAmount={invoiceInfo?.totalAmount} subTotal={invoiceInfo?.taxableAmount} discountAmount={invoiceInfo?.discountAmount} taxAmount={invoiceInfo?.totalTaxAmount}/>
+        <SaleReturnItemDetail SaleReturnDetails={returnInfo}/>
+          <ReturnItems items={returnInfo?.saleReturnItems} totalAmount={returnInfo?.totalAmount} subTotal={returnInfo?.taxableAmount} taxAmount={returnInfo?.totalTaxAmount}/>
         </div>
         <div>
-          <CustomerDetails name ={customerName} gstNumber={gstNumber} mobileNumber={mobileNum} address={address} email={Email}/>
-          <SalesQuickActions saleId={invoiceInfo?.saleId} invoiceNumber={invoiceNumber}/>
+          <CustomerDetails  name ={customerName} gstNumber={gstNumber} mobileNumber={mobileNum} address={address} email={Email}/>
+          <SalesReturnQuickActions  invoiceNumber={ReturninvoiceNumber}/>
          
         </div>
       </div>
@@ -98,4 +97,4 @@ if(error) return<p>error While fetching..</p>
   );
 };
 
-export default SaleInformation;
+export default SaleReturnItemViewInfo;
