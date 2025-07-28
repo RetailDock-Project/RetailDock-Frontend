@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/reusable/Button";
 import { PageHeader } from "../../components/ui/reusable/PageHeader";
 import { useNavigate } from "react-router-dom";
+import { addOrganizationAndSubscription } from "../../services/api/developerApi/developerApi";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
+import toast from "react-hot-toast";
 
 type Organization = {
   organizationName: string;
@@ -9,8 +13,7 @@ type Organization = {
   licenceNumber: string;
   gstNumber: string;
   panNumber: string;
-  financialYearStart: string;
-  financialYearType: "January to December" | "April to March";
+  financialYearStart: "jantodec" | "apriltomarch";
 };
 
 const initialData: Organization = {
@@ -19,29 +22,15 @@ const initialData: Organization = {
   licenceNumber: "",
   gstNumber: "",
   panNumber: "",
-  financialYearStart: "",
-  financialYearType: "April to March", // default
+  financialYearStart: "apriltomarch", // default
 };
 
 const OrganizationRegistration: React.FC = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [formData, setFormData] = useState<Organization>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
-
-  // Automatically set financialYearStart based on type
-  useEffect(() => {
-    if (formData.financialYearType === "January to December") {
-      setFormData((prev) => ({
-        ...prev,
-        financialYearStart: `${new Date().getFullYear()}-01-01`,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        financialYearStart: `${new Date().getFullYear()}-04-01`,
-      }));
-    }
-  }, [formData.financialYearType]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -62,13 +51,20 @@ const OrganizationRegistration: React.FC = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     console.log("Organization Registered:", formData);
+    console.log("Organization Registered:", user?.id);
 
-    navigate("/home/dashboard");
+    try {
+      await addOrganizationAndSubscription(user?.id, formData);
+      toast.success("Organization Registered");
+      navigate("/home");
+    } catch (error) {
+      toast.error("Error in creating organization");
+    }
   };
 
   return (
@@ -130,28 +126,14 @@ const OrganizationRegistration: React.FC = () => {
             Financial Year Type
           </label>
           <select
-            name="financialYearType"
-            value={formData.financialYearType}
+            name="financialYearStart"
+            value={formData.financialYearStart}
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
           >
-            <option>April to March</option>
-            <option>January to December</option>
+            <option value={"apriltomarch"}>April to March</option>
+            <option value={"jantodec"}>January to December</option>
           </select>
-        </div>
-
-        {/* Financial Year Start (Readonly) */}
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Financial Year Start
-          </label>
-          <input
-            type="date"
-            name="financialYearStart"
-            value={formData.financialYearStart}
-            className="w-full border px-3 py-2 rounded bg-gray-100 cursor-not-allowed"
-            readOnly
-          />
         </div>
 
         {/* Submit */}

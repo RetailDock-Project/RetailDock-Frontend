@@ -1,269 +1,203 @@
-import React, { useState } from 'react'
-import Modal from '../../../components/ui/reusable/Modal';
-import { HiEye } from 'react-icons/hi';
-import { HiBan } from 'react-icons/hi';
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  blockOrUnblockOrg,
+  getFilteredOrganizations,
+} from "../../../services/api/developerApi/developerApi";
+import { HiEye, HiBan } from "react-icons/hi";
+import CustomerDetailModal from "./CustomerDetailModal";
+import { DropdownList } from "../../../components/ui/reusable/DropdownList";
+import { Button } from "../../../components/ui/reusable/Button";
+import toast from "react-hot-toast";
 
-interface user {
-    businessName: string;
-    email: string;
-    plan: 'Basic' | 'Premium';
-    status: 'trial' | 'active' | 'canceled';
-    signupDate: string;
-    expiry: string;
-    users: number;
-    stores: number;
+interface Organization {
+  organizationId: string;
+  organizationName: string;
+  planName: string;
+  planStatus: "Active" | "Inactive" | "Expired";
+  signUpDate: string;
+  expiryDate: string;
+  isActive: boolean;
 }
 
-const Customers: user[] = [
-    {
-        businessName: 'Local Mart Enterprises',
-        email: 'contact@localmart.in',
-        plan: 'Basic',
-        status: 'trial',
-        signupDate: '4/1/2024',
-        expiry: '6/15/2025',
-        users: 5,
-        stores: 1,
-    },
-    {
-        businessName: 'Retail Store Chain Ltd.',
-        email: 'info@retailchain.com',
-        plan: 'Premium',
-        status: 'active',
-        signupDate: '1/15/2023',
-        expiry: '12/31/2025',
-        users: 45,
-        stores: 12,
-    },
-    {
-        businessName: 'Tech Gadget Store',
-        email: 'support@techgadget.co.in',
-        plan: 'Premium',
-        status: 'canceled',
-        signupDate: '3/15/2023',
-        expiry: '6/10/2024',
-        users: 15,
-        stores: 2,
-    },
-];
+const Customers: React.FC = () => {
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState<
+    string | null
+  >(null);
 
-const customers: React.FC = () => {
-    const [selectedCustomer, setSelectedCustomer] = useState<user | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState<'business' | 'subscription'>('business');
+  const {
+    data = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["filtered-organizations", search, status],
+    queryFn: () => getFilteredOrganizations(search, status),
+    select: (res) => res.data,
+  });
 
-    return (
-        <>
-          <Modal
-  isOpen={isModalOpen}
-  onClose={() => {
-    setIsModalOpen(false);
-    setSelectedCustomer(null);
-  }}
-  head={selectedCustomer?.businessName || "Organization Details"}
-  subHead={`Customer ID: org_7842`}
-  badge={selectedCustomer?.status}
->
-  {/* Tabs */}
-  <div className="flex gap-2 mb-6">
-    <button
-      className={`px-4 py-2 rounded-lg text-sm font-medium ${
-        activeTab === 'business' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-      }`}
-      onClick={() => setActiveTab('business')}
-    >
-      Business Details
-    </button>
-    <button
-      className={`px-4 py-2 rounded-lg text-sm font-medium ${
-        activeTab === 'subscription' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-      }`}
-      onClick={() => setActiveTab('subscription')}
-    >
-      Subscription History
-    </button>
-  </div>
+  console.log(data);
 
-  {/* Business Tab Content */}
-  {activeTab === 'business' && selectedCustomer && (
-   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
-  <div>
-    <p className="text-gray-500">Organization ID</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">User ID</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Organization Name</p>
-    <p className="font-medium">Company name</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Address</p>
-    <p className="font-medium">Address</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Licence Number</p>
-    <p className="font-medium">Number</p>
-  </div>
-  <div>
-    <p className="text-gray-500">GST Number</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">PAN Number</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Financial Year Start</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Financial Year End</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Is Active</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Created At</p>
-    <p className="font-medium">Data</p>
-  </div>
-  <div>
-    <p className="text-gray-500">Updated At</p>
-    <p className="font-medium">Data</p>
-  </div>
-</div>
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr || dateStr.startsWith("0001")) return "-";
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
-  )}
+  const blockOrUnblockOrganization = async (id: string) => {
+    try {
+      await blockOrUnblockOrg(id);
+      toast.success(`Organization with id-${id} status changed`);
+      refetch();
+    } catch (error) {
+      console.log(error);
 
-  {/* Subscription Tab Content */}
-  {activeTab === 'subscription' && (
-    <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
-      <div>
-        <p className="text-gray-500">Transaction ID</p>
-        <p className="font-medium">XXXXXXXX</p>
+      toast.error("Error in Organization status change");
+    }
+  };
+
+  return (
+    <>
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10">
+        <h1 className="text-2xl font-bold text-gray-800">
+          Customer Management
+        </h1>
+        <p className="text-sm text-gray-500 mb-4">
+          Manage all subscribed retail businesses
+        </p>
+
+        {/* 🔍 Search & Filter */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 mb-4">
+          <input
+            type="text"
+            placeholder="Search by business name or email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border px-4 py-2 text-sm placeholder:text-xs rounded-md w-full sm:w-80"
+          />
+          <DropdownList
+            onSelect={(id: any) => setStatus(id)}
+            includeDefaultOption
+            defaultOptionLabel="Choose status"
+            options={[
+              { id: "active", name: "Active" },
+              { id: "inactive", name: "Inactive" },
+              { id: "expired", name: "Expired" },
+            ]}
+            className="w-full sm:w-60"
+          />
+        </div>
+
+        {/* 📄 Data Table */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-t border-gray-200 text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
+                <th className="text-left px-4 py-2">Business Name</th>
+                <th className="text-left px-4 py-2">Plan Name & Status</th>
+                <th className="text-left px-4 py-2">Sign Up Date</th>
+                <th className="text-left px-4 py-2">Expiry</th>
+                <th className="text-left px-4 py-2">Status</th>
+
+                <th className="text-left px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-4">
+                    Loading...
+                  </td>
+                </tr>
+              ) : isError ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-4 text-red-500">
+                    Failed to load data.
+                  </td>
+                </tr>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-4">
+                    No organizations found.
+                  </td>
+                </tr>
+              ) : (
+                data.map((org: Organization) => (
+                  <tr key={org.organizationId} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 font-medium text-gray-800">
+                      {org.organizationName}
+                      <div className="text-gray-500 text-xs">
+                        {/* Email is not in response, skip or add if needed */}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="inline-flex items-center gap-2">
+                        <span className="text-xs border rounded px-2 py-1 text-gray-600 bg-gray-100">
+                          {org.planName}
+                        </span>
+                        <span
+                          className={`text-xs rounded px-2 py-1 text-white ${
+                            org.planStatus === "Active"
+                              ? "bg-green-400"
+                              : org.planStatus === "Expired"
+                              ? "bg-gray-400"
+                              : "bg-yellow-400"
+                          }`}
+                        >
+                          {org.planStatus}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2">{formatDate(org.signUpDate)}</td>
+                    <td className="px-4 py-2">{formatDate(org.expiryDate)}</td>
+                    <td className="px-4 py-2">
+                      <Button
+                        size="sm"
+                        className={`${org?.isActive && "bg-red-500"}`}
+                        onClick={() =>
+                          blockOrUnblockOrganization(org.organizationId)
+                        }
+                      >
+                        {org?.isActive ? "Block" : "Unblock"}
+                      </Button>
+                    </td>
+
+                    <td className="px-4 py-2 text-center">
+                      <div className="flex justify-center gap-3">
+                        <button
+                          onClick={() => {
+                            setSelectedOrganization(org.organizationId);
+                            setCustomerModalOpen(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="View Details"
+                        >
+                          <HiEye className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div>
-        <p className="text-gray-500">Subscription Name</p>
-        <p className="font-medium">Example Plan</p>
-      </div>
-      <div>
-        <p className="text-gray-500">Amount</p>
-        <p className="font-medium">₹4,000</p>
-      </div>
-      <div>
-        <p className="text-gray-500">Start Date</p>
-        <p className="font-medium">2024-04-01</p>
-      </div>
-      <div>
-        <p className="text-gray-500">Expiry Date</p>
-        <p className="font-medium">2025-04-01</p>
-      </div>
-    </div>
-  )}
-</Modal>
 
-            <div className="p-4 sm:p-6 md:p-8 lg:p-10">
-                <h1 className="text-2xl font-bold text-gray-800">Customer Management</h1>
-                <p className="text-sm text-gray-500 mb-4">Manage all subscribed retail businesses</p>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search by business name or email..."
-                        className="border px-4 py-3 text-sm placeholder:text-xs rounded w-full sm:w-80"
-                    />
-                    <select className="border px-3 py-2 rounded">
-                        <option>All Statuses</option>
-                    </select>
-                    <select className="border px-3 py-2 rounded">
-                        <option>All Plans</option>
-                    </select>
-
-
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="min-w-full border-t border-gray-200 text-sm">
-                        <thead className="bg-gray-50 text-gray-600">
-                            <tr>
-                                <th className="text-left px-4 py-2">Business Name</th>
-                                <th className="text-left px-4 py-2">Plan Name & Status</th>
-                                <th className="text-left px-4 py-2">Sign Up Date</th>
-                                <th className="text-left px-4 py-2">Expiry</th>
-                                <th className="text-left px-4 py-2">Total users</th>
-                                <th className="text-left px-4 py-2">Business Status</th>
-                                <th className="text-left px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                            {Customers.map((x, index) => (
-                                <tr key={index} className="hover:bg-gray-50">
-                                    <td className="px-4 py-2">
-                                        <div className="font-medium text-gray-800">{x.businessName}</div>
-                                        <div className="text-gray-500 text-xs">{x.email}</div>
-                                    </td>
-                                    <td className="px-4 py-2">
-                                        <div className="inline-flex items-center gap-2">
-                                            <span className="text-xs border rounded px-2 py-1 text-gray-600 bg-gray-100">{x.plan}</span>
-                                            <span className={`text-xs rounded px-2 py-1 text-white ${x.status === 'trial'
-                                                    ? 'bg-blue-300'
-                                                    : x.status === 'active'
-                                                        ? 'bg-green-400'
-                                                        : 'bg-gray-400'
-                                                }`}>
-                                                {x.status}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-2">{x.signupDate}</td>
-                                    <td className="px-4 py-2">{x.expiry}</td>
-                                    <td className="px-4 py-2">
-                                        {x.users} users
-                                        <br />
-                                        <span className="text-xs text-gray-500">{x.stores} stores</span>
-                                    </td>
-                                    <td></td>
-                                   <td className="px-4 py-2 text-center">
-  <div className="flex justify-center gap-3">
-    <button
-      className="text-blue-600 hover:text-blue-800"
-      title="View Details"
-      onClick={() => {
-        setSelectedCustomer(x);
-        setIsModalOpen(true);
-        setActiveTab('business');
-      }}
-    >
-      <HiEye className="w-5 h-5" />
-    </button>
-    <button
-      className="text-red-600 hover:text-red-800"
-      title="Suspend Account"
-      onClick={() => {
-        // Suspend logic
-      }}
-    >
-      <HiBan className="w-5 h-5" />
-    </button>
-  </div>
-</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-
-
-            </div>
+      <CustomerDetailModal
+        selectedOrganization={selectedOrganization}
+        setSelectedOrganization={setSelectedOrganization}
+        customerModalOpen={customerModalOpen}
+        setCustomerModalOpen={setCustomerModalOpen}
+      />
     </>
   );
-
-  
 };
 
-export default customers
+export default Customers;

@@ -32,12 +32,13 @@ const PurchaseList: React.FC<PurchaseListProps> = ({ purchases }) => {
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-left">
             <tr>
-              <th className="p-3 font-medium text-gray-600">Invoice No</th>
               <th className="p-3 font-medium text-gray-600">Purchase No</th>
               <th className="p-3 font-medium text-gray-600">Date</th>
               <th className="p-3 font-medium text-gray-600 text-right">
                 Amount
               </th>
+              <th className="p-3 font-medium text-gray-600">Invoice No</th>
+
               <th className="p-3 font-medium text-gray-600 text-right">
                 Actions
               </th>
@@ -46,7 +47,6 @@ const PurchaseList: React.FC<PurchaseListProps> = ({ purchases }) => {
           <tbody className="divide-y">
             {purchases.map((purchase) => (
               <tr key={purchase.id}>
-                <td className="p-3">{purchase.supplierInvoiceNumber}</td>
                 <td className="p-3">{purchase.purchaseInvoiceNumber}</td>
                 <td className="p-3">
                   {new Date(purchase.purchasedate).toLocaleDateString()}
@@ -54,6 +54,12 @@ const PurchaseList: React.FC<PurchaseListProps> = ({ purchases }) => {
                 <td className="p-3 text-right font-medium text-green-600">
                   ₹{purchase.totalAmount.toLocaleString()}
                 </td>
+                <td className="p-3">
+                  {purchase.supplierInvoiceNumber
+                    ? purchase.supplierInvoiceNumber
+                    : "N/A"}
+                </td>
+
                 <td className="p-3 text-right space-x-2">
                   <Button
                     variant="secondary"

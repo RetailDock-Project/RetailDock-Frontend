@@ -50,7 +50,7 @@ const PurchaseReturnDetail = () => {
   return (
     <div className="p-6">
       <PageHeader
-        backTo="/purchase-return"
+        backTo="/home/inventory/purchase-returns"
         title={`Return Invoice: ${invoiceNumber}`}
         subtitle={`Original Invoice: ${originalInvoiceNumber}`}
       />

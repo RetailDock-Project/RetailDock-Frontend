@@ -1,6 +1,8 @@
 import React from "react";
 import SearchSelect from "../../../components/ui/reusable/SearchSelect";
 import { SingleDatePicker } from "../../../components/ui/reusable/SingleDatePicker";
+import { Button } from "../../../components/ui/reusable/Button";
+import { useNavigate } from "react-router-dom";
 
 type Supplier = {
   id: string;
@@ -8,6 +10,7 @@ type Supplier = {
 };
 
 type Props = {
+  isEdit: boolean;
   suppliers: Supplier[];
   selectedSupplier: Supplier | null;
   setSelectedSupplier: (supplier: Supplier) => void;
@@ -21,6 +24,7 @@ type Props = {
 };
 
 const PurchaseOrderInformation: React.FC<Props> = ({
+  isEdit,
   suppliers,
   selectedSupplier,
   setSelectedSupplier,
@@ -35,7 +39,7 @@ const PurchaseOrderInformation: React.FC<Props> = ({
     label: s.name,
     value: s,
   }));
-
+  const navigate = useNavigate();
   console.log(selectedSupplier, "selected supliersss");
 
   return (
@@ -67,6 +71,15 @@ const PurchaseOrderInformation: React.FC<Props> = ({
           />
           {formErrors?.supplier && (
             <p className="text-red-500 text-sm mt-1">{formErrors.supplier}</p>
+          )}
+          {!isEdit && (
+            <Button
+              size="sm"
+              className="mt-3 float-end"
+              onClick={() => navigate("/home/inventory/suppliers/new")}
+            >
+              Add Supplier
+            </Button>
           )}
         </div>
 
