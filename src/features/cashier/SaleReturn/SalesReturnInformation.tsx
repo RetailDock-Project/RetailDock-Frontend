@@ -21,14 +21,17 @@ type ReturnInformationProps = {
   setReturnCondition: React.Dispatch<React.SetStateAction<string>>;
   searchTerm:string;
 setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-setReturnDate:React.Dispatch<React.SetStateAction<Date|null>>;
+handleReturnDate:(date:Date )=>void;
 returnReason:string;
 setReturnReason: React.Dispatch<React.SetStateAction<string>>;
+paymentMode:string;
+setPaymentMode: React.Dispatch<React.SetStateAction<string>>;
+isCreditCustomer:boolean;
 };
 
 
 const SalesReturnInformation: React.FC<ReturnInformationProps> = ({
- searchTerm,setSearchTerm,setReturnDate,returnReason,setReturnReason,returncondition,setReturnCondition
+ searchTerm,setSearchTerm,handleReturnDate,returnReason,setReturnReason,returncondition,setReturnCondition,isCreditCustomer,paymentMode,setPaymentMode
 }) => {
 
 
@@ -114,7 +117,7 @@ const SalesReturnInformation: React.FC<ReturnInformationProps> = ({
           <label className="block text-sm font-medium mb-1">Return Date</label>
           <SingleDatePicker
            
-            onChange={(date: null| Date) => setReturnDate(date)}
+            onChange={(date: Date | null) => handleReturnDate(date??new Date())}
           />
         </div>
       </div>
@@ -148,7 +151,26 @@ const SalesReturnInformation: React.FC<ReturnInformationProps> = ({
       <option value="Good">Good</option>
       <option value="Damaged">Damaged</option>
     </select>
+
+
+{isCreditCustomer&&
+     <div className="w-60">
+    <label className="block text-sm font-medium text-gray-700 mb-1 my-2">
+    Return Payment Mode
+    </label>
+    <select
+      value={paymentMode}
+      onChange={(e) => setPaymentMode(e.target.value)}
+      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+    >
+      <option value="Cash">Cash</option>
+      <option value="Bank">Bank</option>
+      <option value="SetOff">SetOff</option>
+    </select>
   </div>
+}
+  </div>
+ 
 </div>
 
       {/* Notes */}

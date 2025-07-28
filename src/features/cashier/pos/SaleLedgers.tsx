@@ -10,15 +10,15 @@ type SaleLedgersProps = {
   customerName?: string;
   saleLedgerId: string;
   setSaleLedgerId: (id: string) => void;
-
   setCOGS_LedgerId: (id: string) => void;
   setTaxLedgerId: (id: string) => void;
   setInventoryLedgerId: (id: string) => void;
 };
-type saleLedgerResponse={
-    id:string;
-    ledgerName:string;
-}
+
+type saleLedgerResponse = {
+  id: string;
+  ledgerName: string;
+};
 
 const SaleLedgers: React.FC<SaleLedgersProps> = ({
   saleLedgerId,
@@ -30,11 +30,11 @@ const SaleLedgers: React.FC<SaleLedgersProps> = ({
 }) => {
   const [saleLedgerList, setSaleLedgerList] = useState<saleLedgerResponse[]>([]);
 
-useEffect(() => {
-  if (saleLedgerList && saleLedgerList.length > 0) {
-    setSaleLedgerId(saleLedgerList[0].id);
-  }
-}, [saleLedgerList]);
+  useEffect(() => {
+    if (saleLedgerList && saleLedgerList.length > 0) {
+      setSaleLedgerId(saleLedgerList[0].id);
+    }
+  }, [saleLedgerList]);
 
   useEffect(() => {
     const fetchAllLedgerIds = async () => {
@@ -55,58 +55,81 @@ useEffect(() => {
 
     const fetchSaleLedgers = async () => {
       try {
-        const saleResponse = await getSaleLedgerId(); // assuming this returns an array
+        const saleResponse = await getSaleLedgerId();
         setSaleLedgerList(saleResponse.data);
       } catch (error) {
-        console.error('Error fetching Saleledger IDs:', error);
+        console.error('Error fetching Sale ledger IDs:', error);
       }
     };
 
     fetchAllLedgerIds();
     fetchSaleLedgers();
   }, []);
-
   return (
-    <div className="p-4 mt-[72px] bg-white rounded-xl border border-gray-200 shadow-lg">
-      <h2 className="text-xl font-semibold text-gray-800 mb-3">Sale Ledgers :</h2>
+    <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-semibold text-gray-800">Sale Ledgers</h2>
+        <div className="flex space-x-1">
+          <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Dr</span>
+          <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-medium rounded-full">Cr</span>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm font-medium">
-        {/* Dr Side */}
-        <div className="border shadow-md rounded-lg p-4">
-          <h3 className="text-lg font-medium text-gray-700 mb-3">Dr (Debit)</h3>
-          <div className="space-y-4">
-            <p className="w-full border border-gray-300 p-2 rounded-lg h-8">
-              {customerName}
-            </p>
-            <p className="w-full border border-gray-300 p-2 rounded-lg">
-              COGS A/c
-            </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Debit Side - Compact */}
+        <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
+          <div className="flex items-center mb-2">
+            <div className="w-2 h-2 rounded-full bg-blue-500 mr-1.5"></div>
+            <h3 className="text-sm font-medium text-gray-700">Debit</h3>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="py-1.5 px-2 bg-white rounded border border-gray-200">
+              <p className="text-xs text-gray-500 mb-0.5">Customer</p>
+              <p className="text-sm font-medium text-gray-800 truncate">
+                {customerName || 'Select customer'}
+              </p>
+            </div>
+            
+            <div className="py-1.5 px-2 bg-white rounded border border-gray-200">
+              <p className="text-xs text-gray-500 mb-0.5">Account</p>
+              <p className="text-sm font-medium text-gray-800">COGS A/c</p>
+            </div>
           </div>
         </div>
 
-        {/* Cr Side */}
-        <div className="border shadow-md rounded-lg p-4">
-          <h3 className="text-lg font-medium text-gray-700 mb-3">Cr (Credit)</h3>
-          <div className="space-y-4">
-            <select
-              value={saleLedgerId}
-              onChange={(e) => setSaleLedgerId(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-             
-              {saleLedgerList.map((curr: any, index: number) => (
-                <option key={index} value={curr.id}>
-                  {curr.ledgerName}
-                </option>
-              ))}
-            </select>
-
-            <p className="w-full border border-gray-300 p-2 rounded-lg">
-              output GST A/c
-            </p>
-            <p className="w-full border border-gray-300 p-2 rounded-lg">
-              Inventory A/c
-            </p>
+        {/* Credit Side - Compact */}
+        <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
+          <div className="flex items-center mb-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></div>
+            <h3 className="text-sm font-medium text-gray-700">Credit</h3>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="py-1.5 px-2 bg-white rounded border border-gray-200">
+              <label className="text-xs text-gray-500 mb-0.5 block">Sale Account</label>
+              <select
+                value={saleLedgerId}
+                onChange={(e) => setSaleLedgerId(e.target.value)}
+                className="w-full p-1 text-sm rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              >
+                {saleLedgerList.map((curr, index) => (
+                  <option key={index} value={curr.id}>
+                    {curr.ledgerName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="py-1.5 px-2 bg-white rounded border border-gray-200">
+              <p className="text-xs text-gray-500 mb-0.5">Tax Account</p>
+              <p className="text-sm font-medium text-gray-800">Output GST A/c</p>
+            </div>
+            
+            <div className="py-1.5 px-2 bg-white rounded border border-gray-200">
+              <p className="text-xs text-gray-500 mb-0.5">Inventory Account</p>
+              <p className="text-sm font-medium text-gray-800">Inventory A/c</p>
+            </div>
           </div>
         </div>
       </div>

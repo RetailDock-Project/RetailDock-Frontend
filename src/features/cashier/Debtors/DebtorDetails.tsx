@@ -10,7 +10,7 @@ const DebtorDetails: React.FC = () => {
   return (
     <div className=" p-6 overflow-auto scrollbar-hide max-h-screen scrollbar-hidden">
       <DebtorsHeader />
-      <Filter/>
+      {/* <Filter /> */}
       <Debtors />
     </div>
   )

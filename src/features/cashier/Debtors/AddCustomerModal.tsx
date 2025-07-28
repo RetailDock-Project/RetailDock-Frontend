@@ -36,13 +36,12 @@ const AddCreditCustomerModal: React.FC<Props> = ({ isOpen, onClose }) => {
       phoneNumber: Yup.string()
         .matches(/^[0-9]{10}$/, "Must be a 10-digit number")
         .required("Phone number is required"),
-      gstNumber: Yup.string(),
+    
       place: Yup.string().required("Place is required"),
+      contactName: Yup.string().required("contactName is required"),
    
-      contactName: Yup.string().required("Contact Name is required"),
-      bankName: Yup.string().required("Bank Name is required"),
-      accountNumber: Yup.string().required("Account Number is required"),
-      ifscCode: Yup.string().required("IFSC Code is required"),
+    
+    
       upiId: Yup.string(),
       address: Yup.string(),
     }),

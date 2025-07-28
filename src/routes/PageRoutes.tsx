@@ -57,8 +57,15 @@ import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
 
 import GroupAndLedgerDetails from "../features/accountant/components/GroupAndLedgerDetails.tsx";
 import PurchaseOrderForm from "../features/inventory/purchaseorder/PurchaseOrderForm.tsx";
+<<<<<<< HEAD
+import SaleReturnItemViewInfo from "../features/cashier/SaleReturn/SaleReturnItemView/SaleReturnItemViewInfo.tsx";
+
+
+
+=======
 import PurchaseReturnDetail from "../features/inventory/purchasereturn/PurchaseReturnDetails.tsx";
 import HomeIndex from "../pages/home/HomeIndex.tsx";
+>>>>>>> 99c3acd5089644d8dcfad4e4797160b46da8cc01
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -209,6 +216,12 @@ const PageRoutes: React.FC = () => {
             <Route path="sales-return">
               <Route path="new" element={<NewSalesReturn />} />
               {/* <Route path="info" element={<SalesReturnInformation/>} />  */}
+            </Route>
+             <Route path="sales-return">
+              <Route
+                path="details/:ReturninvoiceNumber"
+                element={<SaleReturnItemViewInfo />}
+              />
             </Route>
           </Route>
 

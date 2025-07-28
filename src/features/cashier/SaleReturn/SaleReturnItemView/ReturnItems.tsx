@@ -2,47 +2,45 @@ import React, { useEffect, useState } from "react";
 import { getReturnedProductCount } from "../../../../services/api/cashierApi/cashierApi";
 
 
-type saleItemsProps={
+type returnItemsProps={
 items:any;
 subTotal:number;
-discountAmount:number;
+
 taxAmount:number;
 totalAmount:number;
-saleId:string;
 }
 
 
-const SaleItems: React.FC<saleItemsProps> = ({items,subTotal,discountAmount,totalAmount,taxAmount,saleId}) => {
-const [returnedQuantities, setReturnedQuantities] = useState<Record<string, number>>({});
+const ReturnItems: React.FC<returnItemsProps> = ({items,subTotal,totalAmount,taxAmount}) => {
 
-useEffect(() => {
-  const fetchReturnedQuantities = async () => {
-    const quantities: Record<string, number> = {};
 
-    for (const item of items) {
-      try {
+// const [returnedQuantities, setReturnedQuantities] = useState<Record<string, number>>({});
+// useEffect(() => {
+//   const fetchReturnedQuantities = async () => {
+//     const quantities: Record<string, number> = {};
 
-        const count = await getReturnedProductCount(saleId, item.productId);
-        quantities[`${saleId}-${item.productId}`] = count.data;
-    
-      } catch (error) {
-        console.log(error, "errorFromGetReturnedProductCount");
-      }
-    }
+//     for (const item of items) {
+//       try {
+//         const count = await getReturnedProductCount(item.saleId, item.productId);
+//         quantities[`${item.saleId}-${item.productId}`] = count;
+//       } catch (error) {
+//         console.log(error, "errorFromGetReturnedProductCount");
+//       }
+//     }
 
-    setReturnedQuantities(quantities);
-  };
+//     setReturnedQuantities(quantities);
+//   };
 
-  if (items?.length > 0) {
-    fetchReturnedQuantities();
-  }
-}, [items]);
+//   if (items?.length > 0) {
+//     fetchReturnedQuantities();
+//   }
+// }, [items]);
 
 
   return (
     <div className="p-6 rounded-xl shadow border bg-white mt-6">
       <h2 className="text-lg font-semibold mb-4">
-        🛒 Sale Items ({items?.length})
+        🛒 Return Items ({items?.length})
       </h2>
 
       <div className="overflow-x-auto">
@@ -52,12 +50,11 @@ useEffect(() => {
               <th className="p-2 font-medium border">Product Details</th>
               <th className="p-2 font-medium border text-center">Quantity</th>
               <th className="p-2 font-medium border text-right">Unit Price</th>
-              <th className="p-2 font-medium border text-right">ReturnedQuantity</th>
+   
               <th className="p-2 font-medium border text-right">TaxRate</th>
               <th className="p-2 font-medium border text-right">SubTotal</th>
               <th className="p-2 font-medium border text-right">Tax</th>
 
-              <th className="p-2 font-medium border text-right">Discount</th>
               <th className="p-2 font-medium border text-right">Total</th>
             </tr>
           </thead>
@@ -75,9 +72,7 @@ useEffect(() => {
                 <td className="p-2 text-right border">
                   ₹{item?.unitPrice.toLocaleString()}
                 </td>
-<td className="p-2 text-right border">
-  {returnedQuantities[`${saleId}-${item.productId}`] }
-</td>
+
                 
                 <td className="p-2 text-right border">
                   {item?.taxRate.toLocaleString()}%
@@ -88,9 +83,7 @@ useEffect(() => {
                 <td className="p-2 text-right border">
                   {item?.totalTaxAmount}
                 </td>
-                <td className="p-2 text-right border">
-                  {item?.discountAmount.toLocaleString()}
-                </td>
+            
                 <td className="p-2 text-right border font-semibold">
                   ₹{item?.totalAmount.toLocaleString()}
                 </td>
@@ -106,10 +99,7 @@ useEffect(() => {
       <span className="font-medium text-gray-700">Subtotal:</span>
       <span className="text-gray-800">₹{subTotal}</span>
     </div>
-    <div className="flex justify-between">
-      <span className="font-medium text-gray-700">Discount:</span>
-      <span className="text-gray-800">₹{discountAmount}</span>
-    </div>
+ 
     <div className="flex justify-between">
       <span className="font-medium text-gray-700">Total Tax:</span>
       <span className="text-gray-800">₹{taxAmount}</span>
@@ -128,4 +118,4 @@ useEffect(() => {
   );
 };
 
-export default SaleItems;
+export default ReturnItems;

@@ -12,9 +12,13 @@ import SalesReturnSummary from "./SalesReturnSummary";
 
 import SalesReturnInformation from "./SalesReturnInformation";
 
-import { addNewSalesReturn, getReturnedProductCount, getSaleByInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
+import { addNewSalesReturn, downloadSaleReturnInvoice, getReturnedProductCount, getSaleByInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
 import SalesReturnLedger from "./SalesReturnLedger";
 import ProceedToReturn from "./ProceedToReturn";
+import { useSaleInvoiceInfo } from "../Hooks/UseSaleInvoice";
+import toast from "react-hot-toast";
+import { useSaleReturnInvoice } from "../Hooks/useSaleReturnInvoice";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
 
 
 
@@ -41,7 +45,7 @@ const NewSalesReturn: React.FC = () => {
     const [returnDate, setReturnDate] = useState<Date| null>(new Date());
      const [returnReason, setReturnReason] = useState("");
      const [returnedQuantities, setReturnedQuantities] = useState<Record<string, number>>({});
-
+const [paymentMode,setPaymentMode]=useState("Cash");
   const [items, setItems] = useState<SaleItem[]>([]);
 
 
@@ -118,24 +122,36 @@ useEffect(() => {
 }, [selectedSale,returnedQuantities]);
 
 
+
+const {data}=useSaleInvoiceInfo(searchTerm);
+ const {data:saleReturnInvoice}=useSaleReturnInvoice(data?.salesMode);
+
     useEffect(()=>{
   
-  const fetchSaleDetails=async(searchTerm:string)=>{
-  
-    try{
-  
-  const data=await getSaleByInvoiceNumber(searchTerm);
-  setSelectedSale(data.data);
-  
-    }catch(error){
-      console.log(error,"error from fetch SaleDetails");
-    }
-  
-  
-  }
-  fetchSaleDetails(searchTerm);
-    },[searchTerm])
+  setSelectedSale(data);
+
+
+    },[data])
    
+
+   
+
+const handleReturnDate = (date: Date) => {
+  const saleDate = new Date(selectedSale?.saleDate ?? '');
+
+  
+  if (isNaN(saleDate.getTime())) {
+    toast.error("Invalid sale date");
+    return;
+  }
+ setReturnDate(date);
+  // if (date < saleDate || date > new Date()) {
+  //   toast.error("Select correct Return Date");
+  // } else {
+   
+  // }
+};
+
 
 
 
@@ -184,7 +200,8 @@ const handleSelectAllItems = () => {
 
 const payload = {
   saleInvoiceNumber: selectedSale?.invoiceNumber,
-  returnPayment: "Cash", 
+  returnInvoiceNumber:saleReturnInvoice,
+  returnPayment: paymentMode, 
   returnDate,
   text: returnReason,
   returnCondition,
@@ -221,18 +238,33 @@ const payload = {
   }
 };
 
-const addSalesReturn=async()=>{
-try{
-setIsLoading(true);
-await addNewSalesReturn(payload);
+const addSalesReturn = async () => {
+  try {
+    const hasValidReturnItems = () =>
+  items.some(item => item.selected && item.returnQuantity > 0);
+    if(hasValidReturnItems()){
+ setIsLoading(true);
+    const response = await addNewSalesReturn(payload);
+    
+ toast.success(response.message); 
+//  await downloadExcelFile(()=>downloadSaleReturnInvoice(saleReturnInvoice),`SaleReturn${saleReturnInvoice}.Pdf`)
+ setSearchTerm('');
+ setSelectedSale(null);
+ setItems([]);
+    }else{
+       toast.error('select atleast one quantity'); 
+    }
+   
+   // on success
+  } catch (error: any) {
+    const errorMessage =
+      error?.response?.data?.message || "Something went wrong!";
+    toast.error(errorMessage); // on error
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-}catch(error){
-  console.log("error from addNewSalesReturn");
-
-}finally{
-  setIsLoading(false);
-}
-}
 
   return (
 
@@ -264,6 +296,9 @@ await addNewSalesReturn(payload);
           </>
         }
       />
+       <div className="mt-4 px-4 py-2 bg-gray-100 rounded-md shadow text-sm text-gray-700 font-medium flex items-center gap-2">
+  🧾 <span className="text-gray-900">Return Invoice Number:</span> <span className="font-semibold text-blue-600">{saleReturnInvoice}</span>
+</div>
       <div className=" pt-6 min-h-screen grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <SalesReturnInformation
@@ -271,9 +306,12 @@ await addNewSalesReturn(payload);
           setReturnCondition={setReturnCondition}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          setReturnDate={setReturnDate}
+          handleReturnDate={handleReturnDate}
           returnReason={returnReason}
           setReturnReason={setReturnReason}
+          paymentMode={paymentMode}
+          setPaymentMode={setPaymentMode}
+          isCreditCustomer={selectedSale?.isCreditCustomer}
           
           />
           <SalesDetails customerInfo={selectedSale}/>
@@ -283,7 +321,7 @@ await addNewSalesReturn(payload);
                 <SalesReturnLedger
   saleLedgerId={saleLedgerId}
   setSaleLedgerId={setSaleLedgerId}
-
+returnCondition={returnCondition}
   setCOGS_LedgerId={setCOGS_LedgerId}
  customerName={selectedSale?.customerName ||""}
  

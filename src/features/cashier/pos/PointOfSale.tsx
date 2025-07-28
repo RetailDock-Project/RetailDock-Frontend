@@ -11,7 +11,9 @@ import AddCreditCustomerModal from "../Debtors/AddCustomerModal";
 import AddCustomerModal from "./AddCustomer";
 import { PageHeader } from "../../../components/ui/reusable/PageHeader";
 import toast from "react-hot-toast";
-import { addNewSale } from "../../../services/api/cashierApi/cashierApi";
+import { addNewSale, downloadSaleInvoice, getSaleInvoiceNumber } from "../../../services/api/cashierApi/cashierApi";
+import { downloadExcelFile } from "../../../utils/downloadExcel";
+import SalesInvoice from "../Invoice/salesInvoice/SalesInvoice";
 
 export type Customer = {
   id: number;
@@ -20,7 +22,8 @@ export type Customer = {
   place: string;
   email: string;
   gstNumber: string;
-  
+  ledgerId:string;
+  creditCustomer:boolean;
  
 };
 export type saleItem={
@@ -37,6 +40,7 @@ export type Product = {
   productCategory: string;
   stock: number;
   mrp: number;
+  costPrice:number;
   sellingPrice: number;
 };
 
@@ -49,6 +53,9 @@ const PointOfSale: React.FC = () => {
   const [salesMode, setSalesMode] = useState("B2C");
   const [gst_Type, setGst_Type] = useState("SGST");
   const [paymentMode, setPaymentMode] = useState("Cash");
+  const [invoiceNumber,setInvoiceNumber]=useState('');
+  const [creditCustomer,setCreditCustomer]=useState<boolean>(false);
+
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
@@ -69,22 +76,57 @@ const [productSelected,setProductSelected]=useState<Product[]>([]);
   const [isCashModalOpen,setIsCashModalOpen]=useState(false);
   
 const handleProductAdd = (product: Product) => {
+
   const alreadyExists = productSelected.find((x) => x.id === product.id);
 
   if (!alreadyExists) {
-    setProductSelected((prev) => [...prev, product]);
+
+    if(product.stock <= 0)
+      {
+      toast.error("no stock");
+      
+    }
+    setProductSelected((prev) => [product,...prev ]);
   }else{
     toast.error("Product Already Exists");
   }
-  
 
   setSearchText("");
 };
 
 
+
+useEffect(() => {
+  const fetchInvoice = async () => {
+    try {
+      const response = await getSaleInvoiceNumber(salesMode);
+      setInvoiceNumber(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch invoice number");
+    }
+  };
+
+  fetchInvoice();
+}, [salesMode,mobileNum]);
+
+useEffect(()=>{
+
+   if(selectedCustomer?.creditCustomer){
+            setPaymentMode("Credit");
+            setCreditCustomer(true);
+          }
+
+},[selectedCustomer])
+
+const handlePayment=()=>{
+
+}
+
 const buildSalePayload = () => {
   const payload = {
     paymentType: paymentMode,
+    creditCustomer:creditCustomer,
+    invoiceNumber:invoiceNumber,
     mobileNum: mobileNum,
     text: null, // or "" or any other optional field
     salesMode: salesMode,
@@ -97,26 +139,25 @@ const buildSalePayload = () => {
       discountAmount: item.discountAmount
     })),
     saleVoucher: {
-      voucherTypeId: null, // or pass the actual voucherTypeId if you have one
-      remarks: '',       // or pass remarks string
+      
       transactionsDebit: [  
         {
           ledgerId: COGS_LedgerId,
-          narration: `COGS for sale to ${selectedCustomer?.customerName || "customer"}`
+        
         }
       ],
       transactionsCredit: [
         {
           ledgerId: saleLedgerId,
-          narration: `Sale to ${selectedCustomer?.customerName || "customer"}`
+      
         },
         {
           ledgerId: taxLedgerId,
-          narration: `Tax for sale`
+        
         },
         {
           ledgerId: inventoryLedgerId,
-          narration: `Inventory reduced`
+    
         }
       ]
     }
@@ -127,13 +168,27 @@ const buildSalePayload = () => {
 
 const createNewSale=async()=>{
   try{
+
+    const isValidSale=()=>
+ saleItems.some(item => (item.quantity>0 &&  item.productId));
+    
+    
+    if(isValidSale()){
+
+    
      setIsLoading(true);
   const payload=buildSalePayload();
-  await addNewSale(payload);
+  const response=await addNewSale(payload);
+  toast.success(response.message)
+  downloadExcelFile(()=> downloadSaleInvoice(invoiceNumber),`SaleInvoice${invoiceNumber}.pdf`);
+  setMobileNum("");
+    }else{
+      toast.error(" select atleast one product");
+    }
 
-
-  }catch(error){
-    console.log(error,"error from createNewSale")
+  }catch(error:any){
+   const errorMessage= error?.response?.data?.message || "Something went wrong!";
+    toast.error(errorMessage);
   }
   finally{
     setIsLoading(false);
@@ -142,13 +197,16 @@ const createNewSale=async()=>{
 }
 
   return (
-    <div className="grid p-6 grid-cols-1 lg:grid-cols-[1fr_350px] gap-4">
+    <div className="grid p-6 grid-cols-1 lg:grid-cols-[1fr_350px] gap-4 h-screen ">
    
       <div className="w-full ">
         <div className="flex  justify-between">
-           <PageHeader backTo="/home/cashier/pos" title="Add new Sale" />
-      
-           <div className="flex  gap-3">
+           <PageHeader backTo="/home/cashier/pos" title="Add new Sale " />
+              
+ 
+       <div className="flex items-center gap-2 text-sm ">
+    
+
                  <Button size="sm" className="bg-blue-600 p-2 h-6 mt-10" variant="primary" onClick={() => setIsCashModalOpen(true)}>
                    + Add Cash Customer
                  </Button>
@@ -158,6 +216,10 @@ const createNewSale=async()=>{
 
                </div>
                </div>
+ <div className="mt-4 px-4 py-2 bg-gray-100 rounded-md shadow text-sm text-gray-700 font-medium flex items-center gap-2">
+  🧾 <span className="text-gray-900">Invoice Number:</span> <span className="font-semibold text-blue-600">{invoiceNumber}</span>
+</div>
+
 <POSHeader
   mobile={mobileNum}
   setMobile={setMobileNum}
@@ -171,16 +233,22 @@ const createNewSale=async()=>{
   setSelectedDate={setDueDate}
   selectedCustomer={selectedCustomer}
   setSelectedCustomer={setSelectedCustomer}
+  setCreditCustomer={setCreditCustomer}
 />
 
- 
-        <POSSearchBar setSearchText={setSearchText} searchText={searchText}/>
+
+<POSSearchBar setSearchText={setSearchText} searchText={searchText}/>
         {/* <POSCategories /> */}
         <POSProductList searchText={searchText} handleProductAdd={handleProductAdd} />
+
       </div>
       
       <div className="w-full">
-        <div>
+         <div className=" ">
+        <CurrentSale productSelected={productSelected} setProductSelected={setProductSelected} saleItems={saleItems} setSaleItems={setSaleItems} newSale={createNewSale} isLoading={isLoading} creditCustomer={creditCustomer} paymentMode={paymentMode}/>
+        </div>
+      </div>
+        <div className=" ">
          <SaleLedgers
   saleLedgerId={saleLedgerId}
   setSaleLedgerId={setSaleLedgerId}
@@ -193,10 +261,7 @@ const createNewSale=async()=>{
   setInventoryLedgerId={setInventoryLedgerId}
 />
         </div>
-        <div className=" ">
-        <CurrentSale productSelected={productSelected} setProductSelected={setProductSelected} saleItems={saleItems} setSaleItems={setSaleItems} newSale={createNewSale} isLoading={isLoading}/>
-        </div>
-      </div>
+       
 
 
 <AddCustomerModal

@@ -1,8 +1,30 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DateRangePicker } from './DateRangePicker'
 import { SearchInput } from './SearchInput'
 
-const Filter: React.FC = () => {
+
+interface FilterProps {
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+  dateRange: { startDate: Date | null; endDate: Date | null };
+  setDateRange: (range: { startDate: Date | null; endDate: Date | null }) => void;
+}
+
+const Filter: React.FC<FilterProps> = ({
+  searchTerm,
+  setSearchTerm,
+  dateRange,
+  setDateRange,
+}) => {
+  const handleRangeChange = (range: {
+    startDate: Date | null;
+    endDate: Date | null;
+  }) => {
+    setDateRange({
+      startDate: range.startDate,
+      endDate: range.endDate,
+    });
+  };
   return (
     <div className="rounded-xl shadow border bg-white p-3 mt-6">
       <h3 className="block text-lg">Filters</h3>
@@ -11,17 +33,19 @@ const Filter: React.FC = () => {
         {/* Search */}
         <div>
           <label className="block text-sm font-medium mb-1">Search</label>
-          <SearchInput onSearch={() => {}} />
+          <SearchInput onSearch={(value) => setSearchTerm(value)} />
         </div>
-<div></div>
+
+        <div></div>
+
         {/* Date Range */}
         <div>
           <label className="block text-sm font-medium mb-1">Date</label>
-          <DateRangePicker onChange={() => {}} />
+          <DateRangePicker onChange={handleRangeChange} />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Filter
+export default Filter;

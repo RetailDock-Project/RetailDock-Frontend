@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { SingleDatePicker } from "../../../components/ui/reusable/SingleDatePicker";
-import { getCustomerByMobile } from "../../../services/api/cashierApi/cashierApi";
 import type { Customer } from "./PointOfSale";
+import { useCustomerInfo } from "../Hooks/useCustomerInfo";
+import Loader from "../../../components/ui/reusable/Loader";
 
 
 type POSHeaderProps = {
@@ -13,7 +14,7 @@ type POSHeaderProps = {
 
   gstType: string;
   setGstType: (value: string) => void;
-
+setCreditCustomer:(value: boolean)=>void
   paymentMode: string;
   setPaymentMode: (value: string) => void;
 
@@ -24,25 +25,24 @@ type POSHeaderProps = {
   setSelectedCustomer: (customer: Customer | null) => void;
 };
 
-const POSHeader: React.FC<POSHeaderProps> = ({   mobile ,setMobile,  businessType ,setBusinessType ,gstType,setGstType,paymentMode ,setPaymentMode,selectedDate ,setSelectedDate,selectedCustomer ,setSelectedCustomer}) => {
+const POSHeader: React.FC<POSHeaderProps> = ({   mobile ,setMobile,  businessType ,setBusinessType ,gstType,setGstType,paymentMode ,setPaymentMode,selectedDate ,setSelectedDate,selectedCustomer ,setSelectedCustomer,setCreditCustomer}) => {
  
+const {data,isLoading,error}=useCustomerInfo(mobile);
 
-  useEffect(() => {
-    const fetchCustomer = async () => {
-      if (mobile.length === 10) {
-        try {
-          const response = await getCustomerByMobile(mobile);
-          setSelectedCustomer(response.data);
-        } catch (error) {
-          console.error("Error fetching customer:", error);
-        }
-      } else {
-        setSelectedCustomer(null);
-      }
-    };
+useEffect(() => {
+  if (data) {
+    setSelectedCustomer(data);
 
-    fetchCustomer();
-  }, [mobile]);
+    if (data.gstNumber) {
+      setBusinessType("B2B");
+    } else {
+      setBusinessType("B2C"); 
+    }
+  }
+}, [data]);
+
+
+
 
   return (
     <div className="px-6 py-4 mt-2 bg-white rounded-lg border shadow-sm">

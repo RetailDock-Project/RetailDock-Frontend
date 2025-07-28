@@ -10,7 +10,7 @@ type SalesReturnLedgerProps = {
   customerName?: string;
   saleLedgerId: string;
   setSaleLedgerId: (id: string) => void;
-
+returnCondition :string;
   setCOGS_LedgerId: (id: string) => void;
   setTaxLedgerId: (id: string) => void;
   setInventoryLedgerId: (id: string) => void;
@@ -20,11 +20,14 @@ type saleReturnLedgerResponse={
     ledgerName:string;
 }
 
+
+
 const SalesReturnLedger: React.FC<SalesReturnLedgerProps> = ({
   saleLedgerId,
   setSaleLedgerId,
   setCOGS_LedgerId,
   customerName,
+  returnCondition,
   setTaxLedgerId,
   setInventoryLedgerId,
 }) => {
@@ -36,36 +39,52 @@ useEffect(() => {
   }
 }, [saleLedgerList]);
 
-  useEffect(() => {
-    const fetchAllLedgerIds = async () => {
-      try {
-        const [taxRes, inventoryRes, cogsRes] = await Promise.all([
-          getLedgerByName('output gst'),
-          getInventoryTransactionLedgerId(),
-          getCOGS_LedgerId()
-        ]);
 
-        setTaxLedgerId(taxRes.data);
+
+useEffect(() => {
+  const fetchAllLedgerIds = async () => {
+    try {
+      let inventoryLedgerId = null;
+
+      if (returnCondition === "Good") {
+        const inventoryRes = await getInventoryTransactionLedgerId();
+        
         setInventoryLedgerId(inventoryRes.data.id);
-        setCOGS_LedgerId(cogsRes.data.id);
-      } catch (error) {
-        console.error('Error fetching ledger IDs:', error);
+      } else {
+        const inventoryLoss = await getLedgerByName('Inventory Loss');
+ 
+        setInventoryLedgerId(inventoryLoss.data);
       }
-    };
 
-    const fetchSaleLedgers = async () => {
-      try {
-        const saleResponse = await getSaleLedgerId(); // assuming this returns an array
-        setSaleLedgerList(saleResponse.data);
-      } catch (error) {
-        console.error('Error fetching Saleledger IDs:', error);
-      }
-    };
+      const [taxRes, cogsRes] = await Promise.all([
+        getLedgerByName('output gst'),
+        getCOGS_LedgerId()
+      ]);
 
-    fetchAllLedgerIds();
-    fetchSaleLedgers();
-  }, []);
+      setTaxLedgerId(taxRes.data);
+      setCOGS_LedgerId(cogsRes.data.id);
 
+
+
+    } catch (error) {
+      console.error('❌ Error fetching ledger IDs:', error);
+    }
+  };
+
+  const fetchSaleLedgers = async () => {
+    try {
+      const saleResponse = await getSaleLedgerId();
+      setSaleLedgerList(saleResponse.data);
+
+   
+    } catch (error) {
+      console.error('❌ Error fetching Saleledger IDs:', error);
+    }
+  };
+
+  fetchAllLedgerIds();
+  fetchSaleLedgers();
+}, [returnCondition]);
   return (
     <div className="p-4 py-6 bg-white rounded-xl border border-gray-200 shadow-lg">
       <h2 className="text-xl font-semibold text-gray-800 mb-3">Sale Return Ledgers :</h2>
@@ -93,9 +112,12 @@ useEffect(() => {
             <p className="w-full border border-gray-300 p-2 rounded-lg">
               output GST A/c
             </p>
+           {returnCondition=="Good"?
             <p className="w-full border border-gray-300 p-2 rounded-lg">
               Inventory A/c
-            </p>
+            </p>: <p className="w-full border border-gray-300 p-2 rounded-lg">
+              Inventory Loss A/c
+            </p>}
           </div>
         </div>
 
