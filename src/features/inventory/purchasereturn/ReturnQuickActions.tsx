@@ -3,12 +3,10 @@ import { Search, CheckSquare } from "lucide-react";
 
 type QuickActionsProps = {
   onBrowsePurchases: () => void;
-  onSelectAllItems: () => void;
 };
 
 const ReturnQuickActions: React.FC<QuickActionsProps> = ({
   onBrowsePurchases,
-  onSelectAllItems,
 }) => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-md border">
@@ -25,13 +23,13 @@ const ReturnQuickActions: React.FC<QuickActionsProps> = ({
         </button>
 
         {/* Select All Items */}
-        <button
+        {/* <button
           onClick={onSelectAllItems}
           className="w-full flex items-center gap-2 px-4 py-2 text-sm border rounded-md hover:bg-gray-100 transition"
         >
           <CheckSquare size={16} />
           Select All Items
-        </button>
+        </button> */}
       </div>
     </div>
   );

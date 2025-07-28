@@ -31,6 +31,8 @@ const Purchase: React.FC = () => {
     toDate: dateRange.endDate?.toISOString(),
   });
 
+  console.log(purchases);
+
   const handleRangeChange = (range: {
     startDate: Date | null;
     endDate: Date | null;
@@ -58,7 +60,7 @@ const Purchase: React.FC = () => {
               <FilePlus size={16} />
               New Purchase
             </Button>
-            <Button
+            {/* <Button
               size="sm"
               variant="secondary"
               className="flex items-center gap-2"
@@ -66,7 +68,7 @@ const Purchase: React.FC = () => {
             >
               <RotateCcw size={16} />
               Return
-            </Button>
+            </Button> */}
             <Button
               size="sm"
               variant="secondary"

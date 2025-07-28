@@ -14,7 +14,7 @@ export type PurchaseOrders = {
   purchaseOrderNumber: string;
   supplier: Supplier;
   orderDate: string;
-  orderStatus: "Pending" | "Completed" | "Cancelled";
+  orderStatus: "Pending" | "Complete" | "Cancelled";
   netAmount: number;
   totalAmount: number;
   taxAmount: number;
@@ -76,7 +76,7 @@ export const PurchaseOrderList: React.FC<PurchaseOrderListProps> = ({
               <td className="px-4 py-3">
                 <span
                   className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    order.orderStatus === "Completed"
+                    order.orderStatus === "Complete"
                       ? "bg-green-100 text-green-800"
                       : order.orderStatus === "Pending"
                       ? "bg-yellow-100 text-yellow-800"

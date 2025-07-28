@@ -1,5 +1,8 @@
 import type { ProductFormData } from "../../../features/inventory/product/NewProduct";
-import type { PurchaseRequest, Voucher } from "../../../features/inventory/purchase/PurchaseTypes";
+import type {
+  PurchaseRequest,
+  Voucher,
+} from "../../../features/inventory/purchase/PurchaseTypes";
 import type { SupplierDto } from "../../../features/inventory/supplier/SupplierForm";
 import accountsClient from "../AccountsApi/accountsClient";
 import inventoryClient from "./inventoryClient";
@@ -115,7 +118,6 @@ export const createProduct = async (productData: ProductFormData) => {
   formData.append("description", productData.description);
   formData.append("ReOrderLevel", productData.reorderLevel.toString());
   formData.append("mrp", productData.mrp.toString());
-  formData.append("costPrice", productData.costPrice.toString());
   formData.append("sellingPrice", productData.sellingPrice.toString());
 
   // Append images
@@ -352,4 +354,53 @@ export const createPurchaseReturn = async (data: PurchaseReturnRequest) => {
   console.log(response.data);
 
   return response.data;
+};
+
+export const getPurchaseReturnsFilter = async ({
+  search,
+  fromDate,
+  toDate,
+}: {
+  search?: string;
+  fromDate?: string; // ISO string e.g. "2025-07-01T00:00:00"
+  toDate?: string;
+}) => {
+  const params: Record<string, any> = {};
+
+  if (search) params.search = search;
+  if (fromDate) params.fromDate = fromDate;
+  if (toDate) params.toDate = toDate;
+
+  const response = await inventoryClient.get(
+    `/Purchase/Get/Return/OrganizationId`,
+    {
+      params,
+    }
+  );
+
+  return response.data;
+};
+
+export const SupplierStatusChange = async (id: string) => {
+  const response = await inventoryClient.patch(
+    `/Supplier/${id}/block-or-unblock`
+  );
+  console.log(response);
+  return response.data;
+};
+
+export const getPurchaseReturnDetail = async (id: string) => {
+  const { data } = await inventoryClient.get(`/Purchase/Get/Return/${id}`);
+  return data;
+};
+
+export const getRecentInventoryTransaction = async () => {
+  const { data } = await inventoryClient.get(`/Purchase/recent/organizationId`);
+  return data;
+};
+
+export const exportPurchasePdf = async (id: any) => {
+  return await inventoryClient.get(`/Purchase/download-purchase/${id}`, {
+    responseType: "blob",
+  });
 };

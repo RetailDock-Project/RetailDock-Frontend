@@ -1,50 +1,76 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-type ReturnItem = {
-  id: number;
-  name: string;
-  sku: string;
-  available: number;
-  selected: boolean;
-  returnQty: number;
-  reason: string;
-  condition: string;
+type PurchaseItem = {
+  id: string;
+  productId: string;
+  productName: string;
+  ratePerPiece: number;
+  quantity: number;
+  totalAmount: number;
+  taxAmount: number;
+  returnedQuantity: number;
 };
 
-const initialItems: ReturnItem[] = [
-  {
-    id: 1,
-    name: "Samsung Galaxy M13",
-    sku: "SM-M13-BLK",
-    available: 10,
-    selected: true,
-    returnQty: 0,
-    reason: "",
-    condition: "Damaged",
-  },
-  {
-    id: 2,
-    name: "Samsung Galaxy Charger",
-    sku: "SM-CHG-25W",
-    available: 13,
-    selected: false,
-    returnQty: 0,
-    reason: "",
-    condition: "Damaged",
-  },
-];
+type ReturnItem = PurchaseItem & {
+  selected: boolean;
+  returnQty: number;
+};
 
-export const SelectItemsToReturn: React.FC = () => {
-  const [items, setItems] = useState(initialItems);
+type Props = {
+  items: PurchaseItem[];
+  selectedItems: ReturnItem[];
+  onSelectionChange: (updated: {
+    items: ReturnItem[];
+    totalAmount: number;
+    totalTax: number;
+  }) => void;
+};
+
+export const SelectItemsToReturn: React.FC<Props> = ({
+  items,
+  selectedItems,
+  onSelectionChange,
+}) => {
+  const [localItems, setLocalItems] = useState<ReturnItem[]>([]);
+
+  useEffect(() => {
+    // initialize when purchase items change
+    const mapped: ReturnItem[] = items.map((item) => ({
+      ...item,
+      selected: false,
+      returnQty: 0,
+    }));
+    setLocalItems(mapped);
+  }, [items]);
+
+  useEffect(() => {
+    const filtered = localItems.filter((i) => i.selected && i.returnQty > 0);
+
+    const totalAmount = filtered.reduce(
+      (acc, item) => acc + item.returnQty * item.ratePerPiece,
+      0
+    );
+
+    const totalTax = filtered.reduce(
+      (acc, item) => acc + (item.taxAmount / item.quantity) * item.returnQty,
+      0
+    );
+
+    onSelectionChange({
+      items: filtered,
+      totalAmount,
+      totalTax,
+    });
+  }, [localItems]);
 
   const handleChange = <K extends keyof ReturnItem>(
     index: number,
     field: K,
     value: ReturnItem[K]
   ) => {
-    const updatedItems = [...items];
-    updatedItems[index][field] = value;
-    setItems(updatedItems);
+    const updated = [...localItems];
+    updated[index][field] = value;
+    setLocalItems(updated);
   };
 
   return (
@@ -57,13 +83,12 @@ export const SelectItemsToReturn: React.FC = () => {
               <th className="p-2 text-left">Product</th>
               <th className="p-2 text-center">Available</th>
               <th className="p-2 text-center">Return Qty</th>
-              <th className="p-2 text-left">Reason</th>
-              <th className="p-2 text-left">Condition</th>
               <th className="p-2 text-right">Value</th>
+              <th className="p-2 text-right">Tax</th>
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
+            {localItems.map((item, index) => (
               <tr key={item.id} className="border-t">
                 <td className="p-2">
                   <div className="flex items-center gap-2">
@@ -75,12 +100,16 @@ export const SelectItemsToReturn: React.FC = () => {
                       }
                     />
                     <div>
-                      <p className="font-medium text-gray-800">{item.name}</p>
-                      <p className="text-xs text-gray-500">{item.sku}</p>
+                      <p className="font-medium text-gray-800">
+                        {item.productName}
+                      </p>
+                      {/* <p className="text-xs text-gray-500">{item.}</p> */}
                     </div>
                   </div>
                 </td>
-                <td className="p-2 text-center">{item.available}</td>
+                <td className="p-2 text-center">
+                  {item.quantity - item.returnedQuantity}
+                </td>
                 <td className="p-2 text-center">
                   <input
                     type="number"
@@ -88,40 +117,22 @@ export const SelectItemsToReturn: React.FC = () => {
                     disabled={!item.selected}
                     className="w-16 text-center border rounded px-2 py-1"
                     min={0}
-                    max={item.available}
+                    max={item.quantity - item.returnedQuantity}
                     onChange={(e) =>
                       handleChange(index, "returnQty", Number(e.target.value))
                     }
                   />
                 </td>
-                <td className="p-2">
-                  <select
-                    className="w-full border rounded px-2 py-1"
-                    value={item.reason}
-                    disabled={!item.selected}
-                    onChange={(e) =>
-                      handleChange(index, "reason", e.target.value)
-                    }
-                  >
-                    <option value="">Reason</option>
-                    <option value="Damaged">Damaged</option>
-                    <option value="Incorrect Item">Incorrect Item</option>
-                  </select>
+
+                <td className="p-2 text-right">
+                  ₹{item.selected ? item.returnQty * item.ratePerPiece : 0}
                 </td>
-                <td className="p-2">
-                  <select
-                    className="w-full border rounded px-2 py-1"
-                    value={item.condition}
-                    disabled={!item.selected}
-                    onChange={(e) =>
-                      handleChange(index, "condition", e.target.value)
-                    }
-                  >
-                    <option value="Damaged">Damaged</option>
-                    <option value="Good">Good</option>
-                  </select>
+                <td className="p-2 text-right">
+                  ₹
+                  {item.selected
+                    ? (item.taxAmount / item.quantity) * item.returnQty
+                    : 0}
                 </td>
-                <td className="p-2 text-right">₹0</td>
               </tr>
             ))}
           </tbody>

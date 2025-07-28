@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "../../../components/ui/reusable/Button";
 import SearchSelect from "../../../components/ui/reusable/SearchSelect";
+import toast from "react-hot-toast";
 
 type Product = {
   id: number;
@@ -42,9 +43,20 @@ const AddItemSection: React.FC<AddItemSectionProps> = ({
   }));
 
   const handleAddItem = () => {
-    if (!selectedProduct) return alert("Please select a product");
-    if (quantity < 1) return alert("Quantity must be at least 1");
-    if (unitCost < 0) return alert("Unit cost can't be negative");
+    if (!selectedProduct) {
+      toast.error("Please select a product");
+      return;
+    }
+
+    if (quantity < 1) {
+      toast.error("Quantity must be at least 1");
+      return;
+    }
+
+    if (unitCost < 0) {
+      toast.error("Unit cost can't be negative");
+      return;
+    }
     console.log(selectedProduct.value.id.toString(), "id");
     console.log(selectedProduct.value.name, "name");
     console.log(quantity, "qty");

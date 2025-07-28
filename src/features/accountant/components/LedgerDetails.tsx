@@ -4,6 +4,7 @@ import { Download, Eye, Plus, Pencil } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllLedgers } from "../../../services/api/AccountsApi/accountsApi";
+import Loader from "../../../components/ui/reusable/Loader";
 
 const LedgerDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ const LedgerDetails: React.FC = () => {
         {/* Table */}
         <div>
           {isLoading ? (
-            <div className="text-center py-6 text-gray-600">Loading ledger data...</div>
+            <div className="text-center py-6 text-gray-600"><Loader/></div>
           ) : (
             <table className="min-w-full text-sm text-left table-auto">
               <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
