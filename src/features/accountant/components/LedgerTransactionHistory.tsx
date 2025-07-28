@@ -59,9 +59,10 @@ const LedgerTransactionHistory: React.FC = () => {
           <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
             <tr>
               <th className="px-2 py-2 min-w-[100px]">Date</th>
-              <th className="px-2 py-2 min-w-[100px]">Voucher</th>
-              <th className="px-2 py-2 min-w-[200px]">Description</th>
+              <th className="px-2 py-2 min-w-[100px]">Voucher Number</th>
+              <th className="px-2 py-2 min-w-[200px]">Voucher Name</th>
               <th className="px-2 py-2 min-w-[160px]">Related Account</th>
+                <th className="px-2 py-2 min-w-[160px]">Remarks</th>
               <th className="px-2 py-2 min-w-[100px]">Debit</th>
               <th className="px-2 py-2 min-w-[100px]">Credit</th>
             </tr>
@@ -69,7 +70,7 @@ const LedgerTransactionHistory: React.FC = () => {
           <tbody className="divide-y">
             {/* Opening Balance */}
             <tr className="bg-blue-50 font-semibold text-gray-700">
-              <td colSpan={4} className="px-2 py-2">Opening Balance</td>
+              <td colSpan={5} className="px-2 py-2">Opening Balance</td>
               <td className="px-2 py-2">
                 {ledgerData?.openingType === 'Dr' ? ledgerData?.openingBalance?.toFixed(2) : ''}
               </td>
@@ -79,20 +80,24 @@ const LedgerTransactionHistory: React.FC = () => {
             </tr>
 
             {/* Transactions */}
-            {ledgerData?.transactions?.map((txn:any, index:any) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-2 py-2">{new Date(txn.voucherDate).toLocaleDateString()}</td>
-                <td className="px-2 py-2">{txn.voucherNumber}</td>
-                <td className="px-2 py-2">{txn.typeName}</td>
-                <td className="px-2 py-2">{txn.oppositeLedger}</td>
-                <td className="px-2 py-2">{txn.isDebit ? txn.amount.toFixed(2) : ''}</td>
-                <td className="px-2 py-2">{!txn.isDebit ? txn.amount.toFixed(2) : ''}</td>
-              </tr>
-            ))}
+            {ledgerData?.transactions
+  ?.sort((a: any, b: any) => new Date(a.voucherDate).getTime() - new Date(b.voucherDate).getTime()) // ascending date
+  .map((txn: any, index: any) => (
+    <tr key={index} className="hover:bg-gray-50">
+      <td className="px-2 py-2">{new Date(txn.voucherDate).toLocaleDateString()}</td>
+      <td className="px-2 py-2">{txn.voucherNumber}</td>
+      <td className="px-2 py-2">{txn.voucherTypeDisplay}</td>
+      <td className="px-2 py-2">{txn.oppositeLedgerName}</td>
+      <td className="px-2 py-2">{txn.Remarks}</td>
+      <td className="px-2 py-2">{!txn.oppositeIsDebit ? txn.amount.toFixed(2) : ''}</td>
+      <td className="px-2 py-2">{txn.oppositeIsDebit ? txn.amount.toFixed(2) : ''}</td>
+    </tr>
+))}
+
 
             {/* Closing Balance */}
             <tr className="bg-green-50 font-semibold text-gray-700">
-              <td colSpan={4} className="px-2 py-2">Closing Balance</td>
+              <td colSpan={5} className="px-2 py-2">Closing Balance</td>
               <td className="px-2 py-2">
                 {ledgerData?.closingType === 'Dr' ? ledgerData?.closingBalance?.toFixed(2) : ''}
               </td>
