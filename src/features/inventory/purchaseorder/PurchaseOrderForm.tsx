@@ -88,6 +88,7 @@ const PurchaseOrderForm = ({
   const [initialData, setInitialData] = useState<PurchaseOrderData | null>(
     null
   );
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
     null
   );
@@ -220,6 +221,7 @@ const PurchaseOrderForm = ({
     };
 
     try {
+      setIsSaving(true);
       if (mode === "edit") {
         console.log(payloadWithIds);
         await updatePurchaseOrder(payloadWithIds);
@@ -231,9 +233,12 @@ const PurchaseOrderForm = ({
         console.log(payloadBase);
         await createPurchaseOrder(payloadBase);
         toast.success("Purchase order created!");
+        navigate(`/home/inventory/purchase-orders`);
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -259,6 +264,7 @@ const PurchaseOrderForm = ({
               Cancel
             </Button>
             <Button
+              disabled={isSaving}
               size="sm"
               variant="primary"
               icon={<MdOutlineSave />}
@@ -273,6 +279,7 @@ const PurchaseOrderForm = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <PurchaseOrderInformation
+            isEdit={mode == "edit"}
             suppliers={suppliers}
             selectedSupplier={selectedSupplier}
             setSelectedSupplier={setSelectedSupplier}

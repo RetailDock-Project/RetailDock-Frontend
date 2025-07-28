@@ -28,7 +28,6 @@ import Statements from "../features/accountant/components/FinancialStatements";
 import FinancialStatements from "../features/accountant/components/FinancialStatements";
 import VoucherReport from "../features/accountant/components/VoucherReport";
 
-
 import CashierDashboard from "../features/cashier/dashboard/CashierDashboard";
 import PointOfSale from "../features/cashier/pos/PointOfSale";
 import Purchase from "../features/inventory/purchase/Purchase";
@@ -59,6 +58,7 @@ import NewSupplier from "../features/inventory/supplier/NewSupplier.tsx";
 import GroupAndLedgerDetails from "../features/accountant/components/GroupAndLedgerDetails.tsx";
 import PurchaseOrderForm from "../features/inventory/purchaseorder/PurchaseOrderForm.tsx";
 import PurchaseReturnDetail from "../features/inventory/purchasereturn/PurchaseReturnDetails.tsx";
+import HomeIndex from "../pages/home/HomeIndex.tsx";
 
 const PageRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -83,6 +83,7 @@ const PageRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/">
+        <Route index element={<HomeIndex />} />
         <Route path="auth" element={<AuthLayout />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
@@ -124,7 +125,7 @@ const PageRoutes: React.FC = () => {
             <Route path="purchase-returns" element={<PurchaseReturn />}></Route>
             <Route path="purchase-return">
               <Route path="new/:id" element={<NewPurchaseReturn />}></Route>
-              <Route path=":id" element={<PurchaseReturnDetail/>}></Route>
+              <Route path=":id" element={<PurchaseReturnDetail />}></Route>
             </Route>
 
             <Route path="purchases" element={<Purchase />}></Route>
@@ -168,16 +169,14 @@ const PageRoutes: React.FC = () => {
             <Route
               path="financial-statements"
               element={<FinancialStatements />}
-            >
-              
-              
-
-            </Route>
+            ></Route>
             <Route path="financial-statement">
-               <Route path="groupAndLedgerDetails/:groupId" element={<GroupAndLedgerDetails />}>
-               </Route>
+              <Route
+                path="groupAndLedgerDetails/:groupId"
+                element={<GroupAndLedgerDetails />}
+              ></Route>
             </Route>
-           
+
             <Route path="voucher-report" element={<VoucherReport />}></Route>
 
             <Route path="add-ledger" element={<AddLedger />}></Route>
@@ -186,7 +185,6 @@ const PageRoutes: React.FC = () => {
               path="groupAndLedgerDetails/:id"
               element={<GroupAndLedgerDetails />}
             ></Route>
-
           </Route>
 
           <Route path="cashier">

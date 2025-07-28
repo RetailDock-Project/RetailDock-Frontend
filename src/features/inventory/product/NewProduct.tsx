@@ -28,7 +28,6 @@ export type ProductFormData = {
   description: string;
   reorderLevel: number;
   mrp: number;
-  costPrice: number;
   sellingPrice: number;
   productImages: File[] | string[] | ProductImage[]; // Only new image files
   existingImageIds?: number[]; // For update: retained existing image IDs
@@ -53,7 +52,6 @@ const NewProduct: React.FC = () => {
     description: "",
     reorderLevel: 0,
     mrp: 0,
-    costPrice: 0,
     sellingPrice: 0,
     productImages: [],
   });
@@ -79,7 +77,6 @@ const NewProduct: React.FC = () => {
             description: p.description || "",
             reorderLevel: p.reOrderLevel,
             mrp: p.mrp,
-            costPrice: p.costPrice,
             sellingPrice: p.sellingPrice,
             productImages: [...images], // store for form submission
           });
@@ -106,8 +103,6 @@ const NewProduct: React.FC = () => {
     if (!productData.description.trim())
       errors.push("Description is required.");
     if (productData.mrp <= 0) errors.push("MRP must be greater than 0.");
-    if (productData.costPrice <= 0)
-      errors.push("Cost price must be greater than 0.");
     if (productData.sellingPrice <= 0)
       errors.push("Selling price must be greater than 0.");
     if (productData.reorderLevel < 0)
@@ -134,12 +129,16 @@ const NewProduct: React.FC = () => {
         existingImageIds: existingImageIds,
       };
 
+      //   toString;
+
       if (isEditMode && id) {
         console.log(productToSave, "products to saveee", id);
 
         await updateProduct(id, productToSave);
         toast.success("Product updated successfully");
       } else {
+        console.log(productToSave, "products to saveee");
+
         await createProduct(productToSave);
         toast.success("Product created successfully");
       }
@@ -203,7 +202,6 @@ const NewProduct: React.FC = () => {
           />
           <ProductPricing
             pricingData={{
-              costPrice: productData.costPrice,
               sellingPrice: productData.sellingPrice,
               mrp: productData.mrp,
             }}

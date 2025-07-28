@@ -72,14 +72,14 @@ const AddPurchaseItem: React.FC<AddPurchaseItemProps> = ({
   useEffect(() => {
     if (JSON.stringify(items) === JSON.stringify(prevItemsRef.current)) return;
 
-    // Strip out internal fields before passing to onChange
-    const simplified: PurchaseItem[] = items.map(
-      ({ receivedQuantity, maxQuantity, ...rest }) => rest
-    );
+    // ❌ EXCLUDE zero-quantity items if it's from a purchase order
+    const simplified: PurchaseItem[] = items
+      .filter((item) => !isFromPurchaseOrder || item.quantity > 0)
+      .map(({ receivedQuantity, maxQuantity, ...rest }) => rest);
 
     onChange?.(simplified);
     prevItemsRef.current = items;
-  }, [items, onChange]);
+  }, [items, onChange, isFromPurchaseOrder]);
 
   const handleQuantityChange = useCallback(
     (index: number, value: number) => {
@@ -89,8 +89,8 @@ const AddPurchaseItem: React.FC<AddPurchaseItemProps> = ({
 
           const newQuantity =
             isFromPurchaseOrder && item.maxQuantity !== undefined
-              ? Math.min(Math.max(value, 1), item.maxQuantity)
-              : Math.max(value, 1);
+              ? Math.min(Math.max(value, 0), item.maxQuantity) // ✅ allow 0 for purchase order
+              : Math.max(value, 1); // for manual entries, still enforce >= 1
 
           return { ...item, quantity: newQuantity };
         });
@@ -246,14 +246,21 @@ const AddPurchaseItem: React.FC<AddPurchaseItemProps> = ({
             </thead>
             <tbody>
               {items?.map((item, index) => (
-                <tr key={index} className="border-t">
+                <tr
+                  key={index}
+                  className={`border-t ${
+                    isFromPurchaseOrder && item.quantity === 0
+                      ? "bg-gray-100 text-gray-400"
+                      : ""
+                  }`}
+                >
                   <td className="p-2 border">
                     {item?.product || item.productId}
                   </td>
                   <td className="p-2 border">
                     <input
                       type="number"
-                      min={1}
+                      min={0}
                       max={item.maxQuantity ?? undefined}
                       value={item.quantity}
                       onChange={(e) =>

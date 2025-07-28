@@ -8,6 +8,7 @@ type PurchaseItem = {
   quantity: number;
   totalAmount: number;
   taxAmount: number;
+  returnedQuantity: number;
 };
 
 type ReturnItem = PurchaseItem & {
@@ -106,7 +107,9 @@ export const SelectItemsToReturn: React.FC<Props> = ({
                     </div>
                   </div>
                 </td>
-                <td className="p-2 text-center">{item.quantity}</td>
+                <td className="p-2 text-center">
+                  {item.quantity - item.returnedQuantity}
+                </td>
                 <td className="p-2 text-center">
                   <input
                     type="number"
@@ -114,7 +117,7 @@ export const SelectItemsToReturn: React.FC<Props> = ({
                     disabled={!item.selected}
                     className="w-16 text-center border rounded px-2 py-1"
                     min={0}
-                    max={item.quantity}
+                    max={item.quantity - item.returnedQuantity}
                     onChange={(e) =>
                       handleChange(index, "returnQty", Number(e.target.value))
                     }

@@ -70,6 +70,8 @@ const NewPurchaseReturn: React.FC = () => {
     select: (data) => data.data,
   });
 
+  console.log(purchase, "purchaseeee");
+
   const { data: inventoryLedgerId } = useQuery({
     queryKey: ["inventoryLedgerId"],
     queryFn: getInventoryTransactionLedgerId,

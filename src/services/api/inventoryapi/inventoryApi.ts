@@ -118,7 +118,6 @@ export const createProduct = async (productData: ProductFormData) => {
   formData.append("description", productData.description);
   formData.append("ReOrderLevel", productData.reorderLevel.toString());
   formData.append("mrp", productData.mrp.toString());
-  formData.append("costPrice", productData.costPrice.toString());
   formData.append("sellingPrice", productData.sellingPrice.toString());
 
   // Append images
